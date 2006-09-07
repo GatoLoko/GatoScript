@@ -1,0 +1,14 @@
+###############################################################################
+#
+# TODO:
+#    Agregar autodeteccion y expulsion de bots en los canales que seamos
+#      operadores (parcialmente completado (ClonerX bots))
+#    Crear una funcion de "quotes" con comando remoto (¿a partir de la funcion
+#      de consejos?)
+#    Comprobar la viabilidad de almacenar los quotes en una base de datos
+#    Terminar las funciones para el "/whois"
+#    Terminar el instalador
+#    Crear o buscar un parseador de archivos de configuracion para ayudar en el
+#      instalador y en un posible archivo de configuracion del del script
+#
+###############################################################################

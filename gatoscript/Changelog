@@ -1,0 +1,154 @@
+###############################################################################
+#
+# Cambios en versiones anteriores a la 0.3:
+#    No lleve la cuenta :p
+#
+# Cambios en 0.3:
+#    Extraidos los consejos al archivo "consejos.txt".
+#    Agregado el comando "/consejos" para mostrar consejos aleatorios.
+#    Agregado el comando "/consejo" para mostrar consejos concretos.
+#    Agregado el comando "/gato" para mostrar una lista de comandos disponibles
+#    Limpiada la salida del uptime.
+#    Corregido el numero de pista mostrado por "/gxm".
+#
+# Cambios en 0.4:
+#    Aumentada la prioridad del filtro antispam, asi debe actuar antes que
+#        otras funciones del mismo u otro script que se active por los privados.
+#    Hay que tener en cuenta que puse un valor al azar porque no encuentro
+#        informacion sobre las prioridades, si algo falla habra que probar con
+#        otros valores.
+#    Agregado el comando "/gos" para mostrar la distribucion y su version. Solo
+#        funciona en distribuciones que cumplan con el Linux Standard Base.
+#    Agregado codigo de control de errores en la apertura de archivos ( como en
+#        el caso de los consejos).
+#    Agregada la funcion remota con los comandos "!consejos" y "hola".
+#    Modificado la salida del comando "gxm" para que tambien muestre la version
+#        de XMMS.
+#    Movidos los archivos de consejos y filtros antispam al un subdirectorio
+#        para mantener las cosas ordenadas y facilitar la identificacion se los
+#        componentes del script (util a la hora de eliminarlo por ejemplo).
+#    Actualizada la informacion de ayuda (parcialmente).
+#
+# Cambios en 0.5:
+#    Extraidos los filtros a un archivo externo y modificada la funcion
+#        antispam para que los use. Un filtro por linea y cada linea terminada 
+#        con un retorno de linea excepto la ultima (osea, no quedara una linea
+#        vacia al final del archivo).
+#    Agregado el comando "/antiadd" para agregar filtros al sistema antispam.
+#    Agregado el comando "/antidel" para eliminar filtros del sistema antispam
+#    Agregado el comando "/antilist" para mostrar los filtros.
+#    Redirigidos los mensajes del script a un nuevo tab/ventana (segun la
+#        configuracion de privados que tengamos).
+#
+# Cambios en 0.6:
+#    Sustituida la funcion de "/gup" por otra nueva que debe solucionar los
+#        fallos encontrados en la anterior (uso del plural para referirse a un
+#        solo dia, fallo en el calculo cuando era menos de 24 horas, ...).
+#    Agregado el comando "/kbtemp" para expulsar gente durante 5 minutos.
+#    Actualizada la informacion de ayuda (totalmente).
+#    Agregada lista de tareas pendientes.
+#    Extraida la lista de tareas pendientes a un archivo independiente (aunque
+#        pueda parecer raro que ponga dos lineas sobre la lista de tareas, tiene
+#        un motivo, en el svn que uso hice un commit antes de extraerla a un
+#        archivo aparte, asi que consta como dos commits distintos).
+#    Extraida la lista de cambios a un archivo independiente.
+#
+# Cambios en 0.7:
+#    Eliminados restos de pruebas en versiones anteriores.
+#    Eliminada la funcion que mostraba informacion del sistema con colores.
+#    Agregado el comando "/gsoft" para mostrar informacion sobre el software
+#        basico del sistema.
+#    Agregada comprobacion de errores a la carga del modulo para xmms y en caso
+#        de no estar presente desactivamos todas las funciones que dependen de
+#        el.
+#    Eliminada la antigua funcion de "/gup" (estaba comentada mientras se
+#        probaba la nueva).
+#
+# Cambios en 0.8:
+#    Agregado "/gsoft" a la informacion de ayuda.
+#    Reescrita la funcion que genera el menu de ayuda para el comando "/gato"
+#        de forma que se divida en secciones.
+#    Arreglado un fallo en la carga de librerias (agregue control de errores
+#        a la carga de xmms pero olvide eliminar la carga anterior).
+#    Arreglado un fallo en la funcion de los consejos.
+#    Reordenada la cabecera del script.
+#    Agregada desactivacion de las funciones cuando se descarga el script.
+#
+# Cambios en 0.9:
+#    Modificada la funcion antispam para que soporte expresiones regulares y
+#        que no tenga en cuenta la capitalizacion (mayusculas/minusculas) del
+#        texto ni de los filtros (asi el filtro "p0rn" afecta tambien a "P0RN".
+#    La funcion antigua queda comentada por si falla la nueva y es necesario
+#        recuperarla.
+#    Arregladas algunas cosillas que quedaron pendientes.
+#    Actualizada la lista de filtros en base al soporte de expresiones
+#        regulares. Con el nuevo funcionamiento algunos eran redundantes y otros
+#        podian filtrar mensajes que no debian.
+#
+# Cambios en 0.10:
+#    Arreglado un fallo en la salida del comando "/gxm" y cambiado el orden de
+#        la informacion.
+#    Actualizada la lista de filtros antispam para filtrar nuevas basuras
+#        frecuentes.
+#    Correcciones en el instalador, agregada linea de codificacion del archivo
+#        para evitar problemas en algunos sistemas, corregido un error
+#        tipografico en una llamada a una funcion.
+#    Agregadas varias funciones para el control del comando whois, los
+#        mensajes se reenviaran a la ventana activa. y se modifica ligeramente
+#        el formato.
+#
+# Cambios en 0.11:
+#    Arreglado el tiempo que muestra "/gxm" cuando se reproduce un stream
+#        desde una emisora de radio
+#    Aqui se colaron algunos arreglos que no apunte :p
+#
+# Cambios en 0.12:
+#    Modificada la funcion "antispam_add_cb" para que no recorra todo el
+#        archivo cada vez que se agrege una entrada nueva. Ahora se agrega al
+#        final directamente.
+#    Modificada la funcion "antispam_del_cb" de forma que no use un archivo
+#        temporal. Asi es mas rapida y se reduce el acceso a disco.
+#    Modificada la funcion "antispam_cb" para manejar la lista de filtros en
+#        memoria en vez de en disco.
+#    Modificadas todas las funciones relacionadas con antispam para actualizar
+#        la lista de filtros en memoria despues de cada cambio en el archivo de
+#        filtros.
+#
+#  Cambios en 0.13:
+#    Corregido un fallo en el acceso a la variable "filtros" en los filtros
+#        antispam que impedia la correcta actualizacion de la lista al agregar
+#        o eliminar un filtro nuevo.
+#    Corregido un fallo en la funcion de consejos aleatorios que enviaba
+#        comandos indebidos al servidor.
+#    Modificada la funcion "software_cb" para gestionar mejor los errores
+#        cuando no puede determinar el software.
+#    Mejorado el instalador para que active los menus ocultos en xchat 2.6.x
+#    Mejorado el control de respuestas al whois. Ahora controlamos y
+#        redirigimos mas respuestas (401 para nicks desconectados y 342 para
+#        nick con modo +R). Tambien se ha modificado ligeramente el formato para
+#        que no se descomponga con nicks largos (soporta hasta 15 caracteres de
+#        largo, que es la longitud maxima en el irc-hispano).
+#        Ademas mejora el control de las respuesta 317 (whoisidle).
+#    Modificada la funcion "amule_cb" para que use "Bytes", "MB" o "GB" en
+#        funcion de la longitud de descargas.
+#    Actualizada la lista de filtros antispam.
+#
+#  Cambios en 0.14:
+#    Creado un mecanismo de configuracion (archivo de configuracion mas
+#        funciones de control).
+#    Agregada funcion "media_cb" para control de reproductores externos. El
+#        reproductor es seleccionable mediante el archivo de configuracion.
+#    Integradas las funciones de control de xmms en la funcion "media_cb".
+#    Integradas las funciones de control de Rhythmbox en la funcion "media_cb".
+#    Arreglados varios bugs de la version anterior.
+#    Fundidas las funciones relacionadas con el whois en una sola. Ahora es
+#        desactivable mediante el archivo de configuracion.
+#    Agregada una funcion de proteccion contra envios CTCP a canales.
+#    Agregada una funcion de proteccion contra ClonerX.
+#    Corregido un fallo en la informacion de Rhythmbox. Este reproductor no da
+#        informacion sobre el bitrate de la cancion actual, asi que siempre se
+#        mostraba "0kbps".
+#    Agregada una funcion que copia los mensajes resaltados en la pestaña
+#        "GatoScript".
+#    
+###############################################################################
