@@ -15,16 +15,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
 """
 Modulo principal del GatoScript.
 
-Este modulo debe encargarse de cargar, descargar modulos opcionales y
-comunicarlos entre ellos.
+Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.14beta1"
+__module_version__ = "0.14beta2"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -50,6 +50,13 @@ NoXmms = 0
 cp = ConfigParser()
 
 def lee_conf(seccion, opcion):
+    """Lee una opcion del archivo de configuracion.
+
+    Argumentos:
+    seccion -- cadena con el nombre de la seccion del archivo de configuracion (por defecto "comun")
+    opcion  -- cadena con el nombre de la opcion que queremos leer
+
+    """
     if (seccion == ""):
         seccion = "comun"
     cp.read(configfile)
@@ -83,11 +90,26 @@ else:
 # Definimos algunas funciones de uso interno en el GatoScript
 ###############################################################################
 def gprint(mensaje):
+    """Escribe "Gatoscript >> " seguido de la cadena que recibe como parametro.
+    Util para mostrar mensajes del script al usuario.
+
+    Argumentos:
+    mensaje -- cadena con el mensaje a mostrar
+
+    """
     g_mensaje = "GatoScript >> " + mensaje
     print(g_mensaje)
     return ""
 
 def priv_imprime(mensajes):
+    """Escribe una o mas lineas en la pestaña "GatoScript". Util para mostrar
+    mensajes largos sin que se pierdan entre los recibidos en los canales, asi
+    como menus de opciones.
+
+    Argumentos:
+    mensajes -- array de cadenas
+
+    """
     contexto = xchat.find_context(channel="GatoScript")
     if contexto == None:
         xchat.command("query -nofocus GatoScript")
@@ -97,6 +119,13 @@ def priv_imprime(mensajes):
     return ""
 
 def priv_linea(mensaje):
+    """Escribe una en la pestaña "GatoScript". Util para mostrar mensajes
+    cortos sin que se pierdan entre los recibidos en los canales.
+
+    Argumentos:
+    mensaje -- cadena con el mensaje
+
+    """
     contexto = xchat.find_context(channel="GatoScript")
     if contexto == None:
         xchat.command("query -nofocus GatoScript")
@@ -104,31 +133,35 @@ def priv_linea(mensaje):
     contexto.prnt(mensaje)
     return ""
 
-#def lee_conf(seccion, opcion):
-#    if (seccion == ""):
-#        seccion = "comun"
-#    cp.readfp(open(configfile))
-#    return cp.get(seccion, opcion)
-
 def escribe_conf(seccion, opcion, valor):
+    """Guarda una opcion en el archivo de configuracion.
+
+    Argumentos:
+    seccion -- cadena con el nombre de la seccion del archivo de configuracion (por defecto "comun")
+    opcion  -- cadena con el nombre de la opcion que queremos guardar
+    valor   -- cadena con el valor que queremos asignar a esa opcion
+
+    """
     if (seccion == ""):
         seccion = "comun"
-#    archivo = file(configfile, "w")
-#    memoria = archivo.read().split("\n")
-#    archivo.close
-#    cp.set(seccion, opcion, valor)
-#    cp.write
     cp.read(configfile)
     cp.set(seccion, opcion, valor)
-#    cp.write(sys.stdout)
     cp.write(file(configfile, "w"))
 
 def get_rhythmbox_handle():
+    """Devuelve el manejador para acceder a Rhythmbox atraves de bonobo"""
     bonobo_id = "repo_ids.has('IDL:GNOME/Rhythmbox:1.0')"
     result = bonobo.activation.activate(bonobo_id, [], 4)
     return result
 
 def get_trackinfo(handle):
+    """Obtiene y devuelve informacion del archivo que se reproduce en
+    Rhythmbox. Devuelve un diccionario.
+
+    Argumentos:
+    handle -- manejador bonobo de Rhythmbox
+
+    """
     try:
         details = handle.getPlayerProperties().getValue("song").value()
         return {
@@ -152,6 +185,14 @@ def get_trackinfo(handle):
 # Definimos las funciones de informacion y ayuda sobre el manejo del script   #
 ###############################################################################
 def gato_cb(word, word_eol, userdata):
+    """Muestra la ayuda del GatoScript
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     info_param = len(word_eol)
     if info_param > 2:
         mensajes = [
@@ -207,6 +248,8 @@ def gato_cb(word, word_eol, userdata):
             "    /gup:                Muestra el uptime del sistema",
             "    /gos:                Muestra la distribucion y su version",
             "    /gsoft:              Muestra en el canal la version de los programas mas importantes",
+            "    /gpc:                Muestra en el canal informacion sobre el hardware del pc",
+            "    /hora:               Muestra en el canal la hora del sistema",
             ""]
         elif word[1] == "-c":
             mensajes = [
@@ -249,6 +292,14 @@ def gato_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def gato_info_cb(word, word_eol, userdata):
+    """Muestra la publicidad del GatoScript
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     xchat.command("say ( Publicidad ) Estoy usando GatoScript %s, script en python para X-Chat | ( Web ) http://gatoloko.homelinux.org" % __module_version__)
     return xchat.EAT_ALL
 
@@ -258,40 +309,48 @@ def gato_info_cb(word, word_eol, userdata):
 ###############################################################################
 # Anti CTCP a canales
 def proteccion_cb(word, word_eol, userdata):
-    minick = xchat.get_info("nick")
-    usuarios = xchat.get_list("users")
-    for usuario in usuarios:
-        if usuario.prefix == "@":
-            if usuario.nick == minick:
-                ctcp = re.compile("\.*\", re.IGNORECASE)
-                if ctcp.search(word[3]):
-                    gprint("Se ha recibido un CTCP al canal " + word[2])
-                    partes = word[0][1:].split("@")
-                    comando = "ban *!*@" + partes[len(partes)-1]
-                    xchat.command(comando)
-                    partes = word[0][1:].split("!")
-                    comando = "kick " + partes[0] + " No se permiten CTCPs al canal"
-                    xchat.command(comando)
+    """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
+    ctcp = re.compile("\.*\", re.IGNORECASE)
+    if ctcp.search(word[3]):
+        gprint("Se ha recibido un CTCP al canal " + word[2])
+        canal = re.compile("ubuntu", re.IGNORECASE)
+        canal2 = re.compile("gatoscript", re.IGNORECASE)
+        if canal.search(word[2]) or canal2.search(word[2]):
+            partes = word[0][1:].split("@")
+            comando = "ban *!*@" + partes[len(partes)-1]
+            xchat.command(comando)
+            partes = word[0][1:].split("!")
+            comando = "kick " + partes[0] + " Putos scriptkidies...."
+            xchat.command(comando)
     return xchat.EAT_NONE
 
 # Anti ClonerX
 def proteccion2_cb(word, word_eol, userdata):
-    minick = xchat.get_info("nick")
-    usuarios = xchat.get_list("users")
-    for usuario in usuarios:
-        if usuario.prefix == "@":
-            if usuario.nick == minick:
-                canal = word[2][1:]
-                contexto = xchat.find_context(channel=canal)
-                bots = re.compile("^[a-z]{1}(\d){2,4}$")
-                ident = word[0][1:].split("!")[1].split("@")[0]
-                host = word[0].split("@")[1]
-                if bots.search(ident):
-                    comando = "ban *!*@" + host
-                    contexto.command(comando)
-                    mensaje = "Ident de ClonerX en " + canal
-                    gprint(mensaje)
-                    priv_imprime(mensaje)
+    """Detecta nicks que entran al canal con un indent que concuerde con los de ClonerX y los banea para evitar el flood
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
+    canal = word[2][1:]
+    contexto = xchat.find_context(channel=canal)
+    bots = re.compile("^[a-z]{1}(\d){2,4}$")
+    ident = word[0][1:].split("!")[1].split("@")[0]
+    host = word[0].split("@")[1]
+    if bots.search(ident):
+        comando = "ban *!*@" + host
+        contexto.command(comando)
+        mensaje = "Ident de ClonerX en " + canal
+        gprint(mensaje)
     return xchat.EAT_NONE
 
 
@@ -299,6 +358,14 @@ def proteccion2_cb(word, word_eol, userdata):
 # Redireccion de resaltados
 ###############################################################################
 def resaltados_cb(word, word_eol, userdata):
+    """Detecta palabras resaltadas (en la configuracion del xchat) y copia la linea que las contiene a la pestaña "GatoScript"
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     resaltados = xchat.get_prefs("irc_extra_hilight").split(",")
     canal = word[2]
     if canal[0] == "#":
@@ -308,9 +375,9 @@ def resaltados_cb(word, word_eol, userdata):
                 nick = word[0].split("!")[0][1:]
                 mensaje = nick + " ha mencionado '" + resaltado + "' en " + canal + ": " + "<" + nick + "> " + word_eol[3][1:]
                 priv_linea(mensaje)
-#    print resaltados 
+#    print resaltados
     return xchat.EAT_NONE
-    
+
 
 ###############################################################################
 # Definimos la funcion antispam para filtrado de mensajes privados.           #
@@ -318,6 +385,14 @@ def resaltados_cb(word, word_eol, userdata):
 # cadenas definidas en el archivo antispam.conf                               #
 ###############################################################################
 def antispam_reload():
+    """Recarga la lista de filtros antispam para aplicar los cambios o retomar una lista anterior
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     global filtros
     if path.exists(filtros_path):
         spam_gen = file(filtros_path, "r")
@@ -330,6 +405,14 @@ def antispam_reload():
         antispam = 0
 
 def antispam_cb(word, word_eol, userdata):
+    """Compara las lineas que se reciben con una lista de filtros y elimina aquellas que coincidan
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     global filtros
     if (antispam == 1):
         texto = word_eol[3][1:]
@@ -339,6 +422,15 @@ def antispam_cb(word, word_eol, userdata):
                 return xchat.EAT_ALL
 
 def antispam_add_cb(word, word_eol, userdata):
+    """Añade un nuevo filtro al final de la lista para usarse con el sistema antispam.
+    Esta funcion no comprueba si el nuevo filtro ya existe, simplemente lo añade al final.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     global filtros
     spam = open(filtros_path, "a")
     spam.write(word[1] + "\n")
@@ -351,6 +443,15 @@ def antispam_add_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def antispam_del_cb(word, word_eol, userdata):
+    """Elimina un filtro de la lista que se usa con el sistema antispam.
+    Esta funcion no verifica si hay duplicados, elimina todas las ocurrencias del filtro.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     global filtros
     if path.exists(filtros_path):
         spam = file(filtros_path, "r")
@@ -373,6 +474,14 @@ def antispam_del_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def antispam_list_cb(word, word_eol, userdata):
+    """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de filtros antispam.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     global filtros
     cuenta_lineas = 1
     priv_linea("\nLista de filtros:")
@@ -390,6 +499,14 @@ def antispam_list_cb(word, word_eol, userdata):
 # Definimos la funcion para redireccion y formateo de respuestas al whois
 ###############################################################################
 # Respuesta al whois: Informacion de usuario
+    """Redirecciona las respuestas al "whois" hacia la ventana activa, al tiempo que modifica el formato de salida.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
 def whois_cb(word, word_eol, userdata):
     whois_activo = lee_conf("comun", "whois")
     if (whois_activo == "1"):
@@ -464,6 +581,15 @@ def whois_cb(word, word_eol, userdata):
 # Definimos las funciones para el control de multimedia
 ###############################################################################
 def media_cb(word, word_eol, userdata):
+    """Muestra en el canal activo informacion sobre la cancion que estamos escuchando.
+    Toma del archivo de configuracion el reproductor a usar.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
 #    print userdata
     media_activo = lee_conf("media", "activo")
     if (media_activo == "1"):
@@ -561,6 +687,14 @@ def media_cb(word, word_eol, userdata):
 # Definimos las funciones para el modulo "Consejos del Gato"                  #
 ###############################################################################
 def consejo_aleatorio_cb(word, word_eol, userdata):
+    """Muestra en el canal activo una linea aleatoria del archivo de consejos.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     if path.exists(consejos_path):
         archivo = open(consejos_path, "r")
         consejos = archivo.readlines()
@@ -650,10 +784,13 @@ def autent_cb(word, word_eol, userdata):
 # Definimos las funciones para obtener la informacion del sistema             #
 ###############################################################################
 def uptime_cb(word, word_eol, userdata):
-    """
-    uptime_cb: muestra el uptime del pc.
+    """Muestra en el canal activo el uptime del pc.
 
-    Esta función recibe las tres variables que impone xchat, aunque las ignora.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
     """
     archivo_uptime = open("/proc/uptime", "r")
     lineas_uptime = archivo_uptime.readline()
@@ -678,8 +815,13 @@ def uptime_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def sistema_cb(word, word_eol, userdata):
-    """
-	sistema_cb: muestra informacion sobre el sistema operativo.
+    """Muestra en el canal activo informacion sobre el sistema operativo que usamos.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
     """
     if path.exists("/etc/lsb-release"):
         LSB = open("/etc/lsb-release", "r")
@@ -701,6 +843,14 @@ def sistema_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def software_cb(word, word_eol, userdata):
+    """Muestra en el canal activo informacion sobre las versiones del software basico.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     entrada, salida, error = popen3("uname -sr", "r")
     error2 = error.readlines()
     if len(error2) > 0:
@@ -756,6 +906,14 @@ def software_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def fecha_cb(word, word_eol, userdata):
+    """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de filtros antispam.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     entrada, salida, error = popen3("date")
     error2 = error.readlines()
     if len(error2) > 0:
@@ -763,44 +921,59 @@ def fecha_cb(word, word_eol, userdata):
             gprint(error2[i])
     else:
         fecha = salida.readlines()
-        xchat.command("say %s" % (fecha[0]))
+        xchat.command("say %s" % (fecha[0][:-1]))
     del entrada, salida, error
     return xchat.EAT_ALL
 
 def pc_cb(word, word_eol, userdata):
-	# CPU
-	cpuinfo = file("/proc/cpuinfo")
-	archivo = cpuinfo.readlines()
-	cpu = archivo[4].split(":")[1][1:-1]
-	velocidad = archivo[6].split(":")[1][1:-1]
-	# Memoria
-	meminfo = file("/proc/meminfo")
-	archivo = meminfo.readlines()
-	partes = archivo[0].split(":")[1][:-1].split(" ")
-	memoria = partes[len(partes)-2]
-	unidad = partes[len(partes)-1]
-	# Free
-	partes = archivo[1].split(":")[1][:-1].split(" ")
-	free = partes[len(partes)-2]
-	# Buffer
-	partes = archivo[2].split(":")[1][:-1].split(" ")
-	buffer = partes[len(partes)-2]
-	# Cache
-	partes = archivo[3].split(":")[1][:-1].split(" ")
-	cache = partes[len(partes)-2]
-	usada = int(free) + int(buffer) + int(cache)
-	libre = int(memoria) - usada
+    """Muestra en el canal activo, informacion sobre el pc.
 
-	# Mensaje
-	mensaje = "[Informacion del PC] CPU: " + cpu + " - Velocidad: " + velocidad + "MHz - Memoria instalada: " + memoria + unidad + " - Memoria usada: " + str(libre) + unidad
-	xchat.command("say " + mensaje)
-	return xchat.EAT_ALL
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
+    # CPU
+    cpuinfo = file("/proc/cpuinfo")
+    archivo = cpuinfo.readlines()
+    cpu = archivo[4].split(":")[1][1:-1]
+    velocidad = archivo[6].split(":")[1][1:-1]
+    # Memoria
+    meminfo = file("/proc/meminfo")
+    archivo = meminfo.readlines()
+    partes = archivo[0].split(":")[1][:-1].split(" ")
+    memoria = partes[len(partes)-2]
+    unidad = partes[len(partes)-1]
+    # Free
+    partes = archivo[1].split(":")[1][:-1].split(" ")
+    free = partes[len(partes)-2]
+    # Buffer
+    partes = archivo[2].split(":")[1][:-1].split(" ")
+    buffer = partes[len(partes)-2]
+    # Cache
+    partes = archivo[3].split(":")[1][:-1].split(" ")
+    cache = partes[len(partes)-2]
+    usada = int(free) + int(buffer) + int(cache)
+    libre = int(memoria) - usada
+    # Mensaje
+    mensaje = "[Informacion del PC] CPU: " + cpu + " - Velocidad: " + velocidad + "MHz - Memoria instalada: " + memoria + unidad + " - Memoria usada: " + str(libre) + unidad
+    xchat.command("say " + mensaje)
+    return xchat.EAT_ALL
 
 
 ###############################################################################
 # Funcion para el Kick/Ban temporal
 ###############################################################################
 def kbtemporal_cb(word, word_eol, userdata):
+    """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     #gprint(len(word_eol))
     if (len(word_eol) > 2):
         xchat.command("ban %s!*@*" %word[1])
@@ -819,6 +992,14 @@ def kbtemporal_cb(word, word_eol, userdata):
 # Definimos las funciones para mostrar informacion P2P
 ###############################################################################
 def amule_cb(word, word_eol, userdata):
+    """Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     if path.exists(amulesig):
         datos_amule = open(amulesig, "r")
         lineas_amule = datos_amule.readlines()
@@ -841,11 +1022,18 @@ def amule_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-
 ###############################################################################
 # Definimos las funcion de controles remotos
 ###############################################################################
 def remoto_cb(word, word_eol, userdata):
+    """Esta funcion revisa los mensajes recibidos en busca de comandos remotos y cuando los encuentra, actua en consecuencia.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     remotos_activo = lee_conf("comun", "remotos")
     if (remotos_activo == "1"):
         #Definimos la expresion regular que actuara como activador
@@ -878,6 +1066,14 @@ def remoto_cb(word, word_eol, userdata):
 ###############################################################################
 # Configuracion del script
 ###############################################################################
+    """Esta funcion se encarga de mostrar y modificar las configuraciones del script.
+
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
 def opciones_cb(word, word_eol, userdata):
     info_param = len(word_eol)
     if info_param == 1:
@@ -920,7 +1116,12 @@ def opciones_cb(word, word_eol, userdata):
 # Definimos la funcion para la descarga del programa
 ###############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script"""
+    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+
+    Argumentos:
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+
+    """
     # Desconectamos los comandos
     # Controles remotos
     xchat.unhook(hookremoto)
@@ -987,7 +1188,7 @@ def unload_cb(userdata):
     # Descarga
     xchat.unhook(hook81)
     print "Se ha descargado GatoScript %s" % __module_version__
-    
+
 
 ###############################################################################
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
@@ -1060,6 +1261,7 @@ hook30 = xchat.hook_command('autent', autent_cb)
 hook51 = xchat.hook_command('gup', uptime_cb)
 hook52 = xchat.hook_command('gos', sistema_cb)
 hook53 = xchat.hook_command('gsoft', software_cb)
+hookfecha = xchat.hook_command('fecha', fecha_cb)
 hookpc = xchat.hook_command('pc', pc_cb)
 
 # Kick/Ban temporal

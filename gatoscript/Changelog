@@ -48,9 +48,9 @@
 #    Actualizada la informacion de ayuda (totalmente).
 #    Agregada lista de tareas pendientes.
 #    Extraida la lista de tareas pendientes a un archivo independiente (aunque
-#        pueda parecer raro que ponga dos lineas sobre la lista de tareas, tiene
-#        un motivo, en el svn que uso hice un commit antes de extraerla a un
-#        archivo aparte, asi que consta como dos commits distintos).
+#        pueda parecer raro que ponga dos lineas sobre la lista de tareas,
+#        tiene  un motivo, en el svn que uso hice un commit antes de extraerla
+#        a un archivo aparte, asi que consta como dos commits distintos).
 #    Extraida la lista de cambios a un archivo independiente.
 #
 # Cambios en 0.7:
@@ -82,8 +82,8 @@
 #        recuperarla.
 #    Arregladas algunas cosillas que quedaron pendientes.
 #    Actualizada la lista de filtros en base al soporte de expresiones
-#        regulares. Con el nuevo funcionamiento algunos eran redundantes y otros
-#        podian filtrar mensajes que no debian.
+#        regulares. Con el nuevo funcionamiento algunos eran redundantes y
+#        otros podian filtrar mensajes que no debian.
 #
 # Cambios en 0.10:
 #    Arreglado un fallo en la salida del comando "/gxm" y cambiado el orden de
@@ -125,9 +125,9 @@
 #    Mejorado el instalador para que active los menus ocultos en xchat 2.6.x
 #    Mejorado el control de respuestas al whois. Ahora controlamos y
 #        redirigimos mas respuestas (401 para nicks desconectados y 342 para
-#        nick con modo +R). Tambien se ha modificado ligeramente el formato para
-#        que no se descomponga con nicks largos (soporta hasta 15 caracteres de
-#        largo, que es la longitud maxima en el irc-hispano).
+#        nick con modo +R). Tambien se ha modificado ligeramente el formato
+#        para que no se descomponga con nicks largos (soporta hasta 15
+#        caracteres de largo, que es la longitud maxima en el irc-hispano).
 #        Ademas mejora el control de las respuesta 317 (whoisidle).
 #    Modificada la funcion "amule_cb" para que use "Bytes", "MB" o "GB" en
 #        funcion de la longitud de descargas.
@@ -150,5 +150,13 @@
 #        mostraba "0kbps".
 #    Agregada una funcion que copia los mensajes resaltados en la pestaña
 #        "GatoScript".
+#    Agregada la funcion "pc_cb" que muestra informacion sobre el hardware
+#        (aun esta incompleta, aunque funciona).
+#    Agregada la funcion "hora_cb" que muestra la hora del sistema (tambien
+#        incompleta, aunque funcional).
+#    Agregadas lineas de documentacion a las funciones (para desarrolladores).
+#    Editado el ChangeLog a 79 caracteres por linea, para facilitar su lectura
+#        en terminales de solo texto estandard.
+#    Actualizados los menus del GatoScript.
 #    
 ###############################################################################
