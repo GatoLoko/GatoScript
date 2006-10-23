@@ -31,7 +31,7 @@
 #
 # Cambios en 0.5:
 #    Extraidos los filtros a un archivo externo y modificada la funcion
-#        antispam para que los use. Un filtro por linea y cada linea terminada 
+#        antispam para que los use. Un filtro por linea y cada linea terminada
 #        con un retorno de linea excepto la ultima (osea, no quedara una linea
 #        vacia al final del archivo).
 #    Agregado el comando "/antiadd" para agregar filtros al sistema antispam.
@@ -158,5 +158,18 @@
 #    Editado el ChangeLog a 79 caracteres por linea, para facilitar su lectura
 #        en terminales de solo texto estandard.
 #    Actualizados los menus del GatoScript.
-#    
+#
+#  Cambios en 0.15:
+#    Agregada comprobacion de errores a la carga del modulo bonobo.ui para el
+#        control de Rhythmbox y en caso de no estar presente desactivamos todas
+#        las funciones que dependen de el.
+#    Agregada una funcion contra abuso de mayusculas.
+#    Agregada una funcion de proteccion contra los "HOYGAN".
+#    Corregido un fallo en la funcion de resaltados que generaba exceso de
+#        mensajes cuando no se debia resaltar nada.
+#    Modificada la funcion ginfo_cb para incluir la version de X-Chat.
+#    Agregado control del raw 378 a la funcion que gestiona y formatea las
+#        respuestas al whois.
+#    Modificada la prioridad de la varias funciones de proteccion.
+#
 ###############################################################################
