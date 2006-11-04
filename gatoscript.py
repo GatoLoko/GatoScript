@@ -47,16 +47,14 @@ consejos_path = scriptdir + "/gatoscript/consejos.txt"
 configfile = scriptdir + "/gatoscript/gatoscript.conf"
 amulesig = home + "/.aMule/amulesig.dat"
 NoXmms = 0
-NoBonobo = 0
+NoDBus = 0
 cp = ConfigParser()
 
 def lee_conf(seccion, opcion):
     """Lee una opcion del archivo de configuracion.
-
     Argumentos:
     seccion -- cadena con el nombre de la seccion del archivo de configuracion (por defecto "comun")
     opcion  -- cadena con el nombre de la opcion que queremos leer
-
     """
     if (seccion == ""):
         seccion = "comun"
@@ -75,12 +73,21 @@ if (repro_activo == "1"):
             import xmms.control
         except ImportError:
             NoXmms = 1
-    elif (repro == "rhythmbox"):
+    elif (repro == "rhythmbox") or (repro == "banshee"):
         try:
-            import bonobo.ui
+            import dbus
+            bus = dbus.SessionBus()
+            if repro == "rhythmbox":
+                rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player')
+                rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
+                rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
+                rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
+            elif repro == "banshee":
+                bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
+                banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
         except ImportError:
-            NoBonobo = 1
-            print "No se pudo cargar la libreria 'bonobo.ui', no funcionaran los controles de Rhythmbox"
+            NoDBus = 1
+            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Rhythmbox"
 
 
 # Cargamos la lista de filtros para el antispam
@@ -103,7 +110,6 @@ def gprint(mensaje):
 
     Argumentos:
     mensaje -- cadena con el mensaje a mostrar
-
     """
     g_mensaje = "GatoScript >> " + mensaje
     print(g_mensaje)
@@ -116,7 +122,6 @@ def priv_imprime(mensajes):
 
     Argumentos:
     mensajes -- array de cadenas
-
     """
     contexto = xchat.find_context(channel="GatoScript")
     if contexto == None:
@@ -132,7 +137,6 @@ def priv_linea(mensaje):
 
     Argumentos:
     mensaje -- cadena con el mensaje
-
     """
     contexto = xchat.find_context(channel="GatoScript")
     if contexto == None:
@@ -143,12 +147,10 @@ def priv_linea(mensaje):
 
 def escribe_conf(seccion, opcion, valor):
     """Guarda una opcion en el archivo de configuracion.
-
     Argumentos:
     seccion -- cadena con el nombre de la seccion del archivo de configuracion (por defecto "comun")
     opcion  -- cadena con el nombre de la opcion que queremos guardar
     valor   -- cadena con el valor que queremos asignar a esa opcion
-
     """
     if (seccion == ""):
         seccion = "comun"
@@ -156,50 +158,16 @@ def escribe_conf(seccion, opcion, valor):
     cp.set(seccion, opcion, valor)
     cp.write(file(configfile, "w"))
 
-def get_rhythmbox_handle():
-    """Devuelve el manejador para acceder a Rhythmbox atraves de bonobo"""
-    bonobo_id = "repo_ids.has('IDL:GNOME/Rhythmbox:1.0')"
-    result = bonobo.activation.activate(bonobo_id, [], 4)
-    return result
-
-def get_trackinfo(handle):
-    """Obtiene y devuelve informacion del archivo que se reproduce en
-    Rhythmbox. Devuelve un diccionario.
-
-    Argumentos:
-    handle -- manejador bonobo de Rhythmbox
-
-    """
-    try:
-        details = handle.getPlayerProperties().getValue("song").value()
-        return {
-            "titulo":       details.title,
-            "artista":      details.artist,
-            "album":        details.album,
-            "indice":       details.track_number,
-            "duracion":     details.duration,
-            "genere":       details.genre,
-            "filename":     details.path,
-            "filesize":     details.filesize,
-            "count":        details.play_count,
-            "rating":       details.rating,
-            "bitrate":      details.bitrate
-        }
-    except:
-        pass
-
 
 ###############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script   #
 ###############################################################################
 def gato_cb(word, word_eol, userdata):
     """Muestra la ayuda del GatoScript
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     info_param = len(word_eol)
     if info_param > 2:
@@ -290,6 +258,7 @@ def gato_cb(word, word_eol, userdata):
             "    /opcion media off:           Se desactivan los controles multimedia",
             "    /opciones media xmms:        Selecciona XMMS como reproductor de sonido",
             "    /opciones media rhythmbox:   Selecciona Rhythmbox como reproductor de sonido",
+            "    /opciones media banshee:     Selecciona Banshee como reproductor de sonido",
             ""]
         else:
             mensajes = [
@@ -301,12 +270,10 @@ def gato_cb(word, word_eol, userdata):
 
 def gato_info_cb(word, word_eol, userdata):
     """Muestra la publicidad del GatoScript
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     version = xchat.get_info("version")
     xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version,__module_version__))
@@ -316,42 +283,79 @@ def gato_info_cb(word, word_eol, userdata):
 ###############################################################################
 # Definimos las funciones de proteccion
 ###############################################################################
-# Anti CTCP a canales  (on PRIVMSG)
-def proteccion_cb(word, word_eol, userdata):
+# Proteccion multiple en contra mensajes molestos (on PRIVMSG)
+def anti_ctcp_cb(word, word_eol, userdata):
     """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if lee_conf("protecciones", "ctcps") == "1":
+        ctcp = re.compile("\.*\", re.IGNORECASE)
+        canales = lee_conf("protecciones", "canales").split(',')
+        if ctcp.search(word[3]):
+            for canal in canales:
+                canal_re = re.compile(canal[1:], re.IGNORECASE)
+                if canal_re.search(word[2]):
+                    gprint("Se ha recibido un CTCP al canal " + word[2])
+                    partes = word[0][1:].split("@")
+                    comando = "ban *!*@" + partes[len(partes)-1]
+                    xchat.command(comando)
+                    partes = word[0][1:].split("!")
+                    comando = "kick " + partes[0] + " Putos scriptkidies...."
+                    xchat.command(comando)
+    return xchat.EAT_NONE
 
+def anti_hoygan_cb(word, word_eol, userdata):
+    """Detecta la palabra "hoygan" en los canales y banea al autor
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if lee_conf("protecciones", "hoygan") == "1":
+        hoyga = re.compile("hoyga", re.IGNORECASE)
+        if hoyga.search(word_eol[3]):
+            #noban = 0
+            #mensaje = " Los 'HOYGAN' no son graciosos"
+            partes = word[0][1:].split("@")
+            xchat.command("ban *!*@" + partes[len(partes)-1])
+            partes = word[0][1:].split("!")
+            xchat.command("kick " + partes[0] + " Los hoygan no son graciosos")
+    return xchat.EAT_NONE
+
+def anti_mayusculas_cb(word, word_eol, userdata):
+    if lee_conf("protecciones", "mayusculas") == "1":
+        cadena = word_eol[3][1:]
+        accion = re.compile('^\ACTION')
+        if accion.match(cadena):
+                cadena = cadena[7:]
+        mayusculas = re.compile('[A-Z]')
+        porcentaje = (len(mayusculas.findall(cadena))*100)/len(cadena)
+        #Si mas del 25% de los caracteres son letras mayusculas
+        #if (len(cadena) > 40 and porcentaje > 30):
+        #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
+        #        noban = 1
+        #elif len(cadena) > 20 and porcentaje > 40:
+        #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
+        #        noban = 1
+    return xchat.EAT_NONE
+
+def proteccion_cb(word, word_eol, userdata):
+    """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     mensaje = ""
     noban = 0
-    ctcp = re.compile("\.*\", re.IGNORECASE)
-    hoyga = re.compile("hoyga", re.IGNORECASE)
     web = re.compile("http://www\.geocities\.com/octubre122005", re.IGNORECASE)
-
-    if ctcp.search(word[3]):
-        gprint("Se ha recibido un CTCP al canal " + word[2])
-        canal = re.compile("ubuntu", re.IGNORECASE)
-        canal2 = re.compile("gatoscript", re.IGNORECASE)
-        if canal.search(word[2]) or canal2.search(word[2]):
-            partes = word[0][1:].split("@")
-            comando = "ban *!*@" + partes[len(partes)-1]
-            xchat.command(comando)
-            partes = word[0][1:].split("!")
-            comando = "kick " + partes[0] + " Putos scriptkidies...."
-            xchat.command(comando)
-    #HOYGAN or HOYGA
-    #elif hoyga.search(word_eol[3]):
-    #    noban = 0
-    #    mensaje = " Los 'HOYGAN' no son graciosos"
     #http://www.geocities.com/octubre122005/
-    elif web.search(word_eol[3]):
+    if web.search(word_eol[3]):
         noban = 0
-        mensaje = " Eres un spammer demasiado pesado"
-
+        mensaje = " Eres un spammer demasiado pesado, vete a tomar por culo y chupame lo huevos"
     cadena = word_eol[3][1:]
     accion = re.compile('^\ACTION')
     if accion.match(cadena):
@@ -381,12 +385,10 @@ def proteccion_cb(word, word_eol, userdata):
 # Anti ClonerX  (on JOIN)
 def proteccion2_cb(word, word_eol, userdata):
     """Detecta nicks que entran al canal con un indent que concuerde con los de ClonerX y los banea para evitar el flood
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     canal = word[2][1:]
     contexto = xchat.find_context(channel=canal)
@@ -406,12 +408,10 @@ def proteccion2_cb(word, word_eol, userdata):
 ###############################################################################
 def resaltados_cb(word, word_eol, userdata):
     """Detecta palabras resaltadas (en la configuracion del xchat) y copia la linea que las contiene a la pestaña "GatoScript"
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     resaltados = xchat.get_prefs("irc_extra_hilight")
     if resaltados <> '':
@@ -435,12 +435,10 @@ def resaltados_cb(word, word_eol, userdata):
 ###############################################################################
 def antispam_reload():
     """Recarga la lista de filtros antispam para aplicar los cambios o retomar una lista anterior
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     global filtros
     if path.exists(filtros_path):
@@ -455,12 +453,10 @@ def antispam_reload():
 
 def antispam_cb(word, word_eol, userdata):
     """Compara las lineas que se reciben con una lista de filtros y elimina aquellas que coincidan
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     global filtros
     if (antispam == 1):
@@ -478,7 +474,6 @@ def antispam_add_cb(word, word_eol, userdata):
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     global filtros
     spam = open(filtros_path, "a")
@@ -499,7 +494,6 @@ def antispam_del_cb(word, word_eol, userdata):
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     global filtros
     if path.exists(filtros_path):
@@ -524,12 +518,10 @@ def antispam_del_cb(word, word_eol, userdata):
 
 def antispam_list_cb(word, word_eol, userdata):
     """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de filtros antispam.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     global filtros
     cuenta_lineas = 1
@@ -548,15 +540,13 @@ def antispam_list_cb(word, word_eol, userdata):
 # Definimos la funcion para redireccion y formateo de respuestas al whois
 ###############################################################################
 # Respuesta al whois: Informacion de usuario
+def whois_cb(word, word_eol, userdata):
     """Redirecciona las respuestas al "whois" hacia la ventana activa, al tiempo que modifica el formato de salida.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
-def whois_cb(word, word_eol, userdata):
     whois_activo = lee_conf("comun", "whois")
     if (whois_activo == "1"):
         if (word[1] == "301"):
@@ -640,7 +630,6 @@ def media_cb(word, word_eol, userdata):
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
 #    print userdata
     media_activo = lee_conf("media", "activo")
@@ -699,15 +688,18 @@ def media_cb(word, word_eol, userdata):
                     mensaje = "La funcion " + userdata + " no esta implementada"
                     gprint(mensaje)
         elif (reproductor == "rhythmbox"):
-            if (NoBonobo == 1):
+            if (NoDBus == 1):
                 gprint("No esta disponible la libreria de acceso a Rhythmbox")
             else:
                 if (userdata == "escuchando"):
-                    handle = get_rhythmbox_handle()
-                    detalles = get_trackinfo(handle)
-                    artista = detalles["artista"]
-                    titulo = detalles["titulo"]
-                    tiempo = detalles["duracion"]
+                    #playing = int(rbplayer.getPlaying())
+                    #if playing:
+                    detalles = rbshell.getSongProperties(rbplayer.getPlayingUri())
+                    titulo = detalles['title'].encode('utf-8')
+                    artista = detalles['artist'].encode('utf-8')
+                    #album = detalles['album'].encode('utf-8')
+                    tiempo = detalles['duration']
+
                     if tiempo < 0:
                         longitud = "Radio"
                     else:
@@ -718,16 +710,44 @@ def media_cb(word, word_eol, userdata):
                 elif (userdata == "reproductor"):
                     gprint("Esta utilizando Rhythmbox")
                 elif (userdata == "siguiente"):
-                    handle = get_rhythmbox_handle()
-                    handle.next()
+                    rbplayer.next()
                 elif (userdata == "anterior"):
-                    handle = get_rhythmbox_handle()
-                    handle.previous()
+                    rbplayer.previous()
                 elif (userdata == "play" or userdata == "pausa"):
-                    handle = get_rhythmbox_handle()
-                    handle.playPause()
+                    rbplayer.playPause()
 #                elif (userdata == "stop"):
 #                    gprint("Esta funcion no esta implementada")
+                else:
+                    mensaje = "La funcion " + userdata + " no esta implementada"
+                    gprint(mensaje)
+        elif (reproductor == "rhythmbox"):
+            if (NoDBus == 1):
+                gprint("No esta disponible la libreria de acceso a Banshee")
+            else:
+                if (userdata == "escuchando"):
+                    titulo = banshee.GetPlayingTitle().encode('utf-8')
+                    artista = banshee.GetPlayingArtist().encode('utf-8')
+                    #album = banshee.GetPlayingAlbum().encode('utf-8')
+                    tiempo = banshee.GetPlayingDuration()
+                    if tiempo < 0:
+                        longitud = "Radio"
+                    else:
+                        minutos = int(tiempo/60)
+                        segundos = tiempo-(minutos*60)
+                        longitud = str(minutos) + "m" + str(segundos) + "s"
+                    xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
+                elif (userdata == "reproductor"):
+                    gprint("Esta utilizando Banshee")
+                elif (userdata == "siguiente"):
+                    banshee.Next()
+                elif (userdata == "anterior"):
+                    banshee.Previous()
+                elif (userdata == "play":
+                    banshee.Play()
+                elif (userdata == "pausa"):
+                    banshee.Pause()
+                elif (userdata == "stop"):
+                    banshee.Stop()
                 else:
                     mensaje = "La funcion " + userdata + " no esta implementada"
                     gprint(mensaje)
@@ -743,12 +763,10 @@ def media_cb(word, word_eol, userdata):
 ###############################################################################
 def consejo_aleatorio_cb(word, word_eol, userdata):
     """Muestra en el canal activo una linea aleatoria del archivo de consejos.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     if path.exists(consejos_path):
         archivo = open(consejos_path, "r")
@@ -840,12 +858,10 @@ def autent_cb(word, word_eol, userdata):
 ###############################################################################
 def uptime_cb(word, word_eol, userdata):
     """Muestra en el canal activo el uptime del pc.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     archivo_uptime = open("/proc/uptime", "r")
     lineas_uptime = archivo_uptime.readline()
@@ -871,12 +887,10 @@ def uptime_cb(word, word_eol, userdata):
 
 def sistema_cb(word, word_eol, userdata):
     """Muestra en el canal activo informacion sobre el sistema operativo que usamos.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     if path.exists("/etc/lsb-release"):
         LSB = open("/etc/lsb-release", "r")
@@ -899,12 +913,10 @@ def sistema_cb(word, word_eol, userdata):
 
 def software_cb(word, word_eol, userdata):
     """Muestra en el canal activo informacion sobre las versiones del software basico.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     entrada, salida, error = popen3("uname -sr", "r")
     error2 = error.readlines()
@@ -920,10 +932,12 @@ def software_cb(word, word_eol, userdata):
     if len(error2) > 0:
         for i in range(len(error2)):
             gprint(error2[i])
-        sistema = "Indeterminable"
+        libc = "Indeterminable"
     else:
         libc_text = salida.readlines()
-        libc = (libc_text[0])[37:len(libc_text[0]) -27]
+        if libc_text[0].split()[0] == "GNU":
+            licencia = "GLIBC"
+        libc = licencia + " " + libc_text[0].split()[6][:-1]
     entrada, salida, error = popen3("xdpyinfo | grep version:", "r")
     error2 = error.readlines()
     if len(error2) > 0:
@@ -962,12 +976,10 @@ def software_cb(word, word_eol, userdata):
 
 def fecha_cb(word, word_eol, userdata):
     """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de filtros antispam.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     entrada, salida, error = popen3("date")
     error2 = error.readlines()
@@ -982,12 +994,10 @@ def fecha_cb(word, word_eol, userdata):
 
 def pc_cb(word, word_eol, userdata):
     """Muestra en el canal activo, informacion sobre el pc.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     # CPU
     cpuinfo = file("/proc/cpuinfo")
@@ -1022,12 +1032,10 @@ def pc_cb(word, word_eol, userdata):
 ###############################################################################
 def kbtemporal_cb(word, word_eol, userdata):
     """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     #gprint(len(word_eol))
     if (len(word_eol) > 2):
@@ -1048,12 +1056,10 @@ def kbtemporal_cb(word, word_eol, userdata):
 ###############################################################################
 def amule_cb(word, word_eol, userdata):
     """Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     if path.exists(amulesig):
         datos_amule = open(amulesig, "r")
@@ -1082,12 +1088,10 @@ def amule_cb(word, word_eol, userdata):
 ###############################################################################
 def remoto_cb(word, word_eol, userdata):
     """Esta funcion revisa los mensajes recibidos en busca de comandos remotos y cuando los encuentra, actua en consecuencia.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     remotos_activo = lee_conf("comun", "remotos")
     if (remotos_activo == "1"):
@@ -1122,12 +1126,10 @@ def remoto_cb(word, word_eol, userdata):
 # Configuracion del script
 ###############################################################################
     """Esta funcion se encarga de mostrar y modificar las configuraciones del script.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
 def opciones_cb(word, word_eol, userdata):
     info_param = len(word_eol)
@@ -1154,6 +1156,9 @@ def opciones_cb(word, word_eol, userdata):
             elif word[2] == "rhythmbox":
                 escribe_conf("media", "reproductor", "rhythmbox")
                 gprint("Se ha seleccionado Rythmbox")
+            elif word[2] == "banshee":
+                escribe_conf("media", "reproductor", "banshee")
+                gprint("Se ha seleccionado Banshee")
             elif word[2] == "on":
                 escribe_conf("media", "activo", "1")
                 gprint("Controles multimedia activados")
@@ -1172,10 +1177,8 @@ def opciones_cb(word, word_eol, userdata):
 ###############################################################################
 def unload_cb(userdata):
     """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
-
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
-
     """
     # Desconectamos los comandos
     # Controles remotos
@@ -1260,6 +1263,7 @@ hook12 = xchat.hook_command('ginfo', gato_info_cb)
 # Protecciones
 hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None)
 hookjoin = xchat.hook_server('JOIN', proteccion2_cb, userdata=None)
+hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)

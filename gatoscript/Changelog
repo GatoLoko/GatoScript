@@ -171,5 +171,11 @@
 #    Agregado control del raw 378 a la funcion que gestiona y formatea las
 #        respuestas al whois.
 #    Modificada la prioridad de la varias funciones de proteccion.
+#    Arreglado un fallo en la funcion software_cb. Se mostraba mal la
+#        informacion sobre libc.
+#    Agregados cuatro nuevos filtros antispam.
+#    Reescritas las funciones de control de Rhythmbox. Las nuevas versiones ya
+#        no soportan bonobo, asi que ahora lo controlamos mediante D-Bus
+#    Agregado soporte para el reproductor Banshee (tambien mediante D-Bus)
 #
 ###############################################################################
