@@ -24,14 +24,14 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15alpha"
+__module_version__ = "0.15beta1"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
 # Cargamos las librerias y funciones que necesitamos
-import xchat, re, sys
-from os import popen, popen3, path
-from string import split, upper
+import xchat, re
+from os import popen3, path
+from string import split
 from random import randint
 from ConfigParser import ConfigParser
 
@@ -42,9 +42,10 @@ from ConfigParser import ConfigParser
 ###############################################################################
 home = xchat.get_info("xchatdir")[0:len(xchat.get_info("xchatdir"))-7]
 scriptdir = xchat.get_info("xchatdir")
-filtros_path = scriptdir + "/gatoscript/antispam.conf"
-consejos_path = scriptdir + "/gatoscript/consejos.txt"
-configfile = scriptdir + "/gatoscript/gatoscript.conf"
+gatodir = scriptdir + "/gatoscript/"
+filtros_path = gatodir + "antispam.conf"
+consejos_path = gatodir + "consejos.txt"
+configfile = gatodir + "gatoscript.conf"
 amulesig = home + "/.aMule/amulesig.dat"
 NoXmms = 0
 NoDBus = 0
@@ -63,7 +64,7 @@ def lee_conf(seccion, opcion):
 
 
 ###############################################################################
-# Cargamos los modulos opcionales
+# Cargamos los modulos para la gestion multimedia
 ###############################################################################
 repro_activo = lee_conf("media", "activo")
 if (repro_activo == "1"):
@@ -73,21 +74,28 @@ if (repro_activo == "1"):
             import xmms.control
         except ImportError:
             NoXmms = 1
-    elif (repro == "rhythmbox") or (repro == "banshee"):
+    elif (repro == "rhythmbox"):
         try:
             import dbus
+            DBUS_START_REPLY_SUCCESS = 1
+            DBUS_START_REPLY_ALREADY_RUNNING = 2
             bus = dbus.SessionBus()
-            if repro == "rhythmbox":
-                rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player')
-                rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
-                rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
-                rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
-            elif repro == "banshee":
-                bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
-                banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
+            rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player')
+            rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
+            rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
+            rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
         except ImportError:
             NoDBus = 1
             print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Rhythmbox"
+    elif (repro == "banshee"):
+        try:
+            import dbus
+            bus = dbus.SessionBus()
+            bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
+            banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
+        except ImportError:
+            NoDBus = 1
+            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
 
 
 # Cargamos la lista de filtros para el antispam
@@ -97,7 +105,7 @@ if path.exists(filtros_path):
     spam_gen.close()
     antispam = 1
 else:
-    gprint("No se puede cargar la lista de filtros, AntiSpam desactivado")
+    print("No se puede cargar la lista de filtros, AntiSpam desactivado")
     antispam = 0
 
 
@@ -352,10 +360,18 @@ def proteccion_cb(word, word_eol, userdata):
     mensaje = ""
     noban = 0
     web = re.compile("http://www\.geocities\.com/octubre122005", re.IGNORECASE)
+    web2 = re.compile("www\.dominiosteca\.biz", re.IGNORECASE)
+    web3 = re.compile("es-facil\.com/ganar", re.IGNORECASE)
     #http://www.geocities.com/octubre122005/
     if web.search(word_eol[3]):
         noban = 0
-        mensaje = " Eres un spammer demasiado pesado, vete a tomar por culo y chupame lo huevos"
+        mensaje = " El spam es molesto, metetelo por el culo"
+    if web2.search(word_eol[3]):
+        noban = 0
+        mensaje = " El spam es molesto, metetelo por el culo"
+    if web3.search(word_eol[3]):
+        noban = 0
+        mensaje = " El spam es molesto, metetelo por el culo"
     cadena = word_eol[3][1:]
     accion = re.compile('^\ACTION')
     if accion.match(cadena):
@@ -691,32 +707,42 @@ def media_cb(word, word_eol, userdata):
             if (NoDBus == 1):
                 gprint("No esta disponible la libreria de acceso a Rhythmbox")
             else:
+                try:
+                    sonando = int(rbplayer.getPlaying())
+                except:
+                    sonando = 0
                 if (userdata == "escuchando"):
-                    #playing = int(rbplayer.getPlaying())
-                    #if playing:
-                    detalles = rbshell.getSongProperties(rbplayer.getPlayingUri())
-                    titulo = detalles['title'].encode('utf-8')
-                    artista = detalles['artist'].encode('utf-8')
-                    #album = detalles['album'].encode('utf-8')
-                    tiempo = detalles['duration']
-
-                    if tiempo < 0:
-                        longitud = "Radio"
+                    if sonando == 0:
+                        gprint("El reproductor esta parado")
                     else:
-                        minutos = int(tiempo/60)
-                        segundos = tiempo-(minutos*60)
-                        longitud = str(minutos) + "m" + str(segundos) + "s"
-                    xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
+                        detalles = rbshell.getSongProperties(rbplayer.getPlayingUri())
+                        titulo = detalles['title'].encode('utf-8')
+                        artista = detalles['artist'].encode('utf-8')
+                        #album = detalles['album'].encode('utf-8')
+                        tiempo = detalles['duration']
+                        if tiempo < 0:
+                            longitud = "Radio"
+                        else:
+                            minutos = int(tiempo/60)
+                            segundos = tiempo-(minutos*60)
+                            longitud = str(minutos) + "m" + str(segundos) + "s"
+                        xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
                 elif (userdata == "reproductor"):
                     gprint("Esta utilizando Rhythmbox")
                 elif (userdata == "siguiente"):
-                    rbplayer.next()
+                    if sonando == 0:
+                        gprint("El reproductor esta parado")
+                    else:
+                        rbplayer.next()
                 elif (userdata == "anterior"):
-                    rbplayer.previous()
-                elif (userdata == "play" or userdata == "pausa"):
-                    rbplayer.playPause()
-#                elif (userdata == "stop"):
-#                    gprint("Esta funcion no esta implementada")
+                    if sonando == 0:
+                        gprint("El reproductor esta parado")
+                    else:
+                        rbplayer.previous()
+                #elif (userdata == "play" or userdata == "pausa"):
+                    #rbplayer.playPause()
+                #elif (userdata == "stop"):
+                    #gprint("Esta funcion no esta implementada")
                 else:
                     mensaje = "La funcion " + userdata + " no esta implementada"
                     gprint(mensaje)
@@ -742,7 +768,7 @@ def media_cb(word, word_eol, userdata):
                     banshee.Next()
                 elif (userdata == "anterior"):
                     banshee.Previous()
-                elif (userdata == "play":
+                elif (userdata == "play"):
                     banshee.Play()
                 elif (userdata == "pausa"):
                     banshee.Pause()
@@ -842,7 +868,7 @@ def web_cb(word, word_eol, userdata):
 
 def repos_cb(word, word_eol, userdata):
     xchat.command("say deb http://gatoloko.homelinux.org/repositorio/ VERSION RAMAS")
-    xchat.command("say donde VERSION puede ser 'breezy' o 'dapper'")
+    xchat.command("say donde VERSION puede ser 'dapper' o 'edgy'")
     xchat.command("say donde RAMAS puede ser una o mas de: 'estable', 'inestable'")
     return xchat.EAT_ALL
 
@@ -1066,7 +1092,7 @@ def amule_cb(word, word_eol, userdata):
         lineas_amule = datos_amule.readlines()
         datos_amule.close()
         if lineas_amule[0] == "0":
-            _gprint("No estas conectado a aMule")
+            gprint("No estas conectado a aMule")
         else:
             vdescarga = (lineas_amule[6])[0:len(lineas_amule[6])-1]
             vsubida = (lineas_amule[7])[0:len(lineas_amule[7])-1]
@@ -1079,7 +1105,7 @@ def amule_cb(word, word_eol, userdata):
                 total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
             xchat.command("say ( aMule ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(vdescarga,vsubida,total_descargado))
     else:
-        _gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
+        gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
     return xchat.EAT_ALL
 
 
@@ -1245,6 +1271,7 @@ def unload_cb(userdata):
     xchat.unhook(hookopciones)
     # Descarga
     xchat.unhook(hook81)
+    xchat.command("menu del GatoScript")
     print "Se ha descargado GatoScript %s" % __module_version__
 
 
@@ -1255,25 +1282,20 @@ def unload_cb(userdata):
 
 # Controles remotos
 hookremoto = xchat.hook_print('Channel Message', remoto_cb)
-
 # Informacion del script
 hook11 = xchat.hook_command('gato', gato_cb)
 hook12 = xchat.hook_command('ginfo', gato_info_cb)
-
 # Protecciones
 hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None)
 hookjoin = xchat.hook_server('JOIN', proteccion2_cb, userdata=None)
 hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
-
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
-
 # Antispam
 hook21 = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None)
 hook22 = xchat.hook_command('antiadd', antispam_add_cb)
 hook23 = xchat.hook_command('antilist', antispam_list_cb)
 hook24 = xchat.hook_command('antidel', antispam_del_cb)
-
 # Whois
 raw301 = xchat.hook_server('301', whois_cb, userdata=None, priority=10) # Mensaje de AWA
 raw307 = xchat.hook_server('307', whois_cb, userdata=None, priority=10) # whoisregnick
@@ -1291,7 +1313,6 @@ raw342 = xchat.hook_server('342', whois_cb, userdata=None, priority=10) # Solo a
 raw378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10) #whoishost (ip virtual)
 raw379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10) #whoismodes
 raw401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10) # No such nick
-
 # Media
 hookescuchando = xchat.hook_command('escuchando', media_cb, userdata="escuchando")
 hookreproductor = xchat.hook_command('reproductor', media_cb, userdata="reproductor")
@@ -1300,10 +1321,8 @@ hookanterior = xchat.hook_command('anterior', media_cb, userdata="anterior")
 hookplay = xchat.hook_command('play', media_cb, userdata="play")
 hookpausa = xchat.hook_command('pausa', media_cb, userdata="pausa")
 hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
-
 # Peer to Peer
 hookamule = xchat.hook_command('amule', amule_cb)
-
 # Consejos
 hook31 = xchat.hook_command('consejos', consejo_aleatorio_cb)
 hook32 = xchat.hook_command('consejo', consejo_cb)
@@ -1315,22 +1334,19 @@ hook37 = xchat.hook_command('privado', privado_cb)
 hook38 = xchat.hook_command('web', web_cb)
 hook39 = xchat.hook_command('repos', repos_cb)
 hook30 = xchat.hook_command('autent', autent_cb)
-
 # Informacion del sistema
 hook51 = xchat.hook_command('gup', uptime_cb)
 hook52 = xchat.hook_command('gos', sistema_cb)
 hook53 = xchat.hook_command('gsoft', software_cb)
 hookfecha = xchat.hook_command('fecha', fecha_cb)
-hookpc = xchat.hook_command('pc', pc_cb)
-
+hookpc = xchat.hook_command('gpc', pc_cb)
 # Kick/Ban temporal
 hook71 = xchat.hook_command('kb_temp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
-
 # Opciones del script
 hookopciones = xchat.hook_command('opciones', opciones_cb)
-
 # Descarga del script
 hook81 = xchat.hook_unload(unload_cb)
+xchat.command("load -e " + gatodir + "menu.conf")
 
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que

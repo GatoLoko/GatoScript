@@ -159,7 +159,7 @@
 #        en terminales de solo texto estandard.
 #    Actualizados los menus del GatoScript.
 #
-#  Cambios en 0.15:
+#  Cambios en 0.15beta:
 #    Agregada comprobacion de errores a la carga del modulo bonobo.ui para el
 #        control de Rhythmbox y en caso de no estar presente desactivamos todas
 #        las funciones que dependen de el.
@@ -177,5 +177,7 @@
 #    Reescritas las funciones de control de Rhythmbox. Las nuevas versiones ya
 #        no soportan bonobo, asi que ahora lo controlamos mediante D-Bus
 #    Agregado soporte para el reproductor Banshee (tambien mediante D-Bus)
+#    Agregado menu principal del GatoScript.
+#    Eliminado el menu de las pestañas.
 #
 ###############################################################################
