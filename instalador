@@ -12,10 +12,6 @@ gatoscript = directorio_xchat + "gatoscript.py"
 # Archivos a modificar
 archivo_ctcp = directorio_xchat + "ctcpreply.conf"
 ctcp_antiguo = archivo_ctcp + ".bak"
-archivo_botones = directorio_xchat + "buttons.conf"
-archivo_copia = archivo_botones + ".bak"
-#archivo_tab = directorio_xchat + "tabmenu.conf"
-#tab_antiguo = archivo_tab + ".bak"
 archivo_popup = directorio_xchat + "popup.conf"
 popup_antiguo = archivo_popup + ".bak"
 xchatconf = directorio_xchat + "xchat.conf"
@@ -56,12 +52,6 @@ def conf_cambia(conf,nuevo):
 lineas_ctcp = [
 "NAME VERSION\n",
 "CMD nctcp %s VERSION GatoScript for X-Chat\n",
-"\n"
-]
-
-lineas_botones = [
-"NAME Ayuda\n",
-"CMD gato\n",
 "\n"
 ]
 
@@ -124,21 +114,6 @@ if actualizacion != 1:
         ctcp_nuevo.write(lineas_ctcp[i])
     ctcp_nuevo.close
 
-    ## Configuramos el menu de las pestañas
-    #if os.path.exists(archivo_tab):
-    #    os.rename(archivo_tab, tab_antiguo)
-    #    tab_copiar = open(tab_antiguo, "r")
-    #    lineas = tab_copiar.readlines()
-    #    tab_copiar.close
-    #else:
-    #    lineas = ""
-    #tab_nuevo = open(archivo.tab, "w")
-    #for i in range(0, len(lineas)):
-    #    tab_nuevo.write(lineas[i])
-    #for i in range(0, len(menu)-1):
-    #    tab_nuevo.write(menu[i])
-    #tab_nuevo.close
-
     # Configuramos el menu de la lista de nicks
     if os.path.exists(archivo_popup):
         os.rename(archivo_popup, popup_antiguo)
@@ -153,23 +128,6 @@ if actualizacion != 1:
     for i in range(0, len(menu)-1):
         popup_nuevo.write(menu[i])
     popup_nuevo.close
-
-    # Agregamos los botones y/o menus de opciones
-    if os.path.exists(archivo_botones):
-        os.rename(archivo_botones, archivo_copia)
-        botones_old = open(archivo_copia, "r")
-        lineas = botones_old.readlines()
-        botones_old.close
-        botones = open(archivo_botones, "w")
-        for i in range(0, len(lineas)):
-            botones.write(lineas[i])
-        for i in range(0, len(lineas_botones)-1):
-            botones.write(lineas_botones[i])
-        botones.close
-
-    # Activamos los menus ocultos
-    conf_cambia("gui_usermenu", "1")
-
     print "Instalacion completada"
 else:
     print "Actualizacion completada"

@@ -29,11 +29,12 @@ __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
 # Cargamos las librerias y funciones que necesitamos
-import xchat, re
+import xchat, re, datetime, xml.dom.minidom
 from os import popen3, path
-from string import split
+from string import split, find
 from random import randint
 from ConfigParser import ConfigParser
+from urllib import urlopen
 
 
 ###############################################################################
@@ -46,6 +47,7 @@ gatodir = scriptdir + "/gatoscript/"
 filtros_path = gatodir + "antispam.conf"
 consejos_path = gatodir + "consejos.txt"
 configfile = gatodir + "gatoscript.conf"
+rssfile = gatodir + "rss.conf"
 amulesig = home + "/.aMule/amulesig.dat"
 NoXmms = 0
 NoDBus = 0
@@ -248,7 +250,7 @@ def gato_cb(word, word_eol, userdata):
             "",
             "Descargas",
             "    /amule:             Muestra la informacion de aMule",
-            "    /gazureus:           Muestra la informacion de Azureus (No disponible aun)",
+            "    /azureus:           Muestra la informacion de Azureus (No disponible aun)",
             ""]
         elif word[1] == "-u":
             mensajes = [
@@ -359,19 +361,17 @@ def proteccion_cb(word, word_eol, userdata):
     """
     mensaje = ""
     noban = 0
-    web = re.compile("http://www\.geocities\.com/octubre122005", re.IGNORECASE)
-    web2 = re.compile("www\.dominiosteca\.biz", re.IGNORECASE)
-    web3 = re.compile("es-facil\.com/ganar", re.IGNORECASE)
-    #http://www.geocities.com/octubre122005/
-    if web.search(word_eol[3]):
-        noban = 0
-        mensaje = " El spam es molesto, metetelo por el culo"
-    if web2.search(word_eol[3]):
-        noban = 0
-        mensaje = " El spam es molesto, metetelo por el culo"
-    if web3.search(word_eol[3]):
-        noban = 0
-        mensaje = " El spam es molesto, metetelo por el culo"
+    webs = [
+    "http://www.geocities.com/octubre122005",
+    "www.dominiosteca.biz",
+    "es-facil.com/ganar",
+    "WWW.ELECTRIKSOUND.COM"
+    ]
+    cantidad = len(webs)
+    for i in range(cantidad):
+        if find(word_eol[3], webs[i]) > 0:
+            noban = 0
+            mensaje = " El spam es molesto, metetelo por el culo"
     cadena = word_eol[3][1:]
     accion = re.compile('^\ACTION')
     if accion.match(cadena):
@@ -379,7 +379,7 @@ def proteccion_cb(word, word_eol, userdata):
     mayusculas = re.compile('[A-Z]')
     porcentaje = (len(mayusculas.findall(cadena))*100)/len(cadena)
 
-    #Si mas del 25% de los caracteres son letras mayusculas
+    #Si mas del cierto porcentaje de los caracteres son letras mayusculas
     #if (len(cadena) > 40 and porcentaje > 30):
     #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
     #        noban = 1
@@ -878,6 +878,37 @@ def autent_cb(word, word_eol, userdata):
     xchat.command("say sudo apt-get update")
     return xchat.EAT_ALL
 
+###############################################################################
+# Definimos las funciones del lector rss                                      #
+###############################################################################
+def rss_cb(word, word_eol, userdata):
+    if path.exists(rssfile):
+        archivo = open(rssfile, "r")
+        servidores = archivo.readlines()
+        archivo.close()
+        fecha = str(datetime.datetime.now())[:19]
+        for servidor in servidores:
+            priv_linea(servidor[:-1] + " - " + fecha)
+            priv_linea("")
+            archivo = xml.dom.minidom.parse(urlopen(servidor))
+            for objeto in archivo.getElementsByTagName('item'):
+                titulo = objeto.getElementsByTagName('title')[0].firstChild.data
+                enlace = objeto.getElementsByTagName('link')[0].firstChild.data
+                priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
+            priv_linea("")
+    return xchat.EAT_ALL
+
+def rsslista_cb(word, word_eol, userdata):
+    if path.exists(rssfile):
+        archivo = open(rssfile, "r")
+        servidores = archivo.readlines()
+        archivo.close()
+        priv_linea("")
+        priv_linea("Lista de feeds RSS:")
+        for servidor in servidores:
+            priv_linea(servidor)
+        priv_linea("")
+    return xchat.EAT_ALL
 
 ###############################################################################
 # Definimos las funciones para obtener la informacion del sistema             #
@@ -1260,6 +1291,9 @@ def unload_cb(userdata):
     xchat.unhook(hook38)
     xchat.unhook(hook39)
     xchat.unhook(hook30)
+    # Lector de feeds RSS
+    xchat.unhook(hookrss)
+    xchat.unhook(hooklistarss)
     # Informacion del sistema
     xchat.unhook(hook51)
     xchat.unhook(hook52)
@@ -1334,6 +1368,9 @@ hook37 = xchat.hook_command('privado', privado_cb)
 hook38 = xchat.hook_command('web', web_cb)
 hook39 = xchat.hook_command('repos', repos_cb)
 hook30 = xchat.hook_command('autent', autent_cb)
+# RSS
+hookrss = xchat.hook_command('rss', rss_cb)
+hooklistarss = xchat.hook_command('listarss', rsslista_cb)
 # Informacion del sistema
 hook51 = xchat.hook_command('gup', uptime_cb)
 hook52 = xchat.hook_command('gos', sistema_cb)
