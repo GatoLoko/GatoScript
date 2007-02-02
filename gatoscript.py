@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15beta1"
+__module_version__ = "0.15beta2"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -197,6 +197,7 @@ def gato_cb(word, word_eol, userdata):
         "    -d         Comandos para informacion de Descargas",
         "    -u         Comandos para control de Usuarios",
         "    -o         Comandos para establecer las Opciones",
+        "    -r         Comandos para gestion RSS",
         "",
         "Por ejemplo: /gato -s",
         ""]
@@ -269,6 +270,15 @@ def gato_cb(word, word_eol, userdata):
             "    /opciones media xmms:        Selecciona XMMS como reproductor de sonido",
             "    /opciones media rhythmbox:   Selecciona Rhythmbox como reproductor de sonido",
             "    /opciones media banshee:     Selecciona Banshee como reproductor de sonido",
+            ""]
+        elif word[1] == "-r":
+            mensajes = [
+            "",
+            "Gestion RSS",
+            "    /rss:             Muestra las noticias actuales en los feeds actuales",
+            "    /rsslista:        Muestra la lista de feeds actuales",
+            "    /rssadd:          Añade un nuevo feed a la lista (No disponible aun)",
+            "    /rssdel:          Elimina un feed de la lista actual (No disponible aun)",
             ""]
         else:
             mensajes = [
