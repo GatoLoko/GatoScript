@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15beta2"
+__module_version__ = "0.15beta1"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -37,10 +37,10 @@ from ConfigParser import ConfigParser
 from urllib import urlopen
 
 
-###############################################################################
+#############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
 # opcionales.
-###############################################################################
+#############################################################################
 home = xchat.get_info("xchatdir")[0:len(xchat.get_info("xchatdir"))-7]
 scriptdir = xchat.get_info("xchatdir")
 gatodir = scriptdir + "/gatoscript/"
@@ -49,6 +49,7 @@ consejos_path = gatodir + "consejos.txt"
 configfile = gatodir + "gatoscript.conf"
 rssfile = gatodir + "rss.conf"
 amulesig = home + "/.aMule/amulesig.dat"
+azureusstats = home + "/.azureus/Azureus_Stats.xml"
 NoXmms = 0
 NoDBus = 0
 cp = ConfigParser()
@@ -65,9 +66,9 @@ def lee_conf(seccion, opcion):
     return cp.get(seccion, opcion)
 
 
-###############################################################################
+#############################################################################
 # Cargamos los modulos para la gestion multimedia
-###############################################################################
+#############################################################################
 repro_activo = lee_conf("media", "activo")
 if (repro_activo == "1"):
     repro = lee_conf("media", "reproductor")
@@ -111,9 +112,9 @@ else:
     antispam = 0
 
 
-###############################################################################
+#############################################################################
 # Definimos algunas funciones de uso interno en el GatoScript
-###############################################################################
+#############################################################################
 def gprint(mensaje):
     """Escribe "Gatoscript >> " seguido de la cadena que recibe como parametro.
     Util para mostrar mensajes del script al usuario.
@@ -169,9 +170,9 @@ def escribe_conf(seccion, opcion, valor):
     cp.write(file(configfile, "w"))
 
 
-###############################################################################
-# Definimos las funciones de informacion y ayuda sobre el manejo del script   #
-###############################################################################
+#############################################################################
+# Definimos las funciones de informacion y ayuda sobre el manejo del script
+#############################################################################
 def gato_cb(word, word_eol, userdata):
     """Muestra la ayuda del GatoScript
     Argumentos:
@@ -251,7 +252,7 @@ def gato_cb(word, word_eol, userdata):
             "",
             "Descargas",
             "    /amule:             Muestra la informacion de aMule",
-            "    /azureus:           Muestra la informacion de Azureus (No disponible aun)",
+            "    /azureus:           Muestra la informacion de Azureus",
             ""]
         elif word[1] == "-u":
             mensajes = [
@@ -300,9 +301,9 @@ def gato_info_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
+#############################################################################
 # Definimos las funciones de proteccion
-###############################################################################
+#############################################################################
 # Proteccion multiple en contra mensajes molestos (on PRIVMSG)
 def anti_ctcp_cb(word, word_eol, userdata):
     """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
@@ -429,9 +430,9 @@ def proteccion2_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 
-###############################################################################
+#############################################################################
 # Redireccion de resaltados
-###############################################################################
+#############################################################################
 def resaltados_cb(word, word_eol, userdata):
     """Detecta palabras resaltadas (en la configuracion del xchat) y copia la linea que las contiene a la pestaña "GatoScript"
     Argumentos:
@@ -454,11 +455,11 @@ def resaltados_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 
-###############################################################################
-# Definimos la funcion antispam para filtrado de mensajes privados.           #
-# El sistema antispam eliminara todas las lineas que contengan alguna de las  #
-# cadenas definidas en el archivo antispam.conf                               #
-###############################################################################
+#############################################################################
+# Definimos la funcion antispam para filtrado de mensajes privados.
+# El sistema antispam eliminara todas las lineas que contengan alguna de las
+# cadenas definidas en el archivo antispam.conf
+#############################################################################
 def antispam_reload():
     """Recarga la lista de filtros antispam para aplicar los cambios o retomar una lista anterior
     Argumentos:
@@ -562,9 +563,9 @@ def antispam_list_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
+#############################################################################
 # Definimos la funcion para redireccion y formateo de respuestas al whois
-###############################################################################
+#############################################################################
 # Respuesta al whois: Informacion de usuario
 def whois_cb(word, word_eol, userdata):
     """Redirecciona las respuestas al "whois" hacia la ventana activa, al tiempo que modifica el formato de salida.
@@ -645,9 +646,9 @@ def whois_cb(word, word_eol, userdata):
         return xchat.EAT_NONE
 
 
-###############################################################################
+#############################################################################
 # Definimos las funciones para el control de multimedia
-###############################################################################
+#############################################################################
 def media_cb(word, word_eol, userdata):
     """Muestra en el canal activo informacion sobre la cancion que estamos escuchando.
     Toma del archivo de configuracion el reproductor a usar.
@@ -794,9 +795,9 @@ def media_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
-# Definimos las funciones para el modulo "Consejos del Gato"                  #
-###############################################################################
+#############################################################################
+# Definimos las funciones para el modulo "Consejos del Gato"
+#############################################################################
 def consejo_aleatorio_cb(word, word_eol, userdata):
     """Muestra en el canal activo una linea aleatoria del archivo de consejos.
     Argumentos:
@@ -888,9 +889,9 @@ def autent_cb(word, word_eol, userdata):
     xchat.command("say sudo apt-get update")
     return xchat.EAT_ALL
 
-###############################################################################
-# Definimos las funciones del lector rss                                      #
-###############################################################################
+#############################################################################
+# Definimos las funciones del lector rss
+#############################################################################
 def rss_cb(word, word_eol, userdata):
     if path.exists(rssfile):
         archivo = open(rssfile, "r")
@@ -920,9 +921,9 @@ def rsslista_cb(word, word_eol, userdata):
         priv_linea("")
     return xchat.EAT_ALL
 
-###############################################################################
-# Definimos las funciones para obtener la informacion del sistema             #
-###############################################################################
+#############################################################################
+# Definimos las funciones para obtener la informacion del sistema
+#############################################################################
 def uptime_cb(word, word_eol, userdata):
     """Muestra en el canal activo el uptime del pc.
     Argumentos:
@@ -1094,9 +1095,9 @@ def pc_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
+#############################################################################
 # Funcion para el Kick/Ban temporal
-###############################################################################
+#############################################################################
 def kbtemporal_cb(word, word_eol, userdata):
     """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
     Argumentos:
@@ -1118,9 +1119,9 @@ def kbtemporal_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
+#############################################################################
 # Definimos las funciones para mostrar informacion P2P
-###############################################################################
+#############################################################################
 def amule_cb(word, word_eol, userdata):
     """Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
     Argumentos:
@@ -1149,10 +1150,32 @@ def amule_cb(word, word_eol, userdata):
         gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
     return xchat.EAT_ALL
 
+def azureus_cb(word, word_eol, userdata):
+    """Lee el archivo Azureus_Stats.xml (estadisticas) de azureus y muestra
+    parte de la informacion en el canal activo.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if path.exists(azureusstats):
+        dom1 = xml.dom.minidom.parse(azureusstats)
+        stats = dom1.getElementsByTagName('STATS')[0]
+        glob = stats.getElementsByTagName('GLOBAL')[0]
+        descarga = glob.getElementsByTagName('DOWNLOAD_SPEED')[0]
+        vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
+        subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
+        vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
+        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga,vsubida))
+        del descarga, vdescarga, subida, vsubida, glob, stats, dom1
+    else:
+        gprint("No existe el archivo " + azureusstats + ", compruebe su configuracion de Azureus")
+    return xchat.EAT_ALL
 
-###############################################################################
+
+#############################################################################
 # Definimos las funcion de controles remotos
-###############################################################################
+#############################################################################
 def remoto_cb(word, word_eol, userdata):
     """Esta funcion revisa los mensajes recibidos en busca de comandos remotos y cuando los encuentra, actua en consecuencia.
     Argumentos:
@@ -1189,9 +1212,9 @@ def remoto_cb(word, word_eol, userdata):
     #            xchat.command("say a %s le gustaria echar un polvo pero no tiene con quien (GatoBotijo)" %word[0])
 
 
-###############################################################################
+#############################################################################
 # Configuracion del script
-###############################################################################
+#############################################################################
     """Esta funcion se encarga de mostrar y modificar las configuraciones del script.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
@@ -1239,9 +1262,9 @@ def opciones_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-###############################################################################
+#############################################################################
 # Definimos la funcion para la descarga del programa
-###############################################################################
+#############################################################################
 def unload_cb(userdata):
     """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
     Argumentos:
@@ -1290,6 +1313,7 @@ def unload_cb(userdata):
     xchat.unhook(hookstop)
     # Peer to Peer
     xchat.unhook(hookamule)
+    xchat.unhook(hookazureus)
     # Consejos
     xchat.unhook(hook31)
     xchat.unhook(hook32)
@@ -1319,10 +1343,10 @@ def unload_cb(userdata):
     print "Se ha descargado GatoScript %s" % __module_version__
 
 
-###############################################################################
+#############################################################################
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 # para ellos
-###############################################################################
+#############################################################################
 
 # Controles remotos
 hookremoto = xchat.hook_print('Channel Message', remoto_cb)
@@ -1367,6 +1391,7 @@ hookpausa = xchat.hook_command('pausa', media_cb, userdata="pausa")
 hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
 # Peer to Peer
 hookamule = xchat.hook_command('amule', amule_cb)
+hookazureus = xchat.hook_command('azureus', azureus_cb)
 # Consejos
 hook31 = xchat.hook_command('consejos', consejo_aleatorio_cb)
 hook32 = xchat.hook_command('consejo', consejo_cb)
@@ -1405,7 +1430,7 @@ if NoXmms == 1:
     gprint("Las funciones de control sobre XMMS no estaran disponibles por no encontrarse python-xmms")
 
 
-###############################################################################
+#############################################################################
 #
 # Codigos especiales en las cadenas:
 #
@@ -1417,4 +1442,4 @@ if NoXmms == 1:
 #   "%O"    =   "\017"  =   Desactiva los demas
 #   "$t"    =   "\t"    =   $t
 #
-###############################################################################
+#############################################################################

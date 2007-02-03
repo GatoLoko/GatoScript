@@ -1,5 +1,12 @@
 2007-01-22  GatoLoko  <GatoLoko@gmail.com>
 
+ * Agregada la funcion azureus_cb y el comando "/azureus" para mostrar
+     informacion sobre las transferencias de este programa.
+ * Modificado el menu para activar el acceso a la funcion azureus_cb.
+
+
+2007-01-22  GatoLoko  <GatoLoko@gmail.com>
+
  * Agregada la funcion "rss_cb" que muestra las noticias recientes de los
      de los feeds configurados.
  * Agregada la funcion "rsslista_cb" que muestra la lista de feeds.
