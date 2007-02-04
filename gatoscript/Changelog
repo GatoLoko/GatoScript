@@ -1,3 +1,10 @@
+2007-01-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido el bug que probocaba la ejecucion de Rhythmbox o Banshee al
+    cargar el script.
+ * Publicado como RC1
+
+
 2007-01-22  GatoLoko  <GatoLoko@gmail.com>
 
  * Agregada la funcion azureus_cb y el comando "/azureus" para mostrar

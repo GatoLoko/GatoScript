@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15beta1"
+__module_version__ = "0.15RC1"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -52,6 +52,7 @@ amulesig = home + "/.aMule/amulesig.dat"
 azureusstats = home + "/.azureus/Azureus_Stats.xml"
 NoXmms = 0
 NoDBus = 0
+DBusIniciado = 0
 cp = ConfigParser()
 
 def lee_conf(seccion, opcion):
@@ -83,19 +84,12 @@ if (repro_activo == "1"):
             DBUS_START_REPLY_SUCCESS = 1
             DBUS_START_REPLY_ALREADY_RUNNING = 2
             bus = dbus.SessionBus()
-            rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player')
-            rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
-            rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
-            rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
         except ImportError:
             NoDBus = 1
             print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Rhythmbox"
     elif (repro == "banshee"):
         try:
             import dbus
-            bus = dbus.SessionBus()
-            bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
-            banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
         except ImportError:
             NoDBus = 1
             print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
@@ -715,22 +709,74 @@ def media_cb(word, word_eol, userdata):
                     mensaje = "La funcion " + userdata + " no esta implementada"
                     gprint(mensaje)
         elif (reproductor == "rhythmbox"):
+            global DBusIniciado
             if (NoDBus == 1):
                 gprint("No esta disponible la libreria de acceso a Rhythmbox")
             else:
-                try:
-                    sonando = int(rbplayer.getPlaying())
-                except:
-                    sonando = 0
-                if (userdata == "escuchando"):
-                    if sonando == 0:
-                        gprint("El reproductor esta parado")
+                if DBusIniciado == 0:
+                    bus = dbus.SessionBus()
+                    rbplayerobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Player')
+                    rbplayer = dbus.Interface(rbplayerobj, 'org.gnome.Rhythmbox.Player')
+                    rbshellobj = bus.get_object('org.gnome.Rhythmbox', '/org/gnome/Rhythmbox/Shell')
+                    rbshell = dbus.Interface(rbshellobj, 'org.gnome.Rhythmbox.Shell')
+                    gprint("Conectando con Rhythmbox, por favor intentelo otra vez")
+                    DBusIniciado = 1
+                else:
+                    try:
+                        sonando = int(rbplayer.getPlaying())
+                    except:
+                        sonando = 0
+                    if (userdata == "escuchando"):
+                        if sonando == 0:
+                            gprint("El reproductor esta parado")
+                        else:
+                            detalles = rbshell.getSongProperties(rbplayer.getPlayingUri())
+                            titulo = detalles['title'].encode('utf-8')
+                            artista = detalles['artist'].encode('utf-8')
+                            #album = detalles['album'].encode('utf-8')
+                            tiempo = detalles['duration']
+                            if tiempo < 0:
+                                longitud = "Radio"
+                            else:
+                                minutos = int(tiempo/60)
+                                segundos = tiempo-(minutos*60)
+                                longitud = str(minutos) + "m" + str(segundos) + "s"
+                            xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
+                    elif (userdata == "reproductor"):
+                        gprint("Esta utilizando Rhythmbox")
+                    elif (userdata == "siguiente"):
+                        if sonando == 0:
+                            gprint("El reproductor esta parado")
+                        else:
+                            rbplayer.next()
+                    elif (userdata == "anterior"):
+                        if sonando == 0:
+                            gprint("El reproductor esta parado")
+                        else:
+                            rbplayer.previous()
+                    #elif (userdata == "play" or userdata == "pausa"):
+                        #rbplayer.playPause()
+                    #elif (userdata == "stop"):
+                        #gprint("Esta funcion no esta implementada")
                     else:
-                        detalles = rbshell.getSongProperties(rbplayer.getPlayingUri())
-                        titulo = detalles['title'].encode('utf-8')
-                        artista = detalles['artist'].encode('utf-8')
-                        #album = detalles['album'].encode('utf-8')
-                        tiempo = detalles['duration']
+                        mensaje = "La funcion " + userdata + " no esta implementada"
+                        gprint(mensaje)
+        elif (reproductor == "rhythmbox"):
+            if (NoDBus == 1):
+                gprint("No esta disponible la libreria de acceso a Banshee")
+            else:
+                if DBusIniciado == 0:
+                    bus = dbus.SessionBus()
+                    bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
+                    banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
+                    gprint("Conectando con Banshee, por favor intentelo otra vez")
+                    DBusIniciado = 1
+                else:
+                    if (userdata == "escuchando"):
+                        titulo = banshee.GetPlayingTitle().encode('utf-8')
+                        artista = banshee.GetPlayingArtist().encode('utf-8')
+                        #album = banshee.GetPlayingAlbum().encode('utf-8')
+                        tiempo = banshee.GetPlayingDuration()
                         if tiempo < 0:
                             longitud = "Radio"
                         else:
@@ -738,56 +784,21 @@ def media_cb(word, word_eol, userdata):
                             segundos = tiempo-(minutos*60)
                             longitud = str(minutos) + "m" + str(segundos) + "s"
                         xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
-                elif (userdata == "reproductor"):
-                    gprint("Esta utilizando Rhythmbox")
-                elif (userdata == "siguiente"):
-                    if sonando == 0:
-                        gprint("El reproductor esta parado")
+                    elif (userdata == "reproductor"):
+                        gprint("Esta utilizando Banshee")
+                    elif (userdata == "siguiente"):
+                        banshee.Next()
+                    elif (userdata == "anterior"):
+                        banshee.Previous()
+                    elif (userdata == "play"):
+                        banshee.Play()
+                    elif (userdata == "pausa"):
+                        banshee.Pause()
+                    elif (userdata == "stop"):
+                        banshee.Stop()
                     else:
-                        rbplayer.next()
-                elif (userdata == "anterior"):
-                    if sonando == 0:
-                        gprint("El reproductor esta parado")
-                    else:
-                        rbplayer.previous()
-                #elif (userdata == "play" or userdata == "pausa"):
-                    #rbplayer.playPause()
-                #elif (userdata == "stop"):
-                    #gprint("Esta funcion no esta implementada")
-                else:
-                    mensaje = "La funcion " + userdata + " no esta implementada"
-                    gprint(mensaje)
-        elif (reproductor == "rhythmbox"):
-            if (NoDBus == 1):
-                gprint("No esta disponible la libreria de acceso a Banshee")
-            else:
-                if (userdata == "escuchando"):
-                    titulo = banshee.GetPlayingTitle().encode('utf-8')
-                    artista = banshee.GetPlayingArtist().encode('utf-8')
-                    #album = banshee.GetPlayingAlbum().encode('utf-8')
-                    tiempo = banshee.GetPlayingDuration()
-                    if tiempo < 0:
-                        longitud = "Radio"
-                    else:
-                        minutos = int(tiempo/60)
-                        segundos = tiempo-(minutos*60)
-                        longitud = str(minutos) + "m" + str(segundos) + "s"
-                    xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
-                elif (userdata == "reproductor"):
-                    gprint("Esta utilizando Banshee")
-                elif (userdata == "siguiente"):
-                    banshee.Next()
-                elif (userdata == "anterior"):
-                    banshee.Previous()
-                elif (userdata == "play"):
-                    banshee.Play()
-                elif (userdata == "pausa"):
-                    banshee.Pause()
-                elif (userdata == "stop"):
-                    banshee.Stop()
-                else:
-                    mensaje = "La funcion " + userdata + " no esta implementada"
-                    gprint(mensaje)
+                        mensaje = "La funcion " + userdata + " no esta implementada"
+                        gprint(mensaje)
         else:
             print "El reproductor seleccionado no esta soportado (aun)"
     else:
