@@ -78,6 +78,7 @@ if (repro_activo == "1"):
             import xmms.control
         except ImportError:
             NoXmms = 1
+            print "No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS"
     elif (repro == "rhythmbox"):
         try:
             import dbus
@@ -904,32 +905,62 @@ def autent_cb(word, word_eol, userdata):
 # Definimos las funciones del lector rss
 #############################################################################
 def rss_cb(word, word_eol, userdata):
-    if path.exists(rssfile):
-        archivo = open(rssfile, "r")
-        servidores = archivo.readlines()
-        archivo.close()
-        fecha = str(datetime.datetime.now())[:19]
-        for servidor in servidores:
-            priv_linea(servidor[:-1] + " - " + fecha)
-            priv_linea("")
-            archivo = xml.dom.minidom.parse(urlopen(servidor))
-            for objeto in archivo.getElementsByTagName('item'):
-                titulo = objeto.getElementsByTagName('title')[0].firstChild.data
-                enlace = objeto.getElementsByTagName('link')[0].firstChild.data
-                priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
-            priv_linea("")
+    servidores = lee_conf("rss", "feeds").split(',')
+    fecha = str(datetime.datetime.now())[:19]
+    for servidor in servidores:
+        priv_linea(servidor[:-1] + " - " + fecha)
+        priv_linea("")
+        archivo = xml.dom.minidom.parse(urlopen(servidor))
+        for objeto in archivo.getElementsByTagName('item'):
+            titulo = objeto.getElementsByTagName('title')[0].firstChild.data
+            enlace = objeto.getElementsByTagName('link')[0].firstChild.data
+            priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
+        priv_linea("")
+    del servidores, fecha
     return xchat.EAT_ALL
 
 def rsslista_cb(word, word_eol, userdata):
-    if path.exists(rssfile):
-        archivo = open(rssfile, "r")
-        servidores = archivo.readlines()
-        archivo.close()
-        priv_linea("")
-        priv_linea("Lista de feeds RSS:")
-        for servidor in servidores:
-            priv_linea(servidor)
-        priv_linea("")
+    servidores = lee_conf("rss", "feeds").split(',')
+    priv_linea("")
+    priv_linea("Lista de feeds RSS:")
+    for servidor in servidores:
+        priv_linea(servidor)
+    priv_linea("")
+    del servidores
+    return xchat.EAT_ALL
+
+def rssadd_cb(word, word_eol, userdata):
+    info_param = len(word_eol)
+    if info_param == 1:
+        gprint("Debes añadir la direccion de un feed RSS")
+    elif info_param > 2:
+        gprint("De momento solo se admite un rss cada vez")
+    else:
+        #comprobar si el parametro es una url
+        #if word[1] == "es una url":
+        actuales = lee_conf("rss", "feeds")
+        nuevos = actuales + "," + word[1]
+        escribe_conf("rss", "feeds", nuevos)
+    del actuales, nuevos
+    return xchat.EAT_ALL
+
+def rssdel_cb(word, word_eol, userdata):
+    info_param = len(word_eol)
+    if info_param == 1:
+        gprint("Debes añadir la direccion de un feed RSS")
+    elif info_param > 2:
+        gprint("De momento solo se admite un feed cada vez")
+    else:
+        actuales = lee_conf("rss", "feeds").split(',')
+        temporal = ''
+        for feed in range(len(actuales)):
+            if (actuales[feed] != word_eol[1]) and (actuales[feed] != ""):
+                temporal = temporal + actuales[feed]
+                if feed < len(actuales):
+                    temporal = temporal + ','
+        if temporal <> actuales:
+            escribe_conf("rss", "feeds", temporal)
+    del actuales, temporal, feed
     return xchat.EAT_ALL
 
 #############################################################################
@@ -1226,13 +1257,13 @@ def remoto_cb(word, word_eol, userdata):
 #############################################################################
 # Configuracion del script
 #############################################################################
+def opciones_cb(word, word_eol, userdata):
     """Esta funcion se encarga de mostrar y modificar las configuraciones del script.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-def opciones_cb(word, word_eol, userdata):
     info_param = len(word_eol)
     if info_param == 1:
         cp.read(configfile)
@@ -1254,6 +1285,12 @@ def opciones_cb(word, word_eol, userdata):
             if word[2] == "xmms":
                 escribe_conf("media", "reproductor", "xmms")
                 gprint("Se ha seleccionado XMMS")
+                if NoXmms == 1:
+                    try:
+                        import xmms.control
+                    except ImportError:
+                        NoXmms = 1
+                        gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
             elif word[2] == "rhythmbox":
                 escribe_conf("media", "reproductor", "rhythmbox")
                 gprint("Se ha seleccionado Rythmbox")
@@ -1290,6 +1327,8 @@ def unload_cb(userdata):
     # Protecciones
     xchat.unhook(hookproteccion)
     xchat.unhook(hookjoin)
+    xchat.unhook(hootantictcp)
+    xchat.unhook(hookantihoygan)
     # Resaltados
     xchat.unhook(hookresaltados)
     # Antispam
@@ -1339,6 +1378,8 @@ def unload_cb(userdata):
     # Lector de feeds RSS
     xchat.unhook(hookrss)
     xchat.unhook(hooklistarss)
+    xchat.unhook(hookrssadd)
+    xchat.unhook(hookrssdel)
     # Informacion del sistema
     xchat.unhook(hook51)
     xchat.unhook(hook52)
@@ -1368,6 +1409,7 @@ hook12 = xchat.hook_command('ginfo', gato_info_cb)
 hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None)
 hookjoin = xchat.hook_server('JOIN', proteccion2_cb, userdata=None)
 hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
+hookantihoygan = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
 # Antispam
@@ -1417,6 +1459,8 @@ hook30 = xchat.hook_command('autent', autent_cb)
 # RSS
 hookrss = xchat.hook_command('rss', rss_cb)
 hooklistarss = xchat.hook_command('listarss', rsslista_cb)
+hookrssadd = xchat.hook_command('rssadd', rssadd_cb)
+hookrssdel = xchat.hook_command('rssdel', rssdel_cb)
 # Informacion del sistema
 hook51 = xchat.hook_command('gup', uptime_cb)
 hook52 = xchat.hook_command('gos', sistema_cb)

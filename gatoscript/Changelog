@@ -1,3 +1,12 @@
+2007-02-02  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificadas las funciones rss_cb y rsslista_cb para que almacenen y lean
+     la lista de feeds del archivo de configuracion en lugar de un archivo
+     independiente.
+ * Agregado el comando "rssadd" para agregar un nuevo feed a la lista.
+ * Agregado el comando "rssdel" para eliminar un feed de la lista.
+
+
 2007-01-25  GatoLoko  <GatoLoko@gmail.com>
 
  * Corregido el bug que probocaba la ejecucion de Rhythmbox o Banshee al
@@ -17,8 +26,8 @@
  * Agregada la funcion "rss_cb" que muestra las noticias recientes de los
      de los feeds configurados.
  * Agregada la funcion "rsslista_cb" que muestra la lista de feeds.
- * Cambiado el formato del Changelog. Las entradas anteriores se conservan con
-     fecha 31 de diciembre del 2006.
+ * Cambiado el formato del Changelog. Las entradas anteriores se conservan
+    con fecha 31 de diciembre del 2006.
  * Agregada la ayuda para las funciones de gestion RSS.
  * Publicado como beta2.
 
