@@ -1,3 +1,11 @@
+2007-02-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * Documentadas las funciones para gestion de feeds RSS/RDF.
+ * Modificadas las opciones del menu para poder añadir o quitar nuevos feeds
+    de forma grafica.
+ * Publicado como RC2
+
+
 2007-02-02  GatoLoko  <GatoLoko@gmail.com>
 
  * Modificadas las funciones rss_cb y rsslista_cb para que almacenen y lean

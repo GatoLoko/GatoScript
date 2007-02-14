@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15RC1"
+__module_version__ = "0.15RC2"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -342,6 +342,12 @@ def anti_hoygan_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 def anti_mayusculas_cb(word, word_eol, userdata):
+    """Detecta el abuso de mayusculas en los canales y banea al autor
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     if lee_conf("protecciones", "mayusculas") == "1":
         cadena = word_eol[3][1:]
         accion = re.compile('^\ACTION')
@@ -830,6 +836,13 @@ def consejo_aleatorio_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def consejo_cb(word, word_eol, userdata):
+    """ Muestra consejos en funcion de un parametro o, a falta de este,
+    aleatoriamente.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     if len(word_eol) > 1:
         if word[1] == "preguntar":
             linea = 0
@@ -905,6 +918,14 @@ def autent_cb(word, word_eol, userdata):
 # Definimos las funciones del lector rss
 #############################################################################
 def rss_cb(word, word_eol, userdata):
+    """ Muestra las noticias actuales contenidas en los feeds que hemos
+    configurado en la pestaña/ventana GatoScript.
+    aleatoriamente.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     servidores = lee_conf("rss", "feeds").split(',')
     fecha = str(datetime.datetime.now())[:19]
     for servidor in servidores:
@@ -920,6 +941,12 @@ def rss_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def rsslista_cb(word, word_eol, userdata):
+    """ Muestra la lista de feeds RSS/RDF que tenemos configurados.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     servidores = lee_conf("rss", "feeds").split(',')
     priv_linea("")
     priv_linea("Lista de feeds RSS:")
@@ -930,6 +957,12 @@ def rsslista_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def rssadd_cb(word, word_eol, userdata):
+    """ Agrega un nuevo feed RSS/RDF a la configuracion.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     info_param = len(word_eol)
     if info_param == 1:
         gprint("Debes añadir la direccion de un feed RSS")
@@ -945,6 +978,12 @@ def rssadd_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def rssdel_cb(word, word_eol, userdata):
+    """ Elimina un feed RSS/RDF de la lista.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     info_param = len(word_eol)
     if info_param == 1:
         gprint("Debes añadir la direccion de un feed RSS")
