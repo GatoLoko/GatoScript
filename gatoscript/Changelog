@@ -1,9 +1,17 @@
+2007-03-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion "amule_cb" para mostrar la version de aMule.
+ * Corregidos los fallos en la funcion multimedia para control de
+    remoto de Rhythmbox.
+
+
 2007-02-04  GatoLoko  <GatoLoko@gmail.com>
 
  * Documentadas las funciones para gestion de feeds RSS/RDF.
  * Modificadas las opciones del menu para poder añadir o quitar nuevos feeds
     de forma grafica.
  * Publicado como RC2
+ * Reescrita la funcion "rssdel_cb" para ser mas eficiente.
 
 
 2007-02-02  GatoLoko  <GatoLoko@gmail.com>

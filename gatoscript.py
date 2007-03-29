@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF8 -*-
 
-# CopyRight (C) 2006 GatoLoko
+# CopyRight (C) 2006-2007 GatoLoko
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,8 +52,14 @@ amulesig = home + "/.aMule/amulesig.dat"
 azureusstats = home + "/.azureus/Azureus_Stats.xml"
 NoXmms = 0
 NoDBus = 0
+global DBusIniciado
 DBusIniciado = 0
 cp = ConfigParser()
+global rbplayerobj
+global rbplayer
+global rbshellobj
+global rbshell
+
 
 def lee_conf(seccion, opcion):
     """Lee una opcion del archivo de configuracion.
@@ -377,7 +383,8 @@ def proteccion_cb(word, word_eol, userdata):
     "http://www.geocities.com/octubre122005",
     "www.dominiosteca.biz",
     "es-facil.com/ganar",
-    "WWW.ELECTRIKSOUND.COM"
+    "WWW.ELECTRIKSOUND.COM",
+    "http://www.fororelax.net"
     ]
     cantidad = len(webs)
     for i in range(cantidad):
@@ -717,6 +724,10 @@ def media_cb(word, word_eol, userdata):
                     gprint(mensaje)
         elif (reproductor == "rhythmbox"):
             global DBusIniciado
+            global rbplayerobj
+            global rbplayer
+            global rbshellobj
+            global rbshell
             if (NoDBus == 1):
                 gprint("No esta disponible la libreria de acceso a Rhythmbox")
             else:
@@ -929,7 +940,7 @@ def rss_cb(word, word_eol, userdata):
     servidores = lee_conf("rss", "feeds").split(',')
     fecha = str(datetime.datetime.now())[:19]
     for servidor in servidores:
-        priv_linea(servidor[:-1] + " - " + fecha)
+        priv_linea(servidor + " - " + fecha)
         priv_linea("")
         archivo = xml.dom.minidom.parse(urlopen(servidor))
         for objeto in archivo.getElementsByTagName('item'):
@@ -937,7 +948,7 @@ def rss_cb(word, word_eol, userdata):
             enlace = objeto.getElementsByTagName('link')[0].firstChild.data
             priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
         priv_linea("")
-    del servidores, fecha
+    del servidores, fecha, servidor
     return xchat.EAT_ALL
 
 def rsslista_cb(word, word_eol, userdata):
@@ -960,7 +971,7 @@ def rssadd_cb(word, word_eol, userdata):
     """ Agrega un nuevo feed RSS/RDF a la configuracion.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     info_param = len(word_eol)
@@ -974,6 +985,7 @@ def rssadd_cb(word, word_eol, userdata):
         actuales = lee_conf("rss", "feeds")
         nuevos = actuales + "," + word[1]
         escribe_conf("rss", "feeds", nuevos)
+        gprint("Se ha agregado '" + word[1] + "' a la lista de feeds")
     del actuales, nuevos
     return xchat.EAT_ALL
 
@@ -981,7 +993,7 @@ def rssdel_cb(word, word_eol, userdata):
     """ Elimina un feed RSS/RDF de la lista.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     info_param = len(word_eol)
@@ -991,15 +1003,19 @@ def rssdel_cb(word, word_eol, userdata):
         gprint("De momento solo se admite un feed cada vez")
     else:
         actuales = lee_conf("rss", "feeds").split(',')
-        temporal = ''
-        for feed in range(len(actuales)):
-            if (actuales[feed] != word_eol[1]) and (actuales[feed] != ""):
-                temporal = temporal + actuales[feed]
-                if feed < len(actuales):
-                    temporal = temporal + ','
-        if temporal <> actuales:
+        try:
+            actuales.remove(word_eol[1])
+            temporal = ""
+            for feed in range(len(actuales)):
+                if (actuales[feed] != word_eol[1]) and (actuales[feed] != ""):
+                    temporal = temporal + actuales[feed]
+                    if feed < len(actuales)-1:
+                        temporal = temporal + ','
             escribe_conf("rss", "feeds", temporal)
-    del actuales, temporal, feed
+            gprint("Se ha eliminado '" + word_eol[1] + "'")
+            del actuales, temporal, feed
+        except ValueError:
+            gprint("No existe ningun feed que coincida con el indicado")
     return xchat.EAT_ALL
 
 #############################################################################
@@ -1226,7 +1242,8 @@ def amule_cb(word, word_eol, userdata):
                 total_descargado = str(int((lineas_amule[11])[0:desc_len])/1048576) + 'MB'
             else:
                 total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
-            xchat.command("say ( aMule ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(vdescarga,vsubida,total_descargado))
+            version = lineas_amule[13][0:len(lineas_amule[13]) - 1]
+            xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version,vdescarga,vsubida,total_descargado))
     else:
         gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
     return xchat.EAT_ALL
