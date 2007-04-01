@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15RC2"
+__module_version__ = "0.15"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 

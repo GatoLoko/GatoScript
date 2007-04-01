@@ -3,6 +3,7 @@
  * Modificada la funcion "amule_cb" para mostrar la version de aMule.
  * Corregidos los fallos en la funcion multimedia para control de
     remoto de Rhythmbox.
+ * Publicado como 0.15 final.
 
 
 2007-02-04  GatoLoko  <GatoLoko@gmail.com>
