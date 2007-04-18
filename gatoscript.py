@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.15"
+__module_version__ = "0.16alpha"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -298,7 +298,7 @@ def gato_info_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     version = xchat.get_info("version")
-    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version,__module_version__))
+    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://www.gatoloko.org)" %(version,__module_version__))
     return xchat.EAT_ALL
 
 
@@ -910,12 +910,12 @@ def privado_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def web_cb(word, word_eol, userdata):
-    xchat.command("say http://gatoloko.homelinux.org")
+    xchat.command("say http://www.gatoloko.org")
     return xchat.EAT_ALL
 
 def repos_cb(word, word_eol, userdata):
-    xchat.command("say deb http://gatoloko.homelinux.org/repositorio/ VERSION RAMAS")
-    xchat.command("say donde VERSION puede ser 'dapper' o 'edgy'")
+    xchat.command("say deb http://www.gatoloko.org/repositorio/ VERSION RAMAS")
+    xchat.command("say donde VERSION puede ser 'dapper', 'edgy' o 'feisty'")
     xchat.command("say donde RAMAS puede ser una o mas de: 'estable', 'inestable'")
     return xchat.EAT_ALL
 
@@ -1038,7 +1038,7 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(uptime / 3600)
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say Uptime: %s horas y %s minutos" %(horas,minutos))
+        xchat.command("say ( Uptime ) %s horas y %s minutos" %(horas,minutos))
     else:
         if dias > 1:
             cadena_dias = "dias"
@@ -1047,7 +1047,7 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(resto_dias / 3600)
         resto_horas = int(resto_dias % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say Uptime: %s %s, %s horas y %s minutos" %(dias,cadena_dias,horas,minutos))
+        xchat.command("say ( Uptime ) %s %s, %s horas y %s minutos" %(dias,cadena_dias,horas,minutos))
     return xchat.EAT_ALL
 
 def sistema_cb(word, word_eol, userdata):
@@ -1190,6 +1190,16 @@ def pc_cb(word, word_eol, userdata):
     mensaje = "[Informacion del PC] CPU: " + cpu + " - Velocidad: " + velocidad + "MHz - Memoria instalada: " + memoria + unidad + " - Memoria usada: " + str(libre) + unidad
     xchat.command("say " + mensaje)
     return xchat.EAT_ALL
+
+def red_cb(word, word_eol, userdata):
+	"""Muestra en el canal activo, informacion sobre la red.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+	hostname = file("/etc/hostname").read()
+	gprint("( Hostname ) " + hostname)
 
 
 #############################################################################
@@ -1441,6 +1451,7 @@ def unload_cb(userdata):
     xchat.unhook(hook52)
     xchat.unhook(hook53)
     xchat.unhook(hookpc)
+    xchat.unhook(hooknet)
     # Kick/Ban temporal
     xchat.unhook(hook71)
     # Opciones del script
@@ -1523,6 +1534,7 @@ hook52 = xchat.hook_command('gos', sistema_cb)
 hook53 = xchat.hook_command('gsoft', software_cb)
 hookfecha = xchat.hook_command('fecha', fecha_cb)
 hookpc = xchat.hook_command('gpc', pc_cb)
+hooknet = xchat.hook_command('gnet', red_cb)
 # Kick/Ban temporal
 hook71 = xchat.hook_command('kb_temp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
 # Opciones del script

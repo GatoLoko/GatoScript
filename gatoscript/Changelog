@@ -1,3 +1,11 @@
+2007-04-07  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificados los formatos de mensajes en algunas funciones para ser
+    más consistentes.
+ * Modificadas las URLs para apuntar al nuevo dominio.
+ * Cambiada la numeracion a "o.16alpha"
+
+
 2007-03-21  GatoLoko  <GatoLoko@gmail.com>
 
  * Modificada la funcion "amule_cb" para mostrar la version de aMule.
