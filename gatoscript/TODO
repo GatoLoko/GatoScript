@@ -6,5 +6,6 @@
 #    Crear una funcion de "quotes" con comando remoto (¿a partir de la funcion
 #      de consejos?)
 #    Agregar soporte para amarok
+#    Completar las funcion "red_cb" y "anti_away_cb"
 #
 ###############################################################################

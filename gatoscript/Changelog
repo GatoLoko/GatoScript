@@ -1,9 +1,46 @@
+2007-09-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Añadida la consola de python al menu principal.
+ * Añadida la opcion "Usuarios" al menu de canal (hace un /who al canal).
+ * Pequeño reordenamiento de funciones.
+ * Pequeña refactorizacion en las funciones de proteccion (incompleta). Se
+   crea la funcion "expulsa"
+ * Renombrada la funcion "proteccion2_cb" a "anti_clonerx_cb" para ser mas
+   explicitos.
+
+
+2007-08-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un bug en la funcion "consejo_aleatorio_cb". Calculaba mal la
+   cantidad de consejos a tener en cuenta.
+
+
+2007-06-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un bug en la funcion "software_cb". Usaba "split(cadena)" en
+   lugar de "cadena.split()"
+ * Corregido un fallo en el menu, no existe la funcion "hora"
+
+
+2007-05-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayus_cb para que solo expulse a quien escribe
+    TODO en mayusculas.
+ * Limpiada la funcion de proteccion general del antiguo contenido anti
+    mayusculas que ya estaba en desuso.
+
+
+2007-04-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregado anti-away
+
+
 2007-04-07  GatoLoko  <GatoLoko@gmail.com>
 
  * Modificados los formatos de mensajes en algunas funciones para ser
     más consistentes.
  * Modificadas las URLs para apuntar al nuevo dominio.
- * Cambiada la numeracion a "o.16alpha"
+ * Cambiada la numeracion a "0.16alpha"
 
 
 2007-03-21  GatoLoko  <GatoLoko@gmail.com>

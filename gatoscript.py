@@ -31,7 +31,7 @@ __module_autor__ = "GatoLoko"
 # Cargamos las librerias y funciones que necesitamos
 import xchat, re, datetime, xml.dom.minidom
 from os import popen3, path
-from string import split, find
+#from string import split, find
 from random import randint
 from ConfigParser import ConfigParser
 from urllib import urlopen
@@ -60,7 +60,9 @@ global rbplayer
 global rbshellobj
 global rbshell
 
-
+#############################################################################
+# Funcion para leer la configuracion del script
+#############################################################################
 def lee_conf(seccion, opcion):
     """Lee una opcion del archivo de configuracion.
     Argumentos:
@@ -100,17 +102,6 @@ if (repro_activo == "1"):
         except ImportError:
             NoDBus = 1
             print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
-
-
-# Cargamos la lista de filtros para el antispam
-if path.exists(filtros_path):
-    spam_gen = file(filtros_path, "r")
-    filtros = spam_gen.read().split("\n")
-    spam_gen.close()
-    antispam = 1
-else:
-    print("No se puede cargar la lista de filtros, AntiSpam desactivado")
-    antispam = 0
 
 
 #############################################################################
@@ -170,6 +161,31 @@ def escribe_conf(seccion, opcion, valor):
     cp.set(seccion, opcion, valor)
     cp.write(file(configfile, "w"))
 
+def expulsa(mensaje, ban, word):
+    if mensaje != "":
+        if ban == "":
+            ban = lee_conf("protecciones", "ban")
+        if ban == "1":
+            partes = word[0][1:].split("@")
+            comando = "ban *!*@" + partes[len(partes)-1]
+            xchat.command(comando)
+        partes = word[0][1:].split("!")
+        comando = "kick " + partes[0] + mensaje
+        xchat.command(comando)
+
+
+#############################################################################
+# Cargamos la lista de filtros para el antispam
+#############################################################################
+if path.exists(filtros_path):
+    spam_gen = file(filtros_path, "r")
+    filtros = spam_gen.read().split("\n")
+    spam_gen.close()
+    antispam = 1
+else:
+    print("No se puede cargar la lista de filtros, AntiSpam desactivado")
+    antispam = 0
+    
 
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script
@@ -298,7 +314,7 @@ def gato_info_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     version = xchat.get_info("version")
-    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://www.gatoloko.org)" %(version,__module_version__))
+    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://www.gatoloko.org)" %(version, __module_version__))
     return xchat.EAT_ALL
 
 
@@ -355,19 +371,22 @@ def anti_mayusculas_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if lee_conf("protecciones", "mayusculas") == "1":
+        mensaje = ""
         cadena = word_eol[3][1:]
         accion = re.compile('^\ACTION')
         if accion.match(cadena):
-                cadena = cadena[7:]
-        mayusculas = re.compile('[A-Z]')
-        porcentaje = (len(mayusculas.findall(cadena))*100)/len(cadena)
-        #Si mas del 25% de los caracteres son letras mayusculas
-        #if (len(cadena) > 40 and porcentaje > 30):
-        #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
-        #        noban = 1
-        #elif len(cadena) > 20 and porcentaje > 40:
-        #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
-        #        noban = 1
+            cadena = cadena[7:]
+        if (len(cadena) > 10 and cadena.isupper() == True):
+            mensaje = " Abuso de mayusculas"
+        expulsa(mensaje, ban, word)
+        #if mensaje != "":
+            #if lee_conf("protecciones", "ban") == "1":
+                #partes = word[0][1:].split("@")
+                #comando = "ban *!*@" + partes[len(partes)-1]
+                #xchat.command(comando)
+            #partes = word[0][1:].split("!")
+            #comando = "kick " + partes[0] + mensaje
+            #xchat.command(comando)
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):
@@ -388,37 +407,22 @@ def proteccion_cb(word, word_eol, userdata):
     ]
     cantidad = len(webs)
     for i in range(cantidad):
-        if find(word_eol[3], webs[i]) > 0:
-            noban = 0
+        #if find(word_eol[3], webs[i]) > 0:
+        if word_eol[3].find(webs[i]) > 0:
+            ban = 0
             mensaje = " El spam es molesto, metetelo por el culo"
-    cadena = word_eol[3][1:]
-    accion = re.compile('^\ACTION')
-    if accion.match(cadena):
-            cadena = cadena[7:]
-    mayusculas = re.compile('[A-Z]')
-    porcentaje = (len(mayusculas.findall(cadena))*100)/len(cadena)
-
-    #Si mas del cierto porcentaje de los caracteres son letras mayusculas
-    #if (len(cadena) > 40 and porcentaje > 30):
-    #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
-    #        noban = 1
-    #elif len(cadena) > 20 and porcentaje > 40:
-    #        mensaje = " Abuso de mayusculas (" + str(porcentaje) + "% del texto)"
-    #        noban = 1
-
-    if mensaje <> "":
-        if noban == 0:
-            partes = word[0][1:].split("@")
-            comando = "ban *!*@" + partes[len(partes)-1]
-            xchat.command(comando)
-        partes = word[0][1:].split("!")
-        comando = "kick " + partes[0] + mensaje
-        xchat.command(comando)
+    away = [ "autoaway" ]
+    cantidad = len(away)
+    for i in range(cantidad):
+        if word_eol[3].find(webs[i]) > 0:
+            ban = 0
+            mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+    expulsa(mensaje, ban, word)
 
     return xchat.EAT_NONE
 
 # Anti ClonerX  (on JOIN)
-def proteccion2_cb(word, word_eol, userdata):
+def anti_clonerx_cb(word, word_eol, userdata):
     """Detecta nicks que entran al canal con un indent que concuerde con los de ClonerX y los banea para evitar el flood
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
@@ -436,6 +440,21 @@ def proteccion2_cb(word, word_eol, userdata):
         mensaje = "Ident de ClonerX en " + canal
         gprint(mensaje)
     return xchat.EAT_NONE
+    
+def anti_away_cb(word, word_eol, userdata):
+    """Detecta mensajes de ausencia en el canal y expulsa al usuario
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se envia a un hook (ignorado)
+    """
+    away = [ "autoaway" ]
+    cantidad = len(away)
+    for i in range(cantidad):
+        if word_eol[3].find(webs[i]) > 0:
+            noban = 0
+            mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+    
 
 
 #############################################################################
@@ -449,7 +468,7 @@ def resaltados_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     resaltados = xchat.get_prefs("irc_extra_hilight")
-    if resaltados <> '':
+    if resaltados != '':
         resaltados = xchat.get_prefs("irc_extra_hilight").split(",")
         canal = word[2]
         if canal[0] == "#":
@@ -562,7 +581,7 @@ def antispam_list_cb(word, word_eol, userdata):
     cuenta_lineas = 1
     priv_linea("\nLista de filtros:")
     for filtro in filtros[0:len(filtros)-1]:
-        mensaje = "Filtro %s: %s" %(cuenta_lineas,filtro)
+        mensaje = "Filtro %s: %s" % (cuenta_lineas, filtro)
         priv_linea(mensaje)
         cuenta_lineas = cuenta_lineas + 1
     priv_linea("")
@@ -699,7 +718,7 @@ def media_cb(word, word_eol, userdata):
                         else:
                             canales = "estereo"
                         #print str(bitrate) + " " + str(frecuencia) + " " + str(canales) + " " + str(longitud)
-                        xchat.command("me esta escuchando: %s - %s (%s\%s\%s\%s) - %s" % (posicion+1,titulo,tiempo,bitrate,frecuencia,canales,version[0:len(version)-1]))
+                        xchat.command("me esta escuchando: %s - %s (%s\%s\%s\%s) - %s" % (posicion+1, titulo, tiempo, bitrate, frecuencia, canales, version[0:len(version)-1]))
                     del entrada, salida, error, error2
                 elif (userdata == "reproductor"):
                     entrada, salida, error = popen3("xmms --version", "r")
@@ -759,7 +778,7 @@ def media_cb(word, word_eol, userdata):
                                 minutos = int(tiempo/60)
                                 segundos = tiempo-(minutos*60)
                                 longitud = str(minutos) + "m" + str(segundos) + "s"
-                            xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
+                            xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Rhythmbox"))
                     elif (userdata == "reproductor"):
                         gprint("Esta utilizando Rhythmbox")
                     elif (userdata == "siguiente"):
@@ -801,7 +820,7 @@ def media_cb(word, word_eol, userdata):
                             minutos = int(tiempo/60)
                             segundos = tiempo-(minutos*60)
                             longitud = str(minutos) + "m" + str(segundos) + "s"
-                        xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista,titulo,longitud,"Rhythmbox"))
+                        xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Rhythmbox"))
                     elif (userdata == "reproductor"):
                         gprint("Esta utilizando Banshee")
                     elif (userdata == "siguiente"):
@@ -838,10 +857,10 @@ def consejo_aleatorio_cb(word, word_eol, userdata):
         archivo = open(consejos_path, "r")
         consejos = archivo.readlines()
         lin = len(consejos)
-        aleatorio = randint(0, lin)
+        aleatorio = randint(0, lin -1)
         consejo = consejos[aleatorio]
         xchat.command("say %s" %consejo[0:len(consejo)-1])
-        archivo.close
+        archivo.close()
     else:
         gprint("Falta el archivo de consejos")
     return xchat.EAT_ALL
@@ -1031,14 +1050,14 @@ def uptime_cb(word, word_eol, userdata):
     archivo_uptime = open("/proc/uptime", "r")
     lineas_uptime = archivo_uptime.readline()
     archivo_uptime.close()
-    uptime = eval((split(lineas_uptime))[0])
+    uptime = eval((lineas_uptime.split())[0])
     resto_dias = uptime % 86400
     dias = int(uptime / 86400)
     if dias < 1:
         horas = int(uptime / 3600)
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say ( Uptime ) %s horas y %s minutos" %(horas,minutos))
+        xchat.command("say ( Uptime ) %s horas y %s minutos" %(horas, minutos))
     else:
         if dias > 1:
             cadena_dias = "dias"
@@ -1047,7 +1066,7 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(resto_dias / 3600)
         resto_horas = int(resto_dias % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say ( Uptime ) %s %s, %s horas y %s minutos" %(dias,cadena_dias,horas,minutos))
+        xchat.command("say ( Uptime ) %s %s, %s horas y %s minutos" %(dias, cadena_dias, horas, minutos))
     return xchat.EAT_ALL
 
 def sistema_cb(word, word_eol, userdata):
@@ -1071,7 +1090,7 @@ def sistema_cb(word, word_eol, userdata):
         else:
             kernel = salida.readlines()
             kernel2 = (kernel[0])[0:len(kernel[0])-1]
-        xchat.command("say ( Distribucion ) %s   ( Version ) %s %s   ( Kernel ) %s" %(distro,version,codigo,kernel2))
+        xchat.command("say ( Distribucion ) %s   ( Version ) %s %s   ( Kernel ) %s" %(distro, version, codigo, kernel2))
     else:
         gprint("La distribucion no cumple con LSB")
     return xchat.EAT_ALL
@@ -1111,7 +1130,7 @@ def software_cb(word, word_eol, userdata):
         X11 = "Indeterminable"
     else:
         xserver = salida.readlines()
-        servidor = split(xserver[0])
+        servidor = xserver[0].split()
     entrada, salida, error = popen3('xdpyinfo | grep "vendor string"', "r")
     error2 = error.readlines()
     if len(error2) > 0:
@@ -1120,7 +1139,7 @@ def software_cb(word, word_eol, userdata):
         xversion = "Indeterminable"
     else:
         x_version = salida.readlines()
-        xversion = split(x_version[0])
+        xversion = x_version[0].split()
         X11 = xversion[3] + " " + servidor[len(servidor)-1]
     entrada, salida, error = popen3("gcc --version", "r")
     error2 = error.readlines()
@@ -1133,9 +1152,9 @@ def software_cb(word, word_eol, userdata):
         if gcc_out[0] == "bash: gcc: command not found":
             gcc = "No instalado"
         else:
-            gcc_partes = split(gcc_out[0])
+            gcc_partes = gcc_out[0].split()
             gcc = gcc_partes[2]
-    xchat.command("say ( Sistema ) %s - ( LIBC ) %s - ( X11 ) %s - ( GCC ) %s" %(sistema,libc,X11,gcc))
+    xchat.command("say ( Sistema ) %s - ( LIBC ) %s - ( X11 ) %s - ( GCC ) %s" %(sistema, libc, X11, gcc))
     del entrada, salida, error
     return xchat.EAT_ALL
 
@@ -1177,14 +1196,15 @@ def pc_cb(word, word_eol, userdata):
     unidad = partes[len(partes)-1]
     # Free
     partes = archivo[1].split(":")[1][:-1].split(" ")
-    free = partes[len(partes)-2]
+    freemem = partes[len(partes)-2]
     # Buffer
     partes = archivo[2].split(":")[1][:-1].split(" ")
-    buffer = partes[len(partes)-2]
+    bufmem = partes[len(partes)-2]
     # Cache
     partes = archivo[3].split(":")[1][:-1].split(" ")
-    cache = partes[len(partes)-2]
-    usada = int(free) + int(buffer) + int(cache)
+    cachemem = partes[len(partes)-2]
+    # Usada y libre
+    usada = int(freemem) + int(bufmem) + int(cachemem)
     libre = int(memoria) - usada
     # Mensaje
     mensaje = "[Informacion del PC] CPU: " + cpu + " - Velocidad: " + velocidad + "MHz - Memoria instalada: " + memoria + unidad + " - Memoria usada: " + str(libre) + unidad
@@ -1192,14 +1212,14 @@ def pc_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def red_cb(word, word_eol, userdata):
-	"""Muestra en el canal activo, informacion sobre la red.
+    """Muestra en el canal activo, informacion sobre la red.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-	hostname = file("/etc/hostname").read()
-	gprint("( Hostname ) " + hostname)
+    hostname = file("/etc/hostname").read()
+    gprint("( Hostname ) " + hostname)
 
 
 #############################################################################
@@ -1215,7 +1235,7 @@ def kbtemporal_cb(word, word_eol, userdata):
     #gprint(len(word_eol))
     if (len(word_eol) > 2):
         xchat.command("ban %s!*@*" %word[1])
-        xchat.command("kick %s Expulsado 5 minutos (%s)" %(word[1],word_eol[2]))
+        xchat.command("kick %s Expulsado 5 minutos (%s)" %(word[1], word_eol[2]))
         xchat.command("timer -repeat 1 300 unban %s!*@*" %word[1])
     elif (len(word_eol) > 1):
         xchat.command("ban %s!*@*" %word[1])
@@ -1253,7 +1273,7 @@ def amule_cb(word, word_eol, userdata):
             else:
                 total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
             version = lineas_amule[13][0:len(lineas_amule[13]) - 1]
-            xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version,vdescarga,vsubida,total_descargado))
+            xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version, vdescarga, vsubida, total_descargado))
     else:
         gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
     return xchat.EAT_ALL
@@ -1274,7 +1294,7 @@ def azureus_cb(word, word_eol, userdata):
         vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
         subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
         vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga,vsubida))
+        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga, vsubida))
         del descarga, vdescarga, subida, vsubida, glob, stats, dom1
     else:
         gprint("No existe el archivo " + azureusstats + ", compruebe su configuracion de Azureus")
@@ -1371,6 +1391,12 @@ def opciones_cb(word, word_eol, userdata):
                 gprint("Controles multimedia desactivados")
             else:
                 gprint("Parametro erroneo")
+        elif word[1] == "debug":
+            if word[2] == "on":
+                escribe_conf("comun", "debug", "1")
+                xchat.command("py console")
+            elif word[2] == "off":
+                escribe_conf("comun", "debug", "0")
     else:
         gprint("No mostramos nada")
     return xchat.EAT_ALL
@@ -1392,9 +1418,10 @@ def unload_cb(userdata):
     xchat.unhook(hook12)
     # Protecciones
     xchat.unhook(hookproteccion)
-    xchat.unhook(hookjoin)
+    xchat.unhook(hookanticlonerx)
     xchat.unhook(hootantictcp)
     xchat.unhook(hookantihoygan)
+    xchat.unhook(hookantimayusculas)
     # Resaltados
     xchat.unhook(hookresaltados)
     # Antispam
@@ -1474,9 +1501,10 @@ hook11 = xchat.hook_command('gato', gato_cb)
 hook12 = xchat.hook_command('ginfo', gato_info_cb)
 # Protecciones
 hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None)
-hookjoin = xchat.hook_server('JOIN', proteccion2_cb, userdata=None)
+hookanticlonerx = xchat.hook_server('JOIN', anti_clonerx_cb, userdata=None)
 hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 hookantihoygan = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
+hookantimayusculas = xchat.hook_server('PRIVMSG', anti_mayusculas_cb, userdata=None)
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
 # Antispam
