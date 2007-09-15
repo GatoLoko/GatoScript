@@ -330,19 +330,21 @@ def anti_ctcp_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if lee_conf("protecciones", "ctcps") == "1":
-        ctcp = re.compile("\.*\", re.IGNORECASE)
-        canales = lee_conf("protecciones", "canales").split(',')
-        if ctcp.search(word[3]):
-            for canal in canales:
-                canal_re = re.compile(canal[1:], re.IGNORECASE)
-                if canal_re.search(word[2]):
-                    gprint("Se ha recibido un CTCP al canal " + word[2])
-                    partes = word[0][1:].split("@")
-                    comando = "ban *!*@" + partes[len(partes)-1]
-                    xchat.command(comando)
-                    partes = word[0][1:].split("!")
-                    comando = "kick " + partes[0] + " Putos scriptkidies...."
-                    xchat.command(comando)
+        for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
+            if canal.lower() == word[2].lower():
+                ctcp = re.compile("\.*\", re.IGNORECASE)
+                canales = lee_conf("protecciones", "canales").split(',')
+                if ctcp.search(word[3]):
+                    for canal in canales:
+                        canal_re = re.compile(canal[1:], re.IGNORECASE)
+                        if canal_re.search(word[2]):
+                            gprint("Se ha recibido un CTCP al canal " + word[2])
+                            partes = word[0][1:].split("@")
+                            comando = "ban *!*@" + partes[len(partes)-1]
+                            xchat.command(comando)
+                            partes = word[0][1:].split("!")
+                            comando = "kick " + partes[0] + " Putos scriptkidies...."
+                            xchat.command(comando)
     return xchat.EAT_NONE
 
 def anti_hoygan_cb(word, word_eol, userdata):
@@ -353,14 +355,16 @@ def anti_hoygan_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if lee_conf("protecciones", "hoygan") == "1":
-        hoyga = re.compile("hoyga", re.IGNORECASE)
-        if hoyga.search(word_eol[3]):
-            #noban = 0
-            #mensaje = " Los 'HOYGAN' no son graciosos"
-            partes = word[0][1:].split("@")
-            xchat.command("ban *!*@" + partes[len(partes)-1])
-            partes = word[0][1:].split("!")
-            xchat.command("kick " + partes[0] + " Los hoygan no son graciosos")
+        for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
+            if canal.lower() == word[2].lower():
+                hoyga = re.compile("hoyga", re.IGNORECASE)
+                if hoyga.search(word_eol[3]):
+                    #noban = 0
+                    #mensaje = " Los 'HOYGAN' no son graciosos"
+                    partes = word[0][1:].split("@")
+                    xchat.command("ban *!*@" + partes[len(partes)-1])
+                    partes = word[0][1:].split("!")
+                    xchat.command("kick " + partes[0] + " Los hoygan no son graciosos")
     return xchat.EAT_NONE
 
 def anti_mayusculas_cb(word, word_eol, userdata):
@@ -371,22 +375,16 @@ def anti_mayusculas_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if lee_conf("protecciones", "mayusculas") == "1":
-        mensaje = ""
-        cadena = word_eol[3][1:]
-        accion = re.compile('^\ACTION')
-        if accion.match(cadena):
-            cadena = cadena[7:]
-        if (len(cadena) > 10 and cadena.isupper() == True):
-            mensaje = " Abuso de mayusculas"
-        expulsa(mensaje, ban, word)
-        #if mensaje != "":
-            #if lee_conf("protecciones", "ban") == "1":
-                #partes = word[0][1:].split("@")
-                #comando = "ban *!*@" + partes[len(partes)-1]
-                #xchat.command(comando)
-            #partes = word[0][1:].split("!")
-            #comando = "kick " + partes[0] + mensaje
-            #xchat.command(comando)
+        for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
+            if canal.lower() == word[2].lower():
+                mensaje = ""
+                cadena = word_eol[3][1:]
+                accion = re.compile('^\ACTION')
+                if accion.match(cadena):
+                    cadena = cadena[7:]
+                if (len(cadena) > 10 and cadena.isupper() == True):
+                    mensaje = " Abuso de mayusculas"
+                expulsa(mensaje, "1", word)
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):
@@ -396,29 +394,16 @@ def proteccion_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    mensaje = ""
-    noban = 0
-    webs = [
-    "http://www.geocities.com/octubre122005",
-    "www.dominiosteca.biz",
-    "es-facil.com/ganar",
-    "WWW.ELECTRIKSOUND.COM",
-    "http://www.fororelax.net"
-    ]
-    cantidad = len(webs)
-    for i in range(cantidad):
-        #if find(word_eol[3], webs[i]) > 0:
-        if word_eol[3].find(webs[i]) > 0:
-            ban = 0
-            mensaje = " El spam es molesto, metetelo por el culo"
-    away = [ "autoaway" ]
-    cantidad = len(away)
-    for i in range(cantidad):
-        if word_eol[3].find(webs[i]) > 0:
-            ban = 0
-            mensaje = " Quita los mensajes de away automaticos, si no estas callate"
-    expulsa(mensaje, ban, word)
-
+    if lee_conf("protecciones", "spam") == "1":
+        mensaje = ""
+        noban = 0
+        webs = lee_conf("protecciones", "spamstr").split(",")
+        cantidad = len(webs)
+        for i in range(cantidad):
+            #if find(word_eol[3], webs[i]) > 0:
+            if word_eol[3].find(webs[i]) > 0:
+                ban = 0
+                mensaje = " Spam"
     return xchat.EAT_NONE
 
 # Anti ClonerX  (on JOIN)
@@ -454,6 +439,14 @@ def anti_away_cb(word, word_eol, userdata):
         if word_eol[3].find(webs[i]) > 0:
             noban = 0
             mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+    return xchat.EAT_NONE
+    #away = [ "autoaway" ]
+    #cantidad = len(away)
+    #for i in range(cantidad):
+        #if word_eol[3].find(webs[i]) > 0:
+            #ban = 0
+            #mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+    #expulsa(mensaje, "1", word)
     
 
 
