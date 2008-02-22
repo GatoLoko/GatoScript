@@ -1,3 +1,31 @@
+2008-02-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * Cambios en la gestion de remotos para banshee
+ * Revision general de codigo
+
+
+2008-01-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada funcion anti_notice_cb para detectar y expulsar a quienes envian
+   notices de forma masiva a canales.
+ * Modificada la funcion anti_hoygan_cb para que actue tambien ante la cadena
+   "h 0 y g 4 n" usada por algunos para saltarse la norma.
+
+
+2007-11-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificado el mensaje de expulsion para los hoygan
+ * Agregado el encabezado de seccion a los mensajes de ayuda de antispam
+ * Completada y activada la funcion anti_away_cb
+ * Mejorada la funcion proteccion_cb
+ 
+
+2007-09-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayusculas_cb para tener en cuenta solo los
+   caracteres alfabeticos.
+
+
 2007-09-14  GatoLoko  <GatoLoko@gmail.com>
 
  * Extraida la lista de webs consideradas spam al archivo de configuracion.

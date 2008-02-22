@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.16alpha"
+__module_version__ = "0.16beta1"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -50,11 +50,11 @@ configfile = gatodir + "gatoscript.conf"
 rssfile = gatodir + "rss.conf"
 amulesig = home + "/.aMule/amulesig.dat"
 azureusstats = home + "/.azureus/Azureus_Stats.xml"
+cp = ConfigParser()
 NoXmms = 0
 NoDBus = 0
 global DBusIniciado
 DBusIniciado = 0
-cp = ConfigParser()
 global rbplayerobj
 global rbplayer
 global rbshellobj
@@ -230,6 +230,7 @@ def gato_cb(word, word_eol, userdata):
         elif word[1] == "-a":
             mensajes = [
             "",
+            "Antispam:",
             "    /antiadd <cadena>: Añade una cadena al filtro AntiSpam",
             "    /antidel <cadena>: Elimina una cadena del filtro AntiSpam",
             "    /antilist:     Muestra la lista de filtros",
@@ -323,7 +324,7 @@ def gato_info_cb(word, word_eol, userdata):
 #############################################################################
 # Proteccion multiple en contra mensajes molestos (on PRIVMSG)
 def anti_ctcp_cb(word, word_eol, userdata):
-    """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
+    """Detecta el envio de CTCPs a canales protegidos y expulsa al autor.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -346,6 +347,25 @@ def anti_ctcp_cb(word, word_eol, userdata):
                             comando = "kick " + partes[0] + " Putos scriptkidies...."
                             xchat.command(comando)
     return xchat.EAT_NONE
+    
+def anti_notice_cb(word, word_eol, userdata):
+    """Detecta el envio de NOTICEs a canales protegidos y expulsa al autor.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    """
+    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #cheersing :hola
+    canales = lee_conf("protecciones", "canales").split(',')
+    for canal in canales:
+        if word[2].lower() == canal.lower():
+            #partes = word[0][1:].split("@")
+            #comando = "ban *!*@" + partes[len(partes)-1]
+            #xchat.command(comando)
+            partes = word[0][1:].split("!")
+            #comando = "kick " + partes[0] + " Putos scriptkidies...."
+            comando = "kickban " + partes[0] + " Putos scriptkidies...."
+            xchat.command(comando)
+    return xchat.EAT_NONE
 
 def anti_hoygan_cb(word, word_eol, userdata):
     """Detecta la palabra "hoygan" en los canales y banea al autor
@@ -358,19 +378,20 @@ def anti_hoygan_cb(word, word_eol, userdata):
         for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
             if canal.lower() == word[2].lower():
                 hoyga = re.compile("hoyga", re.IGNORECASE)
-                if hoyga.search(word_eol[3]):
+                hoyga2 = re.compile("h 0 y g 4 n", re.IGNORECASE)
+                if hoyga.search(word_eol[3]) or hoyga2.search(word_eol[3]):
                     #noban = 0
                     #mensaje = " Los 'HOYGAN' no son graciosos"
                     partes = word[0][1:].split("@")
                     xchat.command("ban *!*@" + partes[len(partes)-1])
                     partes = word[0][1:].split("!")
-                    xchat.command("kick " + partes[0] + " Los hoygan no son graciosos")
+                    xchat.command("kick " + partes[0] + " Los hoygan son la version electronica del payaso de la clase y no son graciosos")
     return xchat.EAT_NONE
 
 def anti_mayusculas_cb(word, word_eol, userdata):
     """Detecta el abuso de mayusculas en los canales y banea al autor
     Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
@@ -382,28 +403,31 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                 accion = re.compile('^\ACTION')
                 if accion.match(cadena):
                     cadena = cadena[7:]
-                if (len(cadena) > 10 and cadena.isupper() == True):
+                letrasre = re.compile('[a-zA-Z]')
+                letras = letrasre.findall(cadena)
+                abuso = True
+                for letra in letras:
+                    if letra.islower() == True:
+                        abuso = False
+                if (len(letras)) > 10 and abuso == True:
                     mensaje = " Abuso de mayusculas"
-                expulsa(mensaje, "1", word)
+                    expulsa(mensaje, "1", word)
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):
-    """Detecta el envio de CTCPs a #ubuntu y #gatoscript y expulsa al autor
+    """Detecta el envio de SPAM a canales y expulsa al autor
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if lee_conf("protecciones", "spam") == "1":
-        mensaje = ""
-        noban = 0
-        webs = lee_conf("protecciones", "spamstr").split(",")
-        cantidad = len(webs)
-        for i in range(cantidad):
-            #if find(word_eol[3], webs[i]) > 0:
-            if word_eol[3].find(webs[i]) > 0:
-                ban = 0
+        spamstr = lee_conf("protecciones", "spamstr").split(",")
+        for i in range(len(spamstr)):
+            if word_eol[3].find(spamstr[i]) > 0:
+                ban = "1"
                 mensaje = " Spam"
+                expulsa(mensaje, ban, word)
     return xchat.EAT_NONE
 
 # Anti ClonerX  (on JOIN)
@@ -425,6 +449,10 @@ def anti_clonerx_cb(word, word_eol, userdata):
         mensaje = "Ident de ClonerX en " + canal
         gprint(mensaje)
     return xchat.EAT_NONE
+
+def anti_drone_cb(word, word_eol, userdata):
+    #print word_eol[0]
+    return xchat.EAT_NONE
     
 def anti_away_cb(word, word_eol, userdata):
     """Detecta mensajes de ausencia en el canal y expulsa al usuario
@@ -433,21 +461,14 @@ def anti_away_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se envia a un hook (ignorado)
     """
-    away = [ "autoaway" ]
-    cantidad = len(away)
-    for i in range(cantidad):
-        if word_eol[3].find(webs[i]) > 0:
-            noban = 0
-            mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+    if lee_conf("protecciones", "away") == "1":
+        awaystr = lee_conf("protecciones", "awaystr").split(",")
+        for i in range(len(awaystr)):
+            if word_eol[3].find(awaystr[i]) > 0:
+                ban = "1"
+                mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+                expulsa(mensaje, ban, word)
     return xchat.EAT_NONE
-    #away = [ "autoaway" ]
-    #cantidad = len(away)
-    #for i in range(cantidad):
-        #if word_eol[3].find(webs[i]) > 0:
-            #ban = 0
-            #mensaje = " Quita los mensajes de away automaticos, si no estas callate"
-    #expulsa(mensaje, "1", word)
-    
 
 
 #############################################################################
@@ -791,44 +812,47 @@ def media_cb(word, word_eol, userdata):
                     else:
                         mensaje = "La funcion " + userdata + " no esta implementada"
                         gprint(mensaje)
-        elif (reproductor == "rhythmbox"):
+        elif (reproductor == "banshee"):
+            #global DBusIniciado
+            #global rbplayerobj
+            #global rbplayer
+            #global rbshellobj
+            #global rbshell
             if (NoDBus == 1):
                 gprint("No esta disponible la libreria de acceso a Banshee")
             else:
-                if DBusIniciado == 0:
-                    bus = dbus.SessionBus()
-                    bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
-                    banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
-                    gprint("Conectando con Banshee, por favor intentelo otra vez")
-                    DBusIniciado = 1
-                else:
-                    if (userdata == "escuchando"):
-                        titulo = banshee.GetPlayingTitle().encode('utf-8')
-                        artista = banshee.GetPlayingArtist().encode('utf-8')
-                        #album = banshee.GetPlayingAlbum().encode('utf-8')
-                        tiempo = banshee.GetPlayingDuration()
-                        if tiempo < 0:
-                            longitud = "Radio"
-                        else:
-                            minutos = int(tiempo/60)
-                            segundos = tiempo-(minutos*60)
-                            longitud = str(minutos) + "m" + str(segundos) + "s"
-                        xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Rhythmbox"))
-                    elif (userdata == "reproductor"):
-                        gprint("Esta utilizando Banshee")
-                    elif (userdata == "siguiente"):
-                        banshee.Next()
-                    elif (userdata == "anterior"):
-                        banshee.Previous()
-                    elif (userdata == "play"):
-                        banshee.Play()
-                    elif (userdata == "pausa"):
-                        banshee.Pause()
-                    elif (userdata == "stop"):
-                        banshee.Stop()
+                bus = dbus.SessionBus()
+                bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
+                banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
+                #gprint("Conectando con Banshee, por favor intentelo otra vez")
+                #DBusIniciado = 1
+                if (userdata == "escuchando"):
+                    titulo = banshee.GetPlayingTitle().encode('utf-8')
+                    artista = banshee.GetPlayingArtist().encode('utf-8')
+                    #album = banshee.GetPlayingAlbum().encode('utf-8')
+                    tiempo = banshee.GetPlayingDuration()
+                    if tiempo < 0:
+                        longitud = "Radio"
                     else:
-                        mensaje = "La funcion " + userdata + " no esta implementada"
-                        gprint(mensaje)
+                        minutos = int(tiempo/60)
+                        segundos = tiempo-(minutos*60)
+                        longitud = str(minutos) + "m" + str(segundos) + "s"
+                    xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Banshee"))
+                elif (userdata == "reproductor"):
+                    gprint("Esta utilizando Banshee")
+                elif (userdata == "siguiente"):
+                    banshee.Next()
+                elif (userdata == "anterior"):
+                    banshee.Previous()
+                elif (userdata == "play"):
+                    banshee.Play()
+                elif (userdata == "pausa"):
+                    banshee.Pause()
+                elif (userdata == "stop"):
+                    banshee.Stop()
+                else:
+                    mensaje = "La funcion " + userdata + " no esta implementada"
+                    gprint(mensaje)
         else:
             print "El reproductor seleccionado no esta soportado (aun)"
     else:
@@ -914,7 +938,7 @@ def noayudar_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def planteamiento_cb(word, word_eol, userdata):
-    xchat.command("say Consejos del Gato Nº3: Cuando planteas un problema o una duda, procura hacerte entender lo mas claramente posible, incluyendo la informacion que pueda afectar a tu duda y expresandote bien (nada de 'q' o 'k' en vez de 'que' y mierdas asi).")
+    xchat.command("say Consejos del Gato Nº3: Cuando planteas un problema o una duda, procura hacerte entender lo mas claramente posible, incluyendo toda la informacion que puedas y expresandote bien (nada de 'q' o 'k' en vez de 'que' y mierdas asi). Procura indicar los mensajes de error EXACTOS, no lo que crees que significan.")
     return xchat.EAT_ALL
 
 def privado_cb(word, word_eol, userdata):
@@ -1407,21 +1431,24 @@ def unload_cb(userdata):
     # Controles remotos
     xchat.unhook(hookremoto)
     # Informacion del script
-    xchat.unhook(hook11)
-    xchat.unhook(hook12)
+    xchat.unhook(hookgato)
+    xchat.unhook(hookginfo)
     # Protecciones
     xchat.unhook(hookproteccion)
+    xchat.unhook(hookantinotice)
     xchat.unhook(hookanticlonerx)
+    xchat.unhook(hookantidrone)
     xchat.unhook(hootantictcp)
     xchat.unhook(hookantihoygan)
     xchat.unhook(hookantimayusculas)
+    xchat.unhook(hookantiaway)
     # Resaltados
     xchat.unhook(hookresaltados)
     # Antispam
-    xchat.unhook(hook21)
-    xchat.unhook(hook22)
-    xchat.unhook(hook23)
-    xchat.unhook(hook24)
+    xchat.unhook(hookantispam)
+    xchat.unhook(hookantiadd)
+    xchat.unhook(hookantilist)
+    xchat.unhook(hookantidel)
     # Whois
     xchat.unhook(raw301)
     xchat.unhook(raw307)
@@ -1451,33 +1478,34 @@ def unload_cb(userdata):
     xchat.unhook(hookamule)
     xchat.unhook(hookazureus)
     # Consejos
-    xchat.unhook(hook31)
-    xchat.unhook(hook32)
-    xchat.unhook(hook33)
-    xchat.unhook(hook34)
-    xchat.unhook(hook35)
-    xchat.unhook(hook36)
-    xchat.unhook(hook37)
-    xchat.unhook(hook38)
-    xchat.unhook(hook39)
-    xchat.unhook(hook30)
+    xchat.unhook(hookconsejos)
+    xchat.unhook(hookconsejo)
+    xchat.unhook(hookpreguntar)
+    xchat.unhook(hookayudar)
+    xchat.unhook(hooknoayudar)
+    xchat.unhook(hookplanteamiento)
+    xchat.unhook(hookprivado)
+    xchat.unhook(hookweb)
+    xchat.unhook(hookrepos)
+    xchat.unhook(hookautent)
     # Lector de feeds RSS
     xchat.unhook(hookrss)
     xchat.unhook(hooklistarss)
     xchat.unhook(hookrssadd)
     xchat.unhook(hookrssdel)
     # Informacion del sistema
-    xchat.unhook(hook51)
-    xchat.unhook(hook52)
-    xchat.unhook(hook53)
+    xchat.unhook(hookgup)
+    xchat.unhook(hookgos)
+    xchat.unhook(hookgsoft)
+    xchat.unhook(hookfecha)
     xchat.unhook(hookpc)
     xchat.unhook(hooknet)
     # Kick/Ban temporal
-    xchat.unhook(hook71)
+    xchat.unhook(hookkbtemp)
     # Opciones del script
     xchat.unhook(hookopciones)
     # Descarga
-    xchat.unhook(hook81)
+    xchat.unhook(hookunload)
     xchat.command("menu del GatoScript")
     print "Se ha descargado GatoScript %s" % __module_version__
 
@@ -1490,37 +1518,40 @@ def unload_cb(userdata):
 # Controles remotos
 hookremoto = xchat.hook_print('Channel Message', remoto_cb)
 # Informacion del script
-hook11 = xchat.hook_command('gato', gato_cb)
-hook12 = xchat.hook_command('ginfo', gato_info_cb)
+hookgato = xchat.hook_command('gato', gato_cb)
+hookginfo = xchat.hook_command('ginfo', gato_info_cb)
 # Protecciones
 hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None)
+hookantinotice = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 hookanticlonerx = xchat.hook_server('JOIN', anti_clonerx_cb, userdata=None)
+hookantidrone = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 hookantihoygan = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
 hookantimayusculas = xchat.hook_server('PRIVMSG', anti_mayusculas_cb, userdata=None)
+hookantiaway = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
 # Antispam
-hook21 = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None)
-hook22 = xchat.hook_command('antiadd', antispam_add_cb)
-hook23 = xchat.hook_command('antilist', antispam_list_cb)
-hook24 = xchat.hook_command('antidel', antispam_del_cb)
+hookantispam = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None)
+hookantiadd = xchat.hook_command('antiadd', antispam_add_cb)
+hookantilist = xchat.hook_command('antilist', antispam_list_cb)
+hookantidel = xchat.hook_command('antidel', antispam_del_cb)
 # Whois
-raw301 = xchat.hook_server('301', whois_cb, userdata=None, priority=10) # Mensaje de AWA
+raw301 = xchat.hook_server('301', whois_cb, userdata=None, priority=10) # Mensaje de AWAY
 raw307 = xchat.hook_server('307', whois_cb, userdata=None, priority=10) # whoisregnick
 raw310 = xchat.hook_server('310', whois_cb, userdata=None, priority=10) # whoishelpop
-raw311 = xchat.hook_server('311', whois_cb, userdata=None, priority=10) #whoisuser
-raw312 = xchat.hook_server('312', whois_cb, userdata=None, priority=10) #whoisserver
-raw313 = xchat.hook_server('313', whois_cb, userdata=None, priority=10) #whoisoperator
-raw316 = xchat.hook_server('316', whois_cb, userdata=None, priority=10) #whoischanop
-raw317 = xchat.hook_server('317', whois_cb, userdata=None, priority=10) #whoisidle
-raw318 = xchat.hook_server('318', whois_cb, userdata=None, priority=10) #endofwhois
-raw319 = xchat.hook_server('319', whois_cb, userdata=None, priority=10) #whoischannels
-raw320 = xchat.hook_server('320', whois_cb, userdata=None, priority=10) #whoisspecial
-raw335 = xchat.hook_server('335', whois_cb, userdata=None, priority=10) #whoisbot
+raw311 = xchat.hook_server('311', whois_cb, userdata=None, priority=10) # whoisuser
+raw312 = xchat.hook_server('312', whois_cb, userdata=None, priority=10) # whoisserver
+raw313 = xchat.hook_server('313', whois_cb, userdata=None, priority=10) # whoisoperator
+raw316 = xchat.hook_server('316', whois_cb, userdata=None, priority=10) # whoischanop
+raw317 = xchat.hook_server('317', whois_cb, userdata=None, priority=10) # whoisidle
+raw318 = xchat.hook_server('318', whois_cb, userdata=None, priority=10) # endofwhois
+raw319 = xchat.hook_server('319', whois_cb, userdata=None, priority=10) # whoischannels
+raw320 = xchat.hook_server('320', whois_cb, userdata=None, priority=10) # whoisspecial
+raw335 = xchat.hook_server('335', whois_cb, userdata=None, priority=10) # whoisbot
 raw342 = xchat.hook_server('342', whois_cb, userdata=None, priority=10) # Solo admite privados de usuarios registrados
-raw378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10) #whoishost (ip virtual)
-raw379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10) #whoismodes
+raw378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10) # whoishost (ip virtual)
+raw379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10) # whoismodes
 raw401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10) # No such nick
 # Media
 hookescuchando = xchat.hook_command('escuchando', media_cb, userdata="escuchando")
@@ -1534,34 +1565,34 @@ hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
 hookamule = xchat.hook_command('amule', amule_cb)
 hookazureus = xchat.hook_command('azureus', azureus_cb)
 # Consejos
-hook31 = xchat.hook_command('consejos', consejo_aleatorio_cb)
-hook32 = xchat.hook_command('consejo', consejo_cb)
-hook33 = xchat.hook_command('preguntar', preguntar_cb)
-hook34 = xchat.hook_command('ayudar', ayudar_cb)
-hook35 = xchat.hook_command('noayudar', noayudar_cb)
-hook36 = xchat.hook_command('planteamiento', planteamiento_cb)
-hook37 = xchat.hook_command('privado', privado_cb)
-hook38 = xchat.hook_command('web', web_cb)
-hook39 = xchat.hook_command('repos', repos_cb)
-hook30 = xchat.hook_command('autent', autent_cb)
+hookconsejos = xchat.hook_command('consejos', consejo_aleatorio_cb)
+hookconsejo = xchat.hook_command('consejo', consejo_cb)
+hookpreguntar = xchat.hook_command('preguntar', preguntar_cb)
+hookayudar = xchat.hook_command('ayudar', ayudar_cb)
+hooknoayudar = xchat.hook_command('noayudar', noayudar_cb)
+hookplanteamiento = xchat.hook_command('planteamiento', planteamiento_cb)
+hookprivado = xchat.hook_command('privado', privado_cb)
+hookweb = xchat.hook_command('web', web_cb)
+hookrepos = xchat.hook_command('repos', repos_cb)
+hookautent = xchat.hook_command('autent', autent_cb)
 # RSS
 hookrss = xchat.hook_command('rss', rss_cb)
 hooklistarss = xchat.hook_command('listarss', rsslista_cb)
 hookrssadd = xchat.hook_command('rssadd', rssadd_cb)
 hookrssdel = xchat.hook_command('rssdel', rssdel_cb)
 # Informacion del sistema
-hook51 = xchat.hook_command('gup', uptime_cb)
-hook52 = xchat.hook_command('gos', sistema_cb)
-hook53 = xchat.hook_command('gsoft', software_cb)
+hookgup = xchat.hook_command('gup', uptime_cb)
+hookgos = xchat.hook_command('gos', sistema_cb)
+hookgsoft = xchat.hook_command('gsoft', software_cb)
 hookfecha = xchat.hook_command('fecha', fecha_cb)
 hookpc = xchat.hook_command('gpc', pc_cb)
 hooknet = xchat.hook_command('gnet', red_cb)
 # Kick/Ban temporal
-hook71 = xchat.hook_command('kb_temp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
+hookkbtemp = xchat.hook_command('kb_temp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
 # Opciones del script
 hookopciones = xchat.hook_command('opciones', opciones_cb)
 # Descarga del script
-hook81 = xchat.hook_unload(unload_cb)
+hookunload = xchat.hook_unload(unload_cb)
 xchat.command("load -e " + gatodir + "menu.conf")
 
 
