@@ -1,3 +1,9 @@
+2008-06-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Migrado el repositorio subversion a bazaar.
+ * Publicado como 0.16 final.
+
+
 2008-05-30  GatoLoko  <GatoLoko@gmail.com>
 
  * Corregido un fallo en la funcion media_cb que mostraba una duración

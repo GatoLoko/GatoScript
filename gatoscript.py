@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.16rc1"
+__module_version__ = "0.16"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -433,6 +433,13 @@ def anti_mayusculas_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 def anti_colores_cb(word, word_eol, userdata):
+    """Detecta el envio de mensajes con colores o realzados en los canales
+    protegidos, avisa al autor en la primera ocasion y lo expulsa si reincide
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     if lee_conf("protecciones", "colores") == "1":
         for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
             if canal.lower() == word[2].lower():
@@ -461,7 +468,6 @@ def proteccion_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    
     if lee_conf("protecciones", "spam") == "1":
         chanspam = lee_conf("protecciones", "chanspam").split(",")
         for i in range(len(chanspam)):
