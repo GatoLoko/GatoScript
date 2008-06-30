@@ -131,3 +131,10 @@ if actualizacion != 1:
     print "Instalacion completada"
 else:
     print "Actualizacion completada"
+
+# Mensajes de aviso
+
+mensaje = """Para algunas de las funciones de GatoScript son necesarias las siguientes librerias externas: python-dbus, python-xmms
+En caso de producirse algun error, instale la correspondiente."""
+
+print mensaje

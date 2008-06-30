@@ -1,7 +1,53 @@
+2008-05-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un fallo en la funcion media_cb que mostraba una duración
+   incorrecta de la reproduccion (0m0s) con algunas emisoras de radio. Ahora
+   muestra la etiqueta "Radio" y el bitrate de la emisora.
+ * Modificada la funcion media_cb para que muestre el titulo de cancion que
+   reproduce la radio en vez de dejar el campo vacio.
+
+
+2008-05-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Mejorada la funcion antispam_del_cb.
+ * Modificada la funcion anti_mayusculas_cb para que envie un mensaje publico
+   en el canal, ya que los notices parecen pasar desapercibidos para algunos
+   usuarios.
+
+
+2008-04-27  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_colores_cb para que envie un mensaje publico en
+   el canal, ya que los notices parecen pasar desapercibidos para algunos
+   usuarios.
+
+
+2008-04-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada funcion anti_colores_cb contra el uso de colores, desactivable por
+   el usuario. Notifica en la primera ocurrencia y expulsa en la segunda.
+ * Cambiadas todas las llamadas a open() por file(). Ya que se usaban las dos
+   para lo mismo, es mas coherente usar solo una.
+
+
+2008-04-13  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayusculas_cb de forma que avise al infractor en
+   la primera ocasion, y lo expulse en la segunda, basado en un parche enviado
+   por Foxandxss.
+
+
+2008-03-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregado limite de entradas al lector rss.
+ * Agregada opcion al archivo de configuracion para el limitador del rss.
+ * Actualizada la lista de webs de spam.
+
+
 2008-02-11  GatoLoko  <GatoLoko@gmail.com>
 
- * Cambios en la gestion de remotos para banshee
- * Revision general de codigo
+ * Cambios en la gestion de remotos para banshee.
+ * Revision general de codigo.
 
 
 2008-01-08  GatoLoko  <GatoLoko@gmail.com>
