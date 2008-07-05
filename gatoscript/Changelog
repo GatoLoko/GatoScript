@@ -1,3 +1,9 @@
+2008-07-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Reorganizadas algunas lineas de la funcion anti_clonerx_cb de forma que
+   solo se ejecuten cuando son necesarias.
+
+
 2008-06-30  GatoLoko  <GatoLoko@gmail.com>
 
  * Migrado el repositorio subversion a bazaar.

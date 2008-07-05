@@ -485,12 +485,12 @@ def anti_clonerx_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    canal = word[2][1:]
-    contexto = xchat.find_context(channel=canal)
     bots = re.compile("^[a-z]{1}(\d){2,4}$")
     ident = word[0][1:].split("!")[1].split("@")[0]
-    host = word[0].split("@")[1]
     if bots.search(ident):
+        canal = word[2][1:]
+        contexto = xchat.find_context(channel=canal)
+        host = word[0].split("@")[1]
         comando = "ban *!*@" + host
         contexto.command(comando)
         mensaje = "Ident de ClonerX en " + canal
