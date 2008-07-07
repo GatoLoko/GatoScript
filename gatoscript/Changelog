@@ -1,5 +1,15 @@
 2008-07-07  GatoLoko  <GatoLoko@gmail.com>
 
+ * Limpieza de codigo. Eliminadas multiples lineas de codigo antiguo que se
+   comentaron provisionalmente al ser substituidas por otras y no se
+   eliminaron cuando correspondia
+ * Agregada referencia a la seleccion de Amarok como reproductor en el texto
+   de ayuda.
+ * Simplificacion de la funcion anti_hoygan_cb.
+
+
+2008-07-07  GatoLoko  <GatoLoko@gmail.com>
+
  * Añadida seccion de codigo para gestionar Rhythmbox sin utilizar dbus. Esto
    corregiria varios bugs y simplificaria el codigo, pero depende de una
    funcionalidad aun no disponible en rhythmbox-client, asi que esta sección
