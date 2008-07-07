@@ -294,6 +294,7 @@ def gato_cb(word, word_eol, userdata):
             "    /opciones media xmms:        Selecciona XMMS como reproductor de sonido",
             "    /opciones media rhythmbox:   Selecciona Rhythmbox como reproductor de sonido",
             "    /opciones media banshee:     Selecciona Banshee como reproductor de sonido",
+            "    /opciones media amarok:      Selecciona Amarok como reproductor de sonido",
             ""]
         elif word[1] == "-r":
             mensajes = [
@@ -363,11 +364,7 @@ def anti_notice_cb(word, word_eol, userdata):
     canales = lee_conf("protecciones", "canales").split(',')
     for canal in canales:
         if word[2].lower() == canal.lower():
-            #partes = word[0][1:].split("@")
-            #comando = "ban *!*@" + partes[len(partes)-1]
-            #xchat.command(comando)
             partes = word[0][1:].split("!")
-            #comando = "kick " + partes[0] + " Putos scriptkidies...."
             comando = "kickban " + partes[0] + " Putos scriptkidies...."
             xchat.command(comando)
     return xchat.EAT_NONE
@@ -382,16 +379,8 @@ def anti_hoygan_cb(word, word_eol, userdata):
     if lee_conf("protecciones", "hoygan") == "1":
         for canal in lee_conf( "protecciones", "canales" ).split( ',' ):
             if canal.lower() == word[2].lower():
-                hoyga = re.compile("hoyga", re.IGNORECASE)
-                hoyga2 = re.compile("h 0 y g 4 n", re.IGNORECASE)
+                hoyga = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
                 if hoyga.search(word_eol[3]):
-                    #noban = 0
-                    #mensaje = " Los 'HOYGAN' no son graciosos"
-                    partes = word[0][1:].split("@")
-                    xchat.command("ban *!*@" + partes[len(partes)-1])
-                    partes = word[0][1:].split("!")
-                    xchat.command("kick " + partes[0] + " Los hoygan son la version electronica del payaso de la clase y no son graciosos")
-                if hoyga2.search(word_eol[3]):
                     partes = word[0][1:].split("@")
                     xchat.command("ban *!*@" + partes[len(partes)-1])
                     partes = word[0][1:].split("!")
@@ -420,8 +409,6 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                     if letra.islower() == True:
                         abuso = False
                 if (len(letras)) > 10 and abuso == True:
-                    #mensaje = " Abuso de mayusculas"
-                    #expulsa(mensaje, "1", word)
                     host = word[0][1:].split("@")[1]
                     if host in num_abusos_mayus:
                         num_abusos_mayus.remove(host)
@@ -457,7 +444,6 @@ def anti_colores_cb(word, word_eol, userdata):
                         expulsa(mensaje, "1", word)
                     else:
                         num_abusos_colores.append(host)
-                        #xchat.command("notice " + word[0][1:].split("!")[0] + " No uses colores en este canal, va contra las normas. La proxima vez seras expulsado")
                         xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores en este canal, va contra las normas. La proxima vez seras expulsado.")
     return xchat.EAT_NONE
 
@@ -539,7 +525,6 @@ def resaltados_cb(word, word_eol, userdata):
                     nick = word[0].split("!")[0][1:]
                     mensaje = nick + " ha mencionado '" + resaltado + "' en " + canal + ": " + "<" + nick + "> " + word_eol[3][1:]
                     priv_linea(mensaje)
-#    print resaltados
     return xchat.EAT_NONE
 
 
@@ -561,7 +546,6 @@ def antispam_reload():
         filtros = spam_gen.read().split("\n")
         spam_gen.close()
         antispam = 1
-        #print filtros
     else:
         gprint("No se puede cargar la lista de filtros, AntiSpam desactivado")
         antispam = 0
@@ -770,7 +754,6 @@ def media_cb(word, word_eol, userdata):
                             canales = "mono"
                         else:
                             canales = "estereo"
-                        #print str(bitrate) + " " + str(frecuencia) + " " + str(canales) + " " + str(longitud)
                         xchat.command("me esta escuchando: %s - %s (%s\%s\%s\%s) - %s" % (posicion+1, titulo, tiempo, bitrate, frecuencia, canales, version[0:len(version)-1]))
                     del entrada, salida, error, error2
                 elif (userdata == "reproductor"):
@@ -917,7 +900,6 @@ def media_cb(word, word_eol, userdata):
                 duracion = commands.getoutput("dcop amarok player totalTime")
                 titulo = commands.getoutput("dcop amarok player title")
                 artista = commands.getoutput("dcop amarok player artist")
-                #informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%aa - %tt (%td)"')
                 xchat.command("me esta escuchando: %s - %s (%s) - Amarok" %(artista, titulo, duracion))
             elif userdata == "anterior":
                 system("dcop amarok player prev")
@@ -1067,8 +1049,6 @@ def rss_cb(word, word_eol, userdata):
             titulo = objeto.getElementsByTagName('title')[0].firstChild.data
             enlace = objeto.getElementsByTagName('link')[0].firstChild.data
             priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
-            #comando = "msg #gatoscript Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace')
-            #xchat.command(comando)
             i = i + 1
         priv_linea("")
     del servidores, fecha, servidor
@@ -1103,8 +1083,6 @@ def rssadd_cb(word, word_eol, userdata):
     elif info_param > 2:
         gprint("De momento solo se admite un rss cada vez")
     else:
-        #comprobar si el parametro es una url
-        #if word[1] == "es una url":
         actuales = lee_conf("rss", "feeds")
         nuevos = actuales + "," + word[1]
         escribe_conf("rss", "feeds", nuevos)
@@ -1340,7 +1318,6 @@ def kbtemporal_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    #gprint(len(word_eol))
     if (len(word_eol) > 2):
         xchat.command("ban %s!*@*" %word[1])
         xchat.command("kick %s Expulsado 5 minutos (%s)" %(word[1], word_eol[2]))
@@ -1413,7 +1390,8 @@ def azureus_cb(word, word_eol, userdata):
 # Definimos las funcion de controles remotos
 #############################################################################
 def remoto_cb(word, word_eol, userdata):
-    """Esta funcion revisa los mensajes recibidos en busca de comandos remotos y cuando los encuentra, actua en consecuencia.
+    """Esta funcion revisa los mensajes recibidos en busca de comandos remotos
+    y cuando los encuentra, actua en consecuencia.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
@@ -1423,29 +1401,16 @@ def remoto_cb(word, word_eol, userdata):
     if (remotos_activo == "1"):
         #Definimos la expresion regular que actuara como activador
         consejo_rem = re.compile("!consejo", re.IGNORECASE)
-        gay_rem = re.compile ("!hola gay", re.IGNORECASE)
         hola_rem = re.compile("!hola", re.IGNORECASE)
         version_rem = re.compile("!version", re.IGNORECASE)
-    #    sexo_rem = re.compile("!sexo", re.IGNORECASE)
         #Si se ha encontrado actuamos
         if consejo_rem.search(word[1]):
             consejo_aleatorio_cb("0", "0", "0")
-        elif gay_rem.search(word[1]):
-            xchat.command("say Otra vez buscando gays que te enculen?")
         elif hola_rem.search(word[1]):
             xchat.command("say Hola %s!!" %word[0])
         elif version_rem.search(word[1]):
             software_cb("", "", "")
             xchat.command("say (GatoScript) %s" % __module_version__)
-    #    elif sexo_rem.search(word[1]):
-    #       if word[0][3:] == "_CHRiSTiN":
-    #            xchat.command("say _CHRiSTiN le echaria un polvo magico a GatoLoko pero no sabe como decirselo (GatoBotijo)")
-    #        if word[0][3:] == "VeRiTTo":
-    #            print word[0]
-    #            xchat.command("say VeRiTTo le echaria un polvo a GatoLoko pero no sabe como decirselo (GatoBotijo)")
-    #        else:
-    #            print word[0]
-    #            xchat.command("say a %s le gustaria echar un polvo pero no tiene con quien (GatoBotijo)" %word[0])
 
 
 #############################################################################
@@ -1484,36 +1449,6 @@ def opciones_cb(word, word_eol, userdata):
                 except ImportError:
                     NoXmms = 1
                     gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
-#        if word[1] == "media":
-#            if word[2] == "xmms":
-#                escribe_conf("media", "reproductor", "xmms")
-#                gprint("Se ha seleccionado XMMS")
-#                if NoXmms == 1:
-#                    try:
-#                        import xmms.control
-#                    except ImportError:
-#                        NoXmms = 1
-#                        gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
-#            elif word[2] == "rhythmbox":
-#                escribe_conf("media", "reproductor", "rhythmbox")
-#                gprint("Se ha seleccionado Rythmbox")
-#            elif word[2] == "banshee":
-#                escribe_conf("media", "reproductor", "banshee")
-#                gprint("Se ha seleccionado Banshee")
-#            elif word[2] == "on":
-#                escribe_conf("media", "activo", "1")
-#                gprint("Controles multimedia activados")
-#            elif word[2] == "off":
-#                escribe_conf("media", "activo", "0")
-#                gprint("Controles multimedia desactivados")
-#            else:
-#                gprint("Parametro erroneo")
-#        elif word[1] == "debug":
-#            if word[2] == "on":
-#                escribe_conf("comun", "debug", "1")
-#                xchat.command("py console")
-#            elif word[2] == "off":
-#                escribe_conf("comun", "debug", "0")
     else:
         gprint("No mostramos nada")
     return xchat.EAT_ALL
