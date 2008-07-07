@@ -1,3 +1,27 @@
+2008-07-07  GatoLoko  <GatoLoko@gmail.com>
+
+ * Añadida seccion de codigo para gestionar Rhythmbox sin utilizar dbus. Esto
+   corregiria varios bugs y simplificaria el codigo, pero depende de una
+   funcionalidad aun no disponible en rhythmbox-client, asi que esta sección
+   queda comentada hasta que esté disponible.
+   Ademas he creado una entrada en el bugzilla de rhythmbox notificando esto y
+   proporcionando el parche para solucionarlo, quedando a la espera de
+   aprobacion. http://bugzilla.gnome.org/show_bug.cgi?id=541725
+ * Revisado y parcialmente reescrito el instalador.
+
+
+2008-07-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Parcialmente reescrita la funcion media_cb para gestionar Banshee sin
+   utilizar dbus. Esto elimina varios bugs existentes y simplifica
+   el codigo.
+ * Agregado soporte para amarok en la funcion media_cb.
+ * Modificada la funcion opciones_cb de forma que permita editar cualquier
+   opcion de la configuracion.
+ * Modificado el menu de opciones para que utilice correctamente la funcion
+   opciones_cb de acuerdo a las nuevas modificaciones.   
+
+
 2008-07-05  GatoLoko  <GatoLoko@gmail.com>
 
  * Reorganizadas algunas lineas de la funcion anti_clonerx_cb de forma que

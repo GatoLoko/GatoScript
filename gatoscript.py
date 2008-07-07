@@ -24,13 +24,13 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.16"
+__module_version__ = "0.17alpha"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
 # Cargamos las librerias y funciones que necesitamos
-import xchat, re, datetime, xml.dom.minidom
-from os import popen3, path
+import xchat, re, datetime, xml.dom.minidom, commands
+from os import popen3, path, system
 from random import randint
 from ConfigParser import ConfigParser
 from urllib import urlopen
@@ -52,10 +52,10 @@ home = path.expanduser("~")
 amulesig = home + "/.aMule/amulesig.dat"
 azureusstats = home + "/.azureus/Azureus_Stats.xml"
 cp = ConfigParser()
-NoXmms = 0
-NoDBus = 0
 num_abusos_mayus = []
 num_abusos_colores = []
+NoXmms = 0
+NoDBus = 0
 global DBusIniciado
 DBusIniciado = 0
 global rbplayerobj
@@ -100,12 +100,12 @@ if (repro_activo == "1"):
         except ImportError:
             NoDBus = 1
             print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Rhythmbox"
-    elif (repro == "banshee"):
-        try:
-            import dbus
-        except ImportError:
-            NoDBus = 1
-            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
+#    elif (repro == "banshee"):
+#        try:
+#            import dbus
+#        except ImportError:
+#            NoDBus = 1
+#            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
 
 
 #############################################################################
@@ -359,7 +359,7 @@ def anti_notice_cb(word, word_eol, userdata):
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     """
-    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #cheersing :hola
+    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hola
     canales = lee_conf("protecciones", "canales").split(',')
     for canal in canales:
         if word[2].lower() == canal.lower():
@@ -740,11 +740,9 @@ def media_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-#    print userdata
     media_activo = lee_conf("media", "activo")
     if (media_activo == "1"):
         reproductor = lee_conf("media", "reproductor")
-#        print reproductor
         if (reproductor == "xmms"):
             if (NoXmms == 1):
                 gprint("Esta funcion esta desactivada")
@@ -858,51 +856,84 @@ def media_cb(word, word_eol, userdata):
                     else:
                         mensaje = "La funcion " + userdata + " no esta implementada"
                         gprint(mensaje)
-        elif (reproductor == "banshee"):
-            #global DBusIniciado
-            #global rbplayerobj
-            #global rbplayer
-            #global rbshellobj
-            #global rbshell
-            if (NoDBus == 1):
-                gprint("No esta disponible la libreria de acceso a Banshee")
+        # El siguiente codigo accede a rhythmbox sin necesidad de usar dbus, 
+        # pero debido a una falta de funcionalidad en "rhythmbox-client" no
+        # proporciona toda la informacion que necesitamos, asi que queda
+        # comentado hasta que acepten el parche que envie para añadir la
+        # funcionalidad necesaria. El bugreport y el parche estan disponibles
+        # en: http://bugzilla.gnome.org/show_bug.cgi?id=541725
+        #elif reproductor == "rhythmbox":
+        #    if userdata == "reproductor":
+        #        gprint("Está utilizando Rhythmbox")
+        #    elif userdata == "escuchando":
+        #        duracion = commands.getoutput('rhythmbox-client --no-present --print-playing-format %td')
+        #        if duracion == "Desconocido":
+        #            duracion = "Radio"
+        #            informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %st"')
+        #        else:
+        #            informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %tt"')
+        #        xchat.command("me esta escuchando: %s (%s) - Rhythmbox" %(informacion, duracion))
+        #    elif userdata == "anterior":
+        #        system("rhythmbox-client --previous")
+        #    elif userdata == "siguiente":
+        #        system("rhythmbox-client --next")
+        #    elif userdata == "pausa":
+        #        system("rhythmbox-client --pause")
+        #    elif userdata == "play":
+        #        system("rhythmbox-client --play")
+        #    elif userdata == "stop":
+        #        system("rhythmbox-client --stop")
+        #    else:
+        #        gprint("Funcion no soportada")
+        elif reproductor == "banshee":
+            if userdata == "reproductor":
+                gprint("Está utilizando Banshee")
+            elif userdata == "escuchando":
+                informacion = (commands.getoutput('banshee --query-artist --query-title --query-duration')).split("\n")
+                tiempo = int(informacion[0].split(": ")[1])
+                minutos = int(tiempo/60)
+                segundos = tiempo-(minutos*60)
+                duracion = str(minutos) + "m" + str(segundos) + "s"
+                #duracion = segundos
+                titulo = informacion[1].split(": ")[1]
+                artista = informacion[2].split(": ")[1]
+                xchat.command("me está escuchando: %s - %s (%s) - Banshee" %(artista, titulo, duracion))
+            elif userdata == "anterior":
+                system("banshee --previous")
+            elif userdata == "siguiente":
+                system("banshee --next")
+            elif userdata == "pausa":
+                system("banshee --pause")
+            elif userdata == "play":
+                system("banshee --play")
+            elif userdata == "stop":
+                system("banshee --pause")
             else:
-                bus = dbus.SessionBus()
-                bansheeobj = bus.get_object('org.gnome.Banshee', '/org/gnome/Banshee/Player')
-                banshee = dbus.Interface(bansheeobj, 'org.gnome.Banshee.Core')
-                #gprint("Conectando con Banshee, por favor intentelo otra vez")
-                #DBusIniciado = 1
-                if (userdata == "escuchando"):
-                    titulo = banshee.GetPlayingTitle().encode('utf-8')
-                    artista = banshee.GetPlayingArtist().encode('utf-8')
-                    #album = banshee.GetPlayingAlbum().encode('utf-8')
-                    tiempo = banshee.GetPlayingDuration()
-                    if tiempo < 0:
-                        longitud = "Radio"
-                    else:
-                        minutos = int(tiempo/60)
-                        segundos = tiempo-(minutos*60)
-                        longitud = str(minutos) + "m" + str(segundos) + "s"
-                    xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Banshee"))
-                elif (userdata == "reproductor"):
-                    gprint("Esta utilizando Banshee")
-                elif (userdata == "siguiente"):
-                    banshee.Next()
-                elif (userdata == "anterior"):
-                    banshee.Previous()
-                elif (userdata == "play"):
-                    banshee.Play()
-                elif (userdata == "pausa"):
-                    banshee.Pause()
-                elif (userdata == "stop"):
-                    banshee.Stop()
-                else:
-                    mensaje = "La funcion " + userdata + " no esta implementada"
-                    gprint(mensaje)
-        else:
-            print "El reproductor seleccionado no esta soportado (aun)"
+                gprint("Funcion no soportada")
+        if reproductor == "amarok":
+            if userdata == "reproductor":
+                gprint("Está utilizando Amarok")
+            elif userdata == "escuchando":
+                duracion = commands.getoutput("dcop amarok player totalTime")
+                titulo = commands.getoutput("dcop amarok player title")
+                artista = commands.getoutput("dcop amarok player artist")
+                #informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%aa - %tt (%td)"')
+                xchat.command("me esta escuchando: %s - %s (%s) - Amarok" %(artista, titulo, duracion))
+            elif userdata == "anterior":
+                system("dcop amarok player prev")
+            elif userdata == "siguiente":
+                system("dcop amarok player next")
+            elif userdata == "pausa":
+                system("dcop amarok player pause")
+            elif userdata == "play":
+                system("dcop amarok player play")
+            elif userdata == "stop":
+                system("dcop amarok player stop")
+            else:
+                gprint("Funcion no soportada")
     else:
-        print "Los controles multimedia estan desactivados"
+        gprint("Los controles multimedia estan desactivados")
+
     return xchat.EAT_ALL
 
 
@@ -1443,37 +1474,46 @@ def opciones_cb(word, word_eol, userdata):
             print "Prueba con un solo parametro"
         else:
             print "Parametro erroneo"
-    elif info_param == 3:
-        if word[1] == "media":
-            if word[2] == "xmms":
-                escribe_conf("media", "reproductor", "xmms")
-                gprint("Se ha seleccionado XMMS")
-                if NoXmms == 1:
-                    try:
-                        import xmms.control
-                    except ImportError:
-                        NoXmms = 1
-                        gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
-            elif word[2] == "rhythmbox":
-                escribe_conf("media", "reproductor", "rhythmbox")
-                gprint("Se ha seleccionado Rythmbox")
-            elif word[2] == "banshee":
-                escribe_conf("media", "reproductor", "banshee")
-                gprint("Se ha seleccionado Banshee")
-            elif word[2] == "on":
-                escribe_conf("media", "activo", "1")
-                gprint("Controles multimedia activados")
-            elif word[2] == "off":
-                escribe_conf("media", "activo", "0")
-                gprint("Controles multimedia desactivados")
-            else:
-                gprint("Parametro erroneo")
-        elif word[1] == "debug":
-            if word[2] == "on":
-                escribe_conf("comun", "debug", "1")
-                xchat.command("py console")
-            elif word[2] == "off":
-                escribe_conf("comun", "debug", "0")
+    elif info_param == 4:
+        escribe_conf(word[1], word[2], word[3])
+        if word[3] == "xmms":
+            if NoXmms == 1:
+                try:
+                    import xmms.control
+                    NoXmms = 0
+                except ImportError:
+                    NoXmms = 1
+                    gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
+#        if word[1] == "media":
+#            if word[2] == "xmms":
+#                escribe_conf("media", "reproductor", "xmms")
+#                gprint("Se ha seleccionado XMMS")
+#                if NoXmms == 1:
+#                    try:
+#                        import xmms.control
+#                    except ImportError:
+#                        NoXmms = 1
+#                        gprint("No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS")
+#            elif word[2] == "rhythmbox":
+#                escribe_conf("media", "reproductor", "rhythmbox")
+#                gprint("Se ha seleccionado Rythmbox")
+#            elif word[2] == "banshee":
+#                escribe_conf("media", "reproductor", "banshee")
+#                gprint("Se ha seleccionado Banshee")
+#            elif word[2] == "on":
+#                escribe_conf("media", "activo", "1")
+#                gprint("Controles multimedia activados")
+#            elif word[2] == "off":
+#                escribe_conf("media", "activo", "0")
+#                gprint("Controles multimedia desactivados")
+#            else:
+#                gprint("Parametro erroneo")
+#        elif word[1] == "debug":
+#            if word[2] == "on":
+#                escribe_conf("comun", "debug", "1")
+#                xchat.command("py console")
+#            elif word[2] == "off":
+#                escribe_conf("comun", "debug", "0")
     else:
         gprint("No mostramos nada")
     return xchat.EAT_ALL
