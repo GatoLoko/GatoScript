@@ -1,3 +1,12 @@
+2008-07-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Correccion menor en la informacion de ayuda.
+ * Modificado el mensaje de aviso en anti_colores_cb para informar como
+   desactivar los colores en mirc, por ser el cliente de irc que en mas
+   ocasiones avisamos.
+ * Agregadas algunas opciones de configuracion al menu del script.
+
+
 2008-07-07  GatoLoko  <GatoLoko@gmail.com>
 
  * Limpieza de codigo. Eliminadas multiples lineas de codigo antiguo que se

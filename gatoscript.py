@@ -289,8 +289,7 @@ def gato_cb(word, word_eol, userdata):
             "",
             "Opciones del script",
             "    /opciones:                   Muestra las opciones actuales",
-            "    /opciones media on:          Se activan los controles multimedia",
-            "    /opcion media off:           Se desactivan los controles multimedia",
+            "    /opciones media on|off:      Se activan o desactivan los controles multimedia",
             "    /opciones media xmms:        Selecciona XMMS como reproductor de sonido",
             "    /opciones media rhythmbox:   Selecciona Rhythmbox como reproductor de sonido",
             "    /opciones media banshee:     Selecciona Banshee como reproductor de sonido",
@@ -444,7 +443,7 @@ def anti_colores_cb(word, word_eol, userdata):
                         expulsa(mensaje, "1", word)
                     else:
                         num_abusos_colores.append(host)
-                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores en este canal, va contra las normas. La proxima vez seras expulsado.")
+                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):
