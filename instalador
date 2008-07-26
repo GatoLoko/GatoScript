@@ -14,6 +14,8 @@ archivo_ctcp = directorio_xchat + "ctcpreply.conf"
 xchatconf = directorio_xchat + "xchat.conf"
 ctcp_existe = False
 
+# Esta funcion nos devuelve el valor de una entrada (conf) en el archivo de
+# configuracion de X-Chat.
 def conf_busqueda(conf):
     global xchatconf
     archivo = file(xchatconf, "r")
@@ -23,6 +25,8 @@ def conf_busqueda(conf):
             return valor
     archivo.close
 
+# Esta funcion modifica el valor (nuevo) de un campo (conf) en el archivo de
+# configuracion de X-Chat.
 def conf_cambia(conf,nuevo):
     global xchatconf
     archivo = file(xchatconf, "r")
@@ -38,7 +42,9 @@ def conf_cambia(conf,nuevo):
     archivo.writelines(memoria)
     archivo.close
 
-
+# La siguiente variable contiene las lineas que deben añadirse al archivo de
+# respuestas ctcp para mostrar que se esta usando GatoScript cuando se reciba
+# un ctcp version.
 lineas_ctcp = [
 "NAME VERSION\n",
 "CMD nctcp %s VERSION GatoScript for X-Chat\n",
@@ -57,8 +63,8 @@ else:
 os.system("cp -r %s %s" %(directorio_actual + "/*",directorio_xchat))
 os.system("rm %sinstalador" %directorio_xchat)
 
-# Si no es la primera vez que se instala el GatoScript no modificamos
-# los menus hasta que tengamos un algoritmo mejor
+# Si no es la primera vez que se instala el GatoScript no modificaremos
+# ninguna configuracion.
 if actualizacion != 1:
     # Configuramos la respuesta ctcp con la version del script
     if os.path.exists(archivo_ctcp):
@@ -83,9 +89,13 @@ if actualizacion != 1:
 else:
     print "Actualizacion completada"
 
-# Mensajes de aviso
+# Mensajes de aviso para que quienes lo instalen
+mensaje = """Para algunas funciones de GatoScript son necesarias las siguientes librerias externas indicadas a continuacion:
 
-#mensaje = """Para algunas de las funciones de GatoScript son necesarias las siguientes librerias externas: python-xmms
-#En caso de producirse algun error, instale la correspondiente."""
+Uso                   | Libreria
+-----------------------------------
+Control de XMMS       | python-xmms
+Control de Rhythmbox  | python-dbus
 
-#print mensaje
+Si quiere utilizar alguna de esas funciones, instale la correspondiente."""
+print mensaje
