@@ -1,3 +1,25 @@
+2008-10-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_spam_cb para que opcionalmente expulse spambots.
+ * Modificada la funcion antispam_reload para que tambien recargue la lista
+   blanca usada para no enviarle el mensaje anti bots a usuarios conocidos.
+ * Agregados comentarios a la funcion anti_spam_cb para aclarar como funciona.
+ * Agregada la funcion testspam_cb, conectada al comando /test, para enviar de
+   forma automatica un mensaje de prueba a los nicks no conocidos del canal
+   actual, para detectar bots.
+ * Modificado el mensaje de expulsion en la funcion anti_colores_cb.
+ * Agregada funcion realza_url_cb para realzar de forma local las direcciones
+   url recibidas en un color establecido por nosotros.
+ * Descomentada la seccion de codigo que se creo para gestionar Rhythmbox sin
+   utilizar dbus, ya que se ha publicado una version de Rhythmbox que lo
+   soporta.
+   El metodo anterior queda activo para soportar versiones anteriores.
+ * Modificado el menu de forma que se pueda seleccionar el metodo antiguo de
+   gestion para Rhythmbox.
+ * Corregido un error tipografico que impedia la correcta desactivacion de la
+   funcion anti ctcp cuando se descargaba el script.
+ * Actualizada la lista de filtros antispam.
+
 2008-07-26  GatoLoko  <GatoLoko@gmail.com>
 
  * Completada la revision del instalador y agregados algunos comentarios.

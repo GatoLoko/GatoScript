@@ -24,7 +24,7 @@ Este modulo contiene las mayor parte de la logica del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.17"
+__module_version__ = "0.18alpha"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -91,7 +91,7 @@ if (repro_activo == "1"):
         except ImportError:
             NoXmms = 1
             print "No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS"
-    elif (repro == "rhythmbox"):
+    elif (repro == "rhythmbox-dbus"):
         try:
             import dbus
             DBUS_START_REPLY_SUCCESS = 1
@@ -187,6 +187,9 @@ if path.exists(filtros_path):
     filtros = spam_gen.read().split("\n")
     spam_gen.close()
     antispam = 1
+    if lee_conf("protecciones", "spambots") == "1":
+        spambots = 1
+        goodboys = lee_conf("protecciones", "goodboys").split(",")
 else:
     print("No se puede cargar la lista de filtros, AntiSpam desactivado")
     antispam = 0
@@ -443,7 +446,7 @@ def anti_colores_cb(word, word_eol, userdata):
                         expulsa(mensaje, "1", word)
                     else:
                         num_abusos_colores.append(host)
-                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
+                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores/negrillas/subrallado en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):
@@ -526,6 +529,40 @@ def resaltados_cb(word, word_eol, userdata):
                     priv_linea(mensaje)
     return xchat.EAT_NONE
 
+def realza_url_cb(word, word_eol, userdata):
+    urls = [ "(ftp://.*|http://.*|https://.*)", "(www|ftp)..*\..*" ]
+    nuevo_mensaje = ""
+    color = lee_conf("comun", "colorrealze")
+    palabras = word_eol[3][1:].split(" ")
+    direccion = []
+
+    for i in urls:
+        #print i
+        expresion = re.compile(i, re.IGNORECASE)
+        for j in palabras:
+            if expresion.match(j):
+                direccion.append(j)
+    for palabra in palabras:
+        if palabra in direccion:
+            if nuevo_mensaje == "":
+                nuevo_mensaje = " \003" + color + palabra + "\003"
+            else:
+                nuevo_mensaje = nuevo_mensaje + " \003" + color + palabra + "\003"
+        else:
+            if nuevo_mensaje == "":
+                nuevo_mensaje = palabra
+            else:
+                nuevo_mensaje = nuevo_mensaje + " " + palabra
+
+    if word[2] == xchat.get_info("nick"):
+        contexto = xchat.find_context(channel=word[0][1:].split("!")[0])
+    else:
+        contexto = xchat.find_context(channel=word[2])
+    if contexto == None:
+        xchat.command("query -nofocus %s" %word[2])
+        contexto = xchat.find_context(channel=word[2])
+    contexto.emit_print("Channel Message", word[0].split("!")[0][1:], nuevo_mensaje)
+    return xchat.EAT_ALL
 
 #############################################################################
 # Definimos la funcion antispam para filtrado de mensajes privados.
@@ -540,34 +577,64 @@ def antispam_reload():
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     global filtros
+    global spambots
+    global goodboys
     if path.exists(filtros_path):
         spam_gen = file(filtros_path, "r")
         filtros = spam_gen.read().split("\n")
         spam_gen.close()
         antispam = 1
+        if lee_conf("protecciones", "spambots") == "1":
+            spambots = 1
+            goodboys = lee_conf("protecciones", "goodboys").split(",")
     else:
         gprint("No se puede cargar la lista de filtros, AntiSpam desactivado")
         antispam = 0
+        spambots = 0
 
 def antispam_cb(word, word_eol, userdata):
-    """Compara las lineas que se reciben con una lista de filtros y elimina aquellas que coincidan
+    """Compara las lineas que se reciben con una lista de filtros y elimina
+    aquellas que coincidan. Ademas, de forma opcional, expulsa a los spambots.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     global filtros
+    global spambots
+    global goodboys
+    # Si esta activada la gestion de bots spammers...
+    if spambots == 1:
+        # Comprobamos si el mensaje se ha recibido en un privado o en alguno
+        # de nuestros canales protegidos
+        if (word[2] in lee_conf("protecciones", "canales")) or (word[2] == xchat.get_info("nick")):
+            # Si es asi, comprobamos que el si el mensaje contiene spam
+            for linea in filtros[:-1]:
+                spam_exp = re.compile(".*"+linea[:-1]+".*", re.IGNORECASE)
+                if (spam_exp.search(word_eol[3][1:])):
+                    # Si contiene spam, expulsamos al bot responsable
+                    nick = word[0].split("!")[0].split(":")[1]
+                    host = word[0].split("@")[1]
+                    expulsa(" Bot spammer", "1", word)
+                    # Y quitamos su nick de la lista de niños buenos
+                    if nick in goodboys:
+                        goodboys.remove(nick)
+                        goodboys2 = goodboys[0]
+                        for nick in goodboys[1:]:
+                            goodboys2 = goodboys2 + "," + nick
+                        escribe_conf("protecciones", "goodboys", goodboys2)
+    # Comprobamos si esta activada la funcion anti spam
     if (antispam == 1):
-        texto = word_eol[3][1:]
-        for linea in filtros[0:len(filtros)-1]:
-            spam_exp = re.compile(".*"+linea[0:len(linea)-1]+".*", re.IGNORECASE)
-            if (spam_exp.search(texto)):
+        # Si esta activada, comprobamos si el texto recibido contiene spam y
+        # si es asi, ignoramos la linea
+        for linea in filtros[:-1]:
+            spam_exp = re.compile(".*"+linea[:-1]+".*", re.IGNORECASE)
+            if (spam_exp.search(word_eol[3][1:])):
                 return xchat.EAT_ALL
 
 def antispam_add_cb(word, word_eol, userdata):
     """Añade un nuevo filtro al final de la lista para usarse con el sistema antispam.
     Esta funcion no comprueba si el nuevo filtro ya existe, simplemente lo añade al final.
-
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -627,6 +694,22 @@ def antispam_list_cb(word, word_eol, userdata):
     del cuenta_lineas
     return xchat.EAT_ALL
 
+def testspam_cb(word, word_eol, userdata):
+    global goodboys
+    userlist = xchat.get_list("users")
+    for usuario in userlist:
+        if usuario.nick not in goodboys:
+            contexto = xchat.find_context(channel=usuario.nick)
+            if contexto == None:
+                xchat.command("query -nofocus %s" %usuario.nick)
+                contexto = xchat.find_context(channel=usuario.nick)
+            contexto.command("say %s" %lee_conf("protecciones", "botmensaje"))
+            goodboys.append(usuario.nick)
+    goodboys2 = goodboys[0]
+    for nick in goodboys[1:]:
+        goodboys2 = goodboys2 + "," + nick
+    escribe_conf("protecciones", "goodboys", goodboys2)
+    return xchat.EAT_NONE
 
 #############################################################################
 # Definimos la funcion para redireccion y formateo de respuestas al whois
@@ -776,7 +859,7 @@ def media_cb(word, word_eol, userdata):
                 else:
                     mensaje = "La funcion " + userdata + " no esta implementada"
                     gprint(mensaje)
-        elif (reproductor == "rhythmbox"):
+        elif (reproductor == "rhythmbox-dbus"):
             global DBusIniciado
             global rbplayerobj
             global rbplayer
@@ -818,7 +901,7 @@ def media_cb(word, word_eol, userdata):
                                 minutos = int(tiempo/60)
                                 segundos = tiempo-(minutos*60)
                                 longitud = str(minutos) + "m" + str(segundos) + "s"
-                            xchat.command("me esta escuchando: %s - %s (%s) - %s" %(artista, titulo, longitud, "Rhythmbox"))
+                            xchat.command("me esta escuchando: %s - %s (%s) - Rhythmbox" %(artista, titulo, longitud))
                     elif (userdata == "reproductor"):
                         gprint("Esta utilizando Rhythmbox")
                     elif (userdata == "siguiente"):
@@ -839,34 +922,41 @@ def media_cb(word, word_eol, userdata):
                         mensaje = "La funcion " + userdata + " no esta implementada"
                         gprint(mensaje)
         # El siguiente codigo accede a rhythmbox sin necesidad de usar dbus, 
-        # pero debido a una falta de funcionalidad en "rhythmbox-client" no
-        # proporciona toda la informacion que necesitamos, asi que queda
-        # comentado hasta que acepten el parche que envie para añadir la
-        # funcionalidad necesaria. El bugreport y el parche estan disponibles
-        # en: http://bugzilla.gnome.org/show_bug.cgi?id=541725
-        #elif reproductor == "rhythmbox":
-        #    if userdata == "reproductor":
-        #        gprint("Está utilizando Rhythmbox")
-        #    elif userdata == "escuchando":
-        #        duracion = commands.getoutput('rhythmbox-client --no-present --print-playing-format %td')
-        #        if duracion == "Desconocido":
-        #            duracion = "Radio"
-        #            informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %st"')
-        #        else:
-        #            informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %tt"')
-        #        xchat.command("me esta escuchando: %s (%s) - Rhythmbox" %(informacion, duracion))
-        #    elif userdata == "anterior":
-        #        system("rhythmbox-client --previous")
-        #    elif userdata == "siguiente":
-        #        system("rhythmbox-client --next")
-        #    elif userdata == "pausa":
-        #        system("rhythmbox-client --pause")
-        #    elif userdata == "play":
-        #        system("rhythmbox-client --play")
-        #    elif userdata == "stop":
-        #        system("rhythmbox-client --stop")
-        #    else:
-        #        gprint("Funcion no soportada")
+        # pero necesita una version reciente de "rhythmbox-client". Debe
+        # funcionar a partir de rhythmbox 0.11.6.
+        # El bugreport y el parche estan disponibles que envie para que
+        # proporcionase parte de la informacion que usamos esta disponible en:
+        # http://bugzilla.gnome.org/show_bug.cgi?id=541725
+        elif reproductor == "rhythmbox":
+            if userdata == "reproductor":
+                gprint("Está utilizando Rhythmbox")
+            elif userdata == "escuchando":
+                duracion = commands.getoutput('rhythmbox-client --no-present --print-playing-format %td')
+                if duracion == "Desconocido":
+                    duracion = "Radio"
+                    # No es posible obtener el bitrate mediante rhythmbox-client, asi que he creado
+                    # otro bugreport con su correspondiente parche, a ver si tambien lo aceptan:
+                    # http://bugzilla.gnome.org/show_bug.cgi?id=545930
+                    informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%st - %tt (%tb kbits/s)"')
+                    # Mientras no este disponible el bitrate, continuamos sin el.
+                    # Las emisoras de radio unen el grupo y el titulo en el campo %st y meten el nombre de la emisora en %tt
+                    #informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%st - %tt"')
+                else:
+                    # En etiquetas id3, %ta representa al artista/grupo y %tt al titulo
+                    informacion = commands.getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %tt"')
+                xchat.command("me esta escuchando: %s (%s) - Rhythmbox" %(informacion, duracion))
+            elif userdata == "anterior":
+                system("rhythmbox-client --previous")
+            elif userdata == "siguiente":
+                system("rhythmbox-client --next")
+            elif userdata == "pausa":
+                system("rhythmbox-client --pause")
+            elif userdata == "play":
+                system("rhythmbox-client --play")
+            elif userdata == "stop":
+                system("rhythmbox-client --stop")
+            else:
+                gprint("Funcion no soportada")
         elif reproductor == "banshee":
             if userdata == "reproductor":
                 gprint("Está utilizando Banshee")
@@ -914,7 +1004,6 @@ def media_cb(word, word_eol, userdata):
                 gprint("Funcion no soportada")
     else:
         gprint("Los controles multimedia estan desactivados")
-
     return xchat.EAT_ALL
 
 
@@ -1472,18 +1561,20 @@ def unload_cb(userdata):
     xchat.unhook(hookantinotice)
     xchat.unhook(hookanticlonerx)
     xchat.unhook(hookantidrone)
-    xchat.unhook(hootantictcp)
+    xchat.unhook(hookantictcp)
     xchat.unhook(hookantihoygan)
     xchat.unhook(hookantimayusculas)
     xchat.unhook(hookanticolores)
     xchat.unhook(hookantiaway)
     # Resaltados
     xchat.unhook(hookresaltados)
+    xchat.unhook(hookrealzaurl)
     # Antispam
     xchat.unhook(hookantispam)
     xchat.unhook(hookantiadd)
     xchat.unhook(hookantilist)
     xchat.unhook(hookantidel)
+    xchat.unhook(hooktest)
     # Whois
     xchat.unhook(raw301)
     xchat.unhook(raw307)
@@ -1560,18 +1651,20 @@ hookproteccion = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None, prio
 hookantinotice = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 hookanticlonerx = xchat.hook_server('JOIN', anti_clonerx_cb, userdata=None)
 hookantidrone = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
-hootantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
+hookantictcp = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 hookantihoygan = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
 hookantimayusculas = xchat.hook_server('PRIVMSG', anti_mayusculas_cb, userdata=None)
 hookanticolores = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
 hookantiaway = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 # Resaltados
 hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
+hookrealzaurl = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None, priority=-10)
 # Antispam
 hookantispam = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None)
 hookantiadd = xchat.hook_command('antiadd', antispam_add_cb)
 hookantilist = xchat.hook_command('antilist', antispam_list_cb)
 hookantidel = xchat.hook_command('antidel', antispam_del_cb)
+hooktest = xchat.hook_command('test', testspam_cb)
 # Whois
 raw301 = xchat.hook_server('301', whois_cb, userdata=None, priority=10) # Mensaje de AWAY
 raw307 = xchat.hook_server('307', whois_cb, userdata=None, priority=10) # whoisregnick
