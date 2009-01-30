@@ -2,4 +2,7 @@ notes.py
 pescar.py
 popup.conf
 gatoscript-funciones.txt
-GatoScript.kpf
+*.pyc
+gatoscript-old.py
+realzaurl.py
+./antispam.py

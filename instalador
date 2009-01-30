@@ -6,7 +6,7 @@ import os
 
 # Variables del entorno de trabajo
 home = os.environ["HOME"]
-directorio_xchat = os.path.join(home, "/.xchat2/")
+directorio_xchat = os.path.join(home, ".xchat2/")
 directorio_actual = os.getcwd()
 gatoscript = os.path.join(directorio_xchat, "gatoscript.py")
 # Archivos a modificar

@@ -1,3 +1,26 @@
+2009-01-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido pequeño bug en el instalador.
+ * Eliminado el archivo TODO, en adelante se gestionaran las tareas pendientes
+   en el gestor de proyectos de launchpad.
+ * rss.py:rss_cb() modificado para usar los servidores almacenados en la base
+   de datos.
+ * antispam.py: modificado todo el modulo para almacenar los filtros en la base
+   de datos en lugar de archivos de texto.
+ * Agregada base de datos sqlite al script.
+ * Modificadas las funciones de los modulos para utilizar las funciones
+   auxilires contenidas en el modulo auxiliar.
+ * Desechada la version 0.18rc2
+ * Iniciada la modularizacion del script para la version 1.0. Se ha dividido el
+   script principal en diferentes modulos por tipo de funciones. 
+
+
+2008-10-12  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion realza_url_cb para que sea desactivable en la
+   configuracion.
+
+
 2008-10-08  GatoLoko  <GatoLoko@gmail.com>
 
  * Modificada la funcion anti_spam_cb para que opcionalmente expulse spambots.
