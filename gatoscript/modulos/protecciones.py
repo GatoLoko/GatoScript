@@ -83,7 +83,7 @@ def anti_ctcp_cb(word, word_eol, userdata):
                     for canal in canales:
                         canal_re = re.compile(canal[1:], re.IGNORECASE)
                         if canal_re.search(word[2]):
-                            gprint("Se ha recibido un CTCP al canal " + word[2])
+                            auxiliar.gprint("Se ha recibido un CTCP al canal " + word[2])
                             partes = word[0][1:].split("@")
                             comando = "ban *!*@" + partes[len(partes)-1]
                             xchat.command(comando)
@@ -203,7 +203,8 @@ def proteccion_cb(word, word_eol, userdata):
 
 # Anti ClonerX  (on JOIN)
 def anti_clonerx_cb(word, word_eol, userdata):
-    """Detecta nicks que entran al canal con un indent que concuerde con los de ClonerX y los banea para evitar el flood
+    """Detecta nicks que entran al canal con un indent que concuerde con los de
+    ClonerX y los banea para evitar el flood.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -218,7 +219,7 @@ def anti_clonerx_cb(word, word_eol, userdata):
         comando = "ban *!*@" + host
         contexto.command(comando)
         mensaje = "Ident de ClonerX en " + canal
-        gprint(mensaje)
+        auxiliar.gprint(mensaje)
     return xchat.EAT_NONE
 
 def anti_drone_cb(word, word_eol, userdata):

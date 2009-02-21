@@ -1,3 +1,12 @@
+2009-02-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: varias modificaciones para arreglar el uso de la base de datos.
+ * auxiliar.py: modificada la direccion web en la funcion gato_info_cb para que
+   apunte a la pagina correcta.
+ * protecciones.py: corregido un pequeño bug en la funcion anti_ctcp_cb y otro
+   en anti_clonerx_cb relacionados con la modularizacion.
+ 
+ 
 2009-01-30  GatoLoko  <GatoLoko@gmail.com>
 
  * Corregido pequeño bug en el instalador.

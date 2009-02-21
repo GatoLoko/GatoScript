@@ -107,6 +107,17 @@ def antispam_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
+    filtros = CURSOR.execute("SELECT filtro FROM filtros")
+    if auxiliar.lee_conf("protecciones", "spam") == "1":
+        #chanspam = auxiliar.lee_conf("protecciones", "chanspam").split(",")
+        #for i in range(len(chanspam)):
+            #if word_eol[3].find(chanspam[i]) > 0:
+        for filtro in filtros:
+            spam_exp = re.compile(".*" + filtro[0] + ".*", re.IGNORECASE)
+            if (spam_exp.search(word_eol[3][1:])):
+                ban = "1"
+                mensaje = " Spam"
+                auxiliar.expulsa(mensaje, ban, word)
     # Si esta activada la gestion de bots spammers...
     if SPAMBOTS == 1:
         # Comprobamos si el mensaje se ha recibido en un privado o en alguno
@@ -114,7 +125,7 @@ def antispam_cb(word, word_eol, userdata):
         if (word[2] in CURSOR.execute("SELECT canales FROM canales")) or \
                 (word[2] == xchat.get_info("nick")):
             # Si es asi, comprobamos si el mensaje contiene spam
-            for filtro in CURSOR.execute("SELECT filtro FROM filtros"):
+            for filtro in filtros:
                 spam_exp = re.compile(".*" + filtro[0] + ".*", re.IGNORECASE)
                 if (spam_exp.search(word_eol[3][1:])):
                     # Si contiene spam, expulsamos al bot responsable
@@ -128,8 +139,7 @@ def antispam_cb(word, word_eol, userdata):
     # Comprobamos si esta activada la funcion anti spam
     if (ANTISPAM == 1):
         # Si esta activada, comprobamos si el texto recibido contiene spam y
-        # si es asi, ignoramos la linea
-        filtros = CURSOR.execute("SELECT filtro FROM filtros")
+        # si es asi, ignoramos la linea      
         for filtro in filtros: 
             spam_exp = re.compile(".*" + filtro[0] + ".*", re.IGNORECASE)
             if (spam_exp.search(word_eol[3][1:])):

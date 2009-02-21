@@ -174,7 +174,7 @@ def gato_info_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     version = xchat.get_info("version")
-    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://www.gatoloko.org)" %(version, __module_version__))
+    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
     return xchat.EAT_ALL
 
 def prueba():
