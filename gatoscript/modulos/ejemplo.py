@@ -1,4 +1,3 @@
-
 # -*- coding: UTF8 -*-
 
 # CopyRight (C) 2006-2009 GatoLoko
@@ -98,15 +97,15 @@ def unload_cb(userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     # Desconectamos las funciones AntiSpam
-    xchat.unhook(HOOKEJEMPLO)
+    xchat.unhook(HOOKEJEMPLO1)
     # Descargamos el 
-    xchat.unhook(HOOKUNLOAD)
+    xchat.unhook(HOOKEJEMPLO)
 
 
 #############################################################################
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 # para ellos
 #############################################################################
-HOOKEJEMPLO = xchat.hook_command('ejemplo', antispam_cb, userdata=None)
+HOOKEJEMPLO1 = xchat.hook_command('ejemplo', antispam_cb, userdata=None)
 # Descarga del modulo
-HOOKUNLOAD = xchat.hook_unload(unload_cb)
+HOOKEJEMPLO = xchat.hook_unload(unload_cb)

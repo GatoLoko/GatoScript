@@ -26,7 +26,7 @@ Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
 """
 
 __module_name__ = "GatoScript MultiMedia"
-__module_version__ = "0.80alpha1"
+__module_version__ = "1.0alpha1"
 __module_description__ = "Modulo MultiMedia para el GatoScript"
 __module_autor__ = "GatoLoko"
 

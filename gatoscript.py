@@ -61,6 +61,8 @@ import resaltados
 import media
 # Importamos el modulo gestor de rss
 import rss
+# Importamos el modulo sysinfo
+import sysinfo
 
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que

@@ -182,7 +182,7 @@ def anti_colores_cb(word, word_eol, userdata):
                         auxiliar.expulsa(mensaje, "1", word)
                     else:
                         num_abusos_colores.append(host)
-                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores/negrillas/subrallado en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
+                        xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores/negrillas/subrayado en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
     return xchat.EAT_NONE
 
 def proteccion_cb(word, word_eol, userdata):

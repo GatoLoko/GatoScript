@@ -1,3 +1,15 @@
+2009-03-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * sysinfo.py: sustituido el uso de os.popen3 por subprocess.Popen de acuerdo al
+   Python Enhacement Proposal 324 (http://www.python.org/dev/peps/pep-0324/).
+ * sysinfo.py: aumentado el numero de version al 1.0alpha1
+ * ejemplo.py: renombrada una variable para mejorar la uniformidad general
+   dentro del script.
+ * media.py: aumentado el numero de version al 1.0alpha1
+ * protecciones.py: corregida una falta de ortografia en un mensaje.
+ * rss-py: corregido el numero de version al 1.0alpha1
+
+
 2009-02-21  GatoLoko  <GatoLoko@gmail.com>
 
  * antispam.py: varias modificaciones para arreglar el uso de la base de datos.
