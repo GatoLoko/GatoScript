@@ -63,6 +63,8 @@ import media
 import rss
 # Importamos el modulo sysinfo
 import sysinfo
+# Importamos el modulo autosend
+import autosend
 
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que

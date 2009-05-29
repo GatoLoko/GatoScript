@@ -1,3 +1,8 @@
+2009-04-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * gatoscript.conf: agregada seccion para el nuevo modulo AutoSend
+ * autosend.py: nuevo modulo para envio automatico de archivos
+
 2009-03-05  GatoLoko  <GatoLoko@gmail.com>
 
  * sysinfo.py: sustituido el uso de os.popen3 por subprocess.Popen de acuerdo al
@@ -8,6 +13,10 @@
  * media.py: aumentado el numero de version al 1.0alpha1
  * protecciones.py: corregida una falta de ortografia en un mensaje.
  * rss-py: corregido el numero de version al 1.0alpha1
+ * Agregado un enlace a la base de datos con extension sqlite para facilitar su
+   acceso desde algunos gestores de bases de datos.
+ * Agregado el archivo "Authors" y su enlace "Autores" para dar credito a
+   quienes participan en el script.
 
 
 2009-02-21  GatoLoko  <GatoLoko@gmail.com>
