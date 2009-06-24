@@ -1,3 +1,10 @@
+2009-06-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: modificadas las funciones priv_linea y priv_imprime para
+   comportarse de forma mas similar a un privado real.
+ * antispam.py: arreglada la funcion antilist para que funcione con los filtros
+   de la base de datos.
+
 2009-04-22  GatoLoko  <GatoLoko@gmail.com>
 
  * gatoscript.conf: agregada seccion para el nuevo modulo AutoSend

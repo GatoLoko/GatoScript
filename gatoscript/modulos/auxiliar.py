@@ -88,7 +88,7 @@ def priv_imprime(mensajes):
         xchat.command("query -nofocus GatoScript")
         contexto = xchat.find_context(channel="GatoScript")
     for mensaje in mensajes:
-        contexto.prnt(mensaje)
+        contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
 
 def priv_linea(mensaje):
@@ -101,7 +101,8 @@ def priv_linea(mensaje):
     if contexto == None:
         xchat.command("query -nofocus GatoScript")
         contexto = xchat.find_context(channel="GatoScript")
-    contexto.prnt(mensaje)
+    #contexto.prnt(mensaje)
+    contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
 
 def escribe_conf(seccion, opcion, valor):

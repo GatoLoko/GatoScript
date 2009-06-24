@@ -198,7 +198,7 @@ def antispam_list_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     for filtro in CURSOR.execute("SELECT * FROM filtros"):
-        mensaje = "Filtro %s: %s" % (filtro.id, filtro.filtro)
+        mensaje = u"Filtro %s: %s" % (filtro[0], filtro[1])
         auxiliar.priv_linea(mensaje)
     #global filtros
     #cuenta_lineas = 1
