@@ -92,7 +92,7 @@ def priv_imprime(mensajes):
     return ""
 
 def priv_linea(mensaje):
-    """Escribe una en la pestaña "GatoScript". Util para mostrar mensajes
+    """Escribe una linea en la pestaña "GatoScript". Util para mostrar mensajes
     cortos sin que se pierdan entre los recibidos en los canales.
     Argumentos:
     mensaje -- cadena con el mensaje
@@ -177,10 +177,6 @@ def gato_info_cb(word, word_eol, userdata):
     version = xchat.get_info("version")
     xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
     return xchat.EAT_ALL
-
-def prueba():
-    """Funcion de prueba que debe ser eliminada"""
-    return dir()
 
 
 #############################################################################
