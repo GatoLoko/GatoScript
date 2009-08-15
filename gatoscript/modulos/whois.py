@@ -52,6 +52,16 @@ gatodb = join(gatodir, "gatoscript.db")
 #from urllib import urlopen
 
 
+##############################################################################
+# Definimos las funciones de uso interno del modulo
+##############################################################################
+def espacios(palabra):
+    espacios = 15 - len(palabra)
+    cadena = " "
+    for i in range(espacios):
+        cadena = cadena + " "
+    return cadena
+
 
 
 ##############################################################################
@@ -102,6 +112,10 @@ def whois_cb(word, word_eol, userdata):
         if (word[1] == "301"):
             # Respuesta al whois: AwayMessage
             print '\0033[No disponible   ]\003 ' + word_eol[4][1:]
+        elif (word[1] == "310"):
+            # Respuesta al whois: Operador de servicios
+            cadena = espacios(word[3])
+            print '\0033[' + word[3] + cadena + ']\003 ' + word_eol[4][1:]
         elif (word[1] == "311"):
             # Respuesta al whois: Usuario
             nick = word[3]
@@ -113,6 +127,14 @@ def whois_cb(word, word_eol, userdata):
         elif (word[1] == "312"):
             # Respuesta al whois: Servidor
             print '\0033[Servidor        ]\003 ' + word_eol[4]
+        elif (word[1] == "313"):
+            # Respuesta al whois: IrcOp
+            cadena = espacios(word[3])
+            print '\0033[' + word[3] + cadena + ']\003 ' + word_eol[4]
+        elif (word[1] == "316"):
+            # Respuesta al whois: Bot de la red
+            cadena = espacios(word[3])
+            print '\0033[' + word[3] + cadena + ']\003 ' + word_eol[4]
         elif (word[1] == "317"):
             # Respuesta al whois: IDLE
             horas = int(word[4])/3600
@@ -128,29 +150,18 @@ def whois_cb(word, word_eol, userdata):
             print '\0033[Canales         ]\003 ' + word_eol[4][1:]
         elif (word[1] == "320"):
             # Respuesta al whois: Especial
-            espacios = 15 - len(word[3])
-            cadena = " "
-            for i in range(espacios):
-                cadena = cadena + " "
+            cadena = espacios(word[3])
             print '\0033[' + word[3] + cadena + ']\003 ' + word_eol[4][1:]
         elif (word[1] == "335"):
             # Respuesta al whois: Bot
             print '\0033' + word_eol[0] + '\003'
         elif (word[1] == "307"):
             # Respuesta al whois: RegNick
-            espacios = 15 - len(word[3])
-            cadena = " "
-            #if (espacios > 1):
-            for i in range(espacios):
-                cadena = cadena + " "
+            cadena = espacios(word[3])
             print '\0033[' + word[3] + cadena + '] \003' + word_eol[4][1:]
         elif (word[1] == "342"):
             # Respuesta al whois: Solo admite privados de usuarios registrados
-            espacios = 15 - len(word[3])
-            cadena = " "
-            #if (espacios > 1):
-            for i in range(espacios):
-                cadena = cadena + " "
+            cadena = espacios(word[3])
             print '\0033[' + word[3] + cadena + '] \003' + word_eol[4][1:]
         elif (word[1] == "378"):
             # Respuesta al whois: VHOST
@@ -220,6 +231,7 @@ raw342 = xchat.hook_server('342', whois_cb, userdata=None, priority=10) # Solo a
 raw378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10) # whoishost (ip virtual)
 raw379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10) # whoismodes
 raw401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10) # No such nick
+
 
 # Descarga del script
 hookunload = xchat.hook_unload(unload_cb)
