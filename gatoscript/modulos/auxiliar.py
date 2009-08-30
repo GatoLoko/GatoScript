@@ -210,6 +210,9 @@ def unload_cb(userdata):
     xchat.unhook(HOOKGINFO)
     # Descarga
     xchat.unhook(HOOKAUXILIAR)
+    xchat.command('menu del "GatoScript/Informacion"')
+    xchat.command('menu del "GatoScript/Opciones"')
+
 
 
 #############################################################################
@@ -223,3 +226,28 @@ HOOKOPCIONES = xchat.hook_command('opciones', opciones_cb)
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 # Descarga del script
 HOOKAUXILIAR = xchat.hook_unload(unload_cb)
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/Informacion" "ginfo"')
+xchat.command('menu ADD "GatoScript/-"')
+xchat.command('menu ADD "GatoScript/Opciones"')
+xchat.command('menu ADD "GatoScript/Opciones/Protecciones"')
+xchat.command('menu -t0 ADD "GatoScript/Opciones/Protecciones/Away" "opciones protecciones away 1" "opciones protecciones media 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Ban" "opciones protecciones ban 1" "opciones protecciones ban 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Colores" "opciones protecciones colores 1" "opciones protecciones colores 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/CTCPs" "opciones protecciones ctcps 1" "opciones protecciones ctcps 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Mayusculas" "opciones protecciones mayusculas 1" "opciones protecciones mayusculas 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/HOYGAN" "opciones protecciones hoygan 1" "opciones protecciones hoygan 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam" "opciones protecciones spam 1" "opciones protecciones spam 0"')
+xchat.command('menu ADD "GatoScript/Opciones/-"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/XMMS" "opciones media reproductor xmms"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox" "opciones media reproductor rhythmbox"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox (Metodo antiguo)" "opciones media reproductor rhythmbox-dbus"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Banshee" "opciones media reproductor banshee"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Amarok" "opciones media reproductor amarok"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Multimedia" "opciones media activo 1" "opciones media activo 0"')
+xchat.command('menu ADD "GatoScript/Opciones/Python" "py console"')
+
