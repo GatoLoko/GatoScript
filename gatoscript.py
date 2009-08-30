@@ -47,6 +47,8 @@ gatodb = join(gatodir, "gatoscript.db")
 # Incluimos el directorio de modulos en el path
 sys.path.append(moddir)
 
+xchat.command('menu -p4 ADD "GatoScript"')
+
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 # Importamos el modulo antispam
@@ -65,7 +67,26 @@ import rss
 import sysinfo
 # Importamos el modulo autosend
 import autosend
+# Importamos el modulo p2p
+# import p2p
+# Importamos el modolo remotos
+# import remotos
+# Importamos el modulo consejos
+# import consejos
+# Importamos el modulo ejemplo
+# import ejemplo
 
+#############################################################################
+# Definimos la funcion para descargar el script
+#############################################################################
+def unload_cb(userdata):
+    xchat.command("menu del GatoScript")
+    print "Se ha descargado GatoScript %s" % __module_version__
+
+#############################################################################
+# Conectamos la funcion de descarga del script
+#############################################################################
+hookunload = xchat.hook_unload(unload_cb)
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que
 # mostramos el mensaje de carga
