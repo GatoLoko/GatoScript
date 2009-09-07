@@ -60,7 +60,7 @@ else:
     actualizacion = 0
 
 ## Instalamos los archivos del script
-os.system("cp -r %s %s" %(directorio_actual + "/*",directorio_xchat))
+os.system("cp -rf %s %s" %(directorio_actual + "/*",directorio_xchat))
 os.system("rm %sinstalador" %directorio_xchat)
 
 # Si no es la primera vez que se instala el GatoScript no modificaremos
@@ -90,12 +90,12 @@ else:
     print "Actualizacion completada"
 
 # Mensajes de aviso para que quienes lo instalen
-mensaje = """Para algunas funciones de GatoScript son necesarias las siguientes librerias externas indicadas a continuacion:
+mensaje = """Para algunas funciones de GatoScript son necesarias las librerias externas indicadas a continuacion:
 
 Uso                   | Libreria
 -----------------------------------
 Control de XMMS       | python-xmms
 Control de Rhythmbox  | python-dbus
 
-Si quiere utilizar alguna de esas funciones, instale la correspondiente."""
+Si quiere utilizar alguna de esas funciones, instale la libreria correspondiente."""
 print mensaje
