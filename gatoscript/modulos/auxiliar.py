@@ -210,9 +210,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKGINFO)
     # Descarga
     xchat.unhook(HOOKAUXILIAR)
-    xchat.command('menu del "GatoScript/Informacion"')
-    xchat.command('menu del "GatoScript/Opciones"')
-
 
 
 #############################################################################
