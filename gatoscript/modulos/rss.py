@@ -37,6 +37,7 @@ from os import path
 import sqlite3
 import xml.dom.minidom
 import datetime
+from urllib import urlopen
 import auxiliar
 
 ##############################################################################
@@ -59,30 +60,6 @@ if path.exists(_GATODB_PATH):
 else:
     _CONECTADO = 0
 
-
-## Cargamos las librerias y funciones que necesitamos
-#import xchat, re, datetime, xml.dom.minidom, commands
-#from os import popen3, path, system
-#from random import randint
-#from ConfigParser import ConfigParser
-#from urllib import urlopen
-
-
-##############################################################################
-## Definimos algunas variables que describen el entorno de trabajo y librerias
-## opcionales.
-##############################################################################
-
-#scriptdir = xchat.get_info("xchatdir")
-#gatodir = scriptdir + "/gatoscript/"
-#filtros_path = gatodir + "antispam.conf"
-#consejos_path = gatodir + "consejos.txt"
-#configfile = gatodir + "gatoscript.conf"
-#rssfile = gatodir + "rss.conf"
-##home = xchat.get_info("xchatdir")[0:len(xchat.get_info("xchatdir"))-7]
-#home = path.expanduser("~")
-      
-
 ##############################################################################
 ## Definimos las funciones del lector rss
 ##############################################################################
@@ -100,6 +77,7 @@ def rss_cb(word, word_eol, userdata):
     fecha = str(datetime.datetime.now())[:19]
     limitador = int(auxiliar.lee_conf("rss", "limitador"))
     for servidor in servidores:
+        print "Debug: " + servidor
         auxiliar.priv_linea(servidor + " - " + fecha)
         auxiliar.priv_linea("")
         archivo = xml.dom.minidom.parse(urlopen(servidor))
@@ -124,7 +102,7 @@ def rsslista_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    servidores = auxuliar.lee_conf("rss", "feeds").split(',')
+    servidores = auxiliar.lee_conf("rss", "feeds").split(',')
     auxiliar.priv_linea("")
     auxiliar.priv_linea("Lista de feeds RSS:")
     for servidor in servidores:
@@ -228,3 +206,14 @@ hookrssadd = xchat.hook_command('rssadd', rssadd_cb)
 hookrssdel = xchat.hook_command('rssdel', rssdel_cb)
 # Descarga del script
 hookunload = xchat.hook_unload(unload_cb)
+
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/RSS"')
+xchat.command('menu ADD "GatoScript/RSS/Mostrar resultados" "rss"')
+xchat.command('menu ADD "GatoScript/RSS/-"')
+xchat.command('menu ADD "GatoScript/RSS/Lista de feeds" "listarss"')
+xchat.command('menu ADD "GatoScript/RSS/Añadir feed" "getstr # "rssadd" "Feed:""')
+xchat.command('menu ADD "GatoScript/RSS/Eliminar feed" "getstr # "rssdel" "Feed:""')

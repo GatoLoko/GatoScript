@@ -389,3 +389,15 @@ hookunload = xchat.hook_unload(unload_cb)
 # Y si hemos desactivado las funciones de XMMS avisamos de que no se usaran
 if NoXmms == 1:
     auxiliar.gprint("Las funciones de control sobre XMMS no estaran disponibles por no encontrarse python-xmms")
+
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/Multimedia"')
+xchat.command('menu ADD "GatoScript/Multimedia/Cancion actual" "escuchando"')
+xchat.command('menu ADD "GatoScript/Multimedia/Reproductor" "reproductor"')
+xchat.command('menu ADD "GatoScript/Multimedia/Anterior" "anterior"')
+xchat.command('menu ADD "GatoScript/Multimedia/Siguiente" "siguiente"')
+xchat.command('menu ADD "GatoScript/Multimedia/Stop" "stop"')
+xchat.command('menu ADD "GatoScript/Multimedia/Play" "play"')

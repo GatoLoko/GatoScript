@@ -304,3 +304,14 @@ HOOKGPC = xchat.hook_command('gpc', pc_cb)
 HOOKNET = xchat.hook_command('gnet', red_cb)
 # Descarga del script
 HOOKSYSINFO = xchat.hook_unload(unload_cb)
+
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/Sistema"')
+xchat.command('menu ADD "GatoScript/Sistema/Uptime" "gup"')
+xchat.command('menu ADD "GatoScript/Sistema/Sistema" "gos"')
+xchat.command('menu ADD "GatoScript/Sistema/Software" "gsoft"')
+xchat.command('menu ADD "GatoScript/Sistema/Hardware" "gpc"')
+xchat.command('menu ADD "GatoScript/Sistema/Fecha" "fecha"')
