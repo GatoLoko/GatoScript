@@ -26,7 +26,7 @@ Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.80alpha1"
+__module_version__ = "0.80alpha2"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -68,7 +68,7 @@ import sysinfo
 # Importamos el modulo autosend
 import autosend
 # Importamos el modulo p2p
-# import p2p
+import p2p
 # Importamos el modolo remotos
 # import remotos
 # Importamos el modulo consejos
@@ -80,13 +80,13 @@ import autosend
 # Definimos la funcion para descargar el script
 #############################################################################
 def unload_cb(userdata):
-    xchat.command("menu del GatoScript")
+    xchat.command('menu del GatoScript')
     print "Se ha descargado GatoScript %s" % __module_version__
 
 #############################################################################
 # Conectamos la funcion de descarga del script
 #############################################################################
-hookunload = xchat.hook_unload(unload_cb)
+HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que
 # mostramos el mensaje de carga
@@ -103,6 +103,7 @@ auxiliar.gprint(mensaje)
 ##   "%U"    =   "\037"  =   Subrallado
 ##   "%R"    =   "\026"  =   Color invertido
 ##   "%O"    =   "\017"  =   Desactiva los demas
+##           =   "\007"  =   Pitido
 ##   "$t"    =   "\t"    =   $t
 ##
 ##############################################################################

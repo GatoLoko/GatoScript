@@ -20,70 +20,34 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
+Modulo P2P del GatoScript.
 
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+Este modulo contiene las funciones para acceder a informacion de clientes P2P
+desde el GatoScript.
 """
 
-__module_name__ = "GatoScript"
+__module_name__ = "GatoScript P2P"
 __module_version__ = "0.80alpha1"
-__module_description__ = "GatoScript para XChat"
+__module_description__ = "Modulo P2P para el GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# Cargamos la libreria y funciones que necesitamos
 import xchat
-# Importamos la funcion para unir directorios de forma portable
-from os.path import join
-# Importamos la funcion que nos permite definir nuestro directorio de modulos
-import sys
-
-# Definimos algunas variables de entorno para poder trabajar comodamente
-scriptdir = xchat.get_info("xchatdir")
-gatodir = join(scriptdir, "gatoscript")
-moddir = join(gatodir, "modulos")
-gatoconf = join(scriptdir, "gatoscript.conf")
-gatodb = join(gatodir, "gatoscript.db")
-
-# Incluimos el directorio de modulos en el path
-sys.path.append(moddir)
-
-# Importamos el modulo de funciones auxiliares
+from os import path
 import auxiliar
+import xml.dom.minidom
 
-## Cargamos las librerias y funciones que necesitamos
-#import xchat, re, datetime, xml.dom.minidom, commands
-#from os import popen3, path, system
-#from random import randint
-#from ConfigParser import ConfigParser
-#from urllib import urlopen
-
+#############################################################################
+# Definimos algunas variables que describen el entorno de trabajo y librerias
+# opcionales.
+#############################################################################
+_HOME = path.expanduser("~")
+_AMULESIG = _HOME + "/.aMule/amulesig.dat"
+_AZUREUSSTATS = _HOME + "/.azureus/Azureus_Stats.xml"
 
 ##############################################################################
-## Definimos algunas variables que describen el entorno de trabajo y librerias
-## opcionales.
+# Inicializamos el modulo
 ##############################################################################
-
-#scriptdir = xchat.get_info("xchatdir")
-#gatodir = scriptdir + "/gatoscript/"
-#filtros_path = gatodir + "antispam.conf"
-#consejos_path = gatodir + "consejos.txt"
-#configfile = gatodir + "gatoscript.conf"
-#rssfile = gatodir + "rss.conf"
-##home = xchat.get_info("xchatdir")[0:len(xchat.get_info("xchatdir"))-7]
-#home = path.expanduser("~")
-#amulesig = home + "/.aMule/amulesig.dat"
-#azureusstats = home + "/.azureus/Azureus_Stats.xml"
-#cp = ConfigParser()
-#num_abusos_mayus = []
-#num_abusos_colores = []
-#NoXmms = 0
-#NoDBus = 0
-#global DBusIniciado
-#DBusIniciado = 0
-#global rbplayerobj
-#global rbplayer
-#global rbshellobj
-#global rbshell
 
 ##############################################################################
 ## Definimos las funciones de informacion y ayuda sobre el manejo del script
@@ -122,86 +86,94 @@ import auxiliar
             #"",
             #"Parametro no soportado",
             #""]
-    #priv_imprime(mensajes)
+    #auxiliar.priv_imprime(mensajes)
     #return xchat.EAT_ALL
 
 
 ##############################################################################
 ## Definimos las funciones para mostrar informacion P2P
 ##############################################################################
-#def amule_cb(word, word_eol, userdata):
-    #"""Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook (ignorado)
-    #word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #if path.exists(amulesig):
-        #archivo = file(amulesig, "r")
-        #lineas_amule = archivo.readlines()
-        #archivo.close()
-        #if lineas_amule[0] == "0":
-            #gprint("No estas conectado a aMule")
-        #else:
-            #vdescarga = (lineas_amule[6])[0:len(lineas_amule[6])-1]
-            #vsubida = (lineas_amule[7])[0:len(lineas_amule[7])-1]
-            #desc_len = len(lineas_amule[11]) - 1
-            #if (int(lineas_amule[11]) < 1048576):
-                #total_descargado = str(lineas_amule[11][0:desc_len]) + 'Bytes'
-            #elif (int(lineas_amule[11][0:desc_len]) >= 1048576) and (int(lineas_amule[11][0:desc_len]) < 1073741824):
-                #total_descargado = str(int((lineas_amule[11])[0:desc_len])/1048576) + 'MB'
-            #else:
-                #total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
-            #version = lineas_amule[13][0:len(lineas_amule[13]) - 1]
-            #xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version, vdescarga, vsubida, total_descargado))
-    #else:
-        #gprint("No existe el archivo " + amulesig + ", compruebe que activo la firma online en la configuracion de aMule")
-    #return xchat.EAT_ALL
+def amule_cb(word, word_eol, userdata):
+    """Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if path.exists(_AMULESIG):
+        archivo = file(_AMULESIG, "r")
+        lineas_amule = archivo.readlines()
+        archivo.close()
+        if lineas_amule[0] == "0":
+            auxiliar.gprint("No estas conectado a aMule")
+        else:
+            vdescarga = (lineas_amule[6])[0:len(lineas_amule[6])-1]
+            vsubida = (lineas_amule[7])[0:len(lineas_amule[7])-1]
+            desc_len = len(lineas_amule[11]) - 1
+            if (int(lineas_amule[11]) < 1048576):
+                total_descargado = str(lineas_amule[11][0:desc_len]) + 'Bytes'
+            elif (int(lineas_amule[11][0:desc_len]) >= 1048576) and (int(lineas_amule[11][0:desc_len]) < 1073741824):
+                total_descargado = str(int((lineas_amule[11])[0:desc_len])/1048576) + 'MB'
+            else:
+                total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
+            version = lineas_amule[13][0:len(lineas_amule[13]) - 1]
+            xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version, vdescarga, vsubida, total_descargado))
+    else:
+        auxiliar.gprint("No existe el archivo " + _AMULESIG + ", compruebe que activo la firma online en la configuracion de aMule")
+    return xchat.EAT_ALL
 
-#def azureus_cb(word, word_eol, userdata):
-    #"""Lee el archivo Azureus_Stats.xml (estadisticas) de azureus y muestra
-    #parte de la informacion en el canal activo.
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook (ignorado)
-    #word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #if path.exists(azureusstats):
-        #dom1 = xml.dom.minidom.parse(azureusstats)
-        #stats = dom1.getElementsByTagName('STATS')[0]
-        #glob = stats.getElementsByTagName('GLOBAL')[0]
-        #descarga = glob.getElementsByTagName('DOWNLOAD_SPEED')[0]
-        #vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
-        #subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
-        #vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        #xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga, vsubida))
-        #del descarga, vdescarga, subida, vsubida, glob, stats, dom1
-    #else:
-        #gprint("No existe el archivo " + azureusstats + ", compruebe su configuracion de Azureus")
-    #return xchat.EAT_ALL
+def azureus_cb(word, word_eol, userdata):
+    """Lee el archivo Azureus_Stats.xml (estadisticas) de azureus y muestra
+    parte de la informacion en el canal activo.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if path.exists(_AZUREUSSTATS):
+        dom1 = xml.dom.minidom.parse(_AZUREUSSTATS)
+        stats = dom1.getElementsByTagName('STATS')[0]
+        glob = stats.getElementsByTagName('GLOBAL')[0]
+        descarga = glob.getElementsByTagName('DOWNLOAD_SPEED')[0]
+        vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
+        subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
+        vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
+        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga, vsubida))
+        del descarga, vdescarga, subida, vsubida, glob, stats, dom1
+    else:
+        auxiliar.gprint("No existe el archivo " + _AZUREUSSTATS + ", compruebe su configuracion de Azureus")
+    return xchat.EAT_ALL
 
-##############################################################################
-## Definimos la funcion para la descarga del programa
-##############################################################################
-#def unload_cb(userdata):
-    #"""Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
-    #Argumentos:
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    ## Desconectamos los comandos
-    ## Peer to Peer
-    #xchat.unhook(hookamule)
-    #xchat.unhook(hookazureus)
-    ## Descarga
-    #xchat.unhook(hookunload)
+#############################################################################
+# Definimos la funcion para la descarga del programa
+#############################################################################
+def unload_cb(userdata):
+    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+    Argumentos:
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    # Desconectamos los comandos
+    # Peer to Peer
+    xchat.unhook(hookamule)
+    xchat.unhook(hookazureus)
+    # Descarga
+    xchat.unhook(hookunload)
 
 
-##############################################################################
-## Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-## para ellos
-##############################################################################
-## Peer to Peer
-#hookamule = xchat.hook_command('amule', amule_cb)
-#hookazureus = xchat.hook_command('azureus', azureus_cb)
-## Descarga del script
-#hookunload = xchat.hook_unload(unload_cb)
+#############################################################################
+# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
+# para ellos
+#############################################################################
+# Peer to Peer
+HOOKAMULE = xchat.hook_command('amule', amule_cb)
+HOOKAZUREUS = xchat.hook_command('azureus', azureus_cb)
+# Descarga del script
+HOOKP2P = xchat.hook_unload(unload_cb)
+
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/Descargas"')
+xchat.command('menu ADD "GatoScript/Descargas/aMule" "amule"')
+xchat.command('menu ADD "GatoScript/Descargas/Azureus" "azureus"')
