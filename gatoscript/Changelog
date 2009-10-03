@@ -1,8 +1,13 @@
 2009-10-03  GatoLoko  <GatoLoko@gmail.com>
 
- * auxiliar.py: agregada funcion para pasar bytes a su multiplo mas legible
- * p2p.py: simplificada la funcion amule_cb utilizando la nueva funcion auxiliar
- * p2p.py: agregada funcion transmission_cb para mostrar datos de transmission
+ * remotos.py: Arreglada la cabecera del archivo.
+
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: agregada funcion para pasar bytes a su multiplo mas legible.
+ * p2p.py: simplificada la funcion amule_cb utilizando la nueva funcion
+   auxiliar.unidades para convertir las catidades de bytes a KB, MB, GB, ...
+ * p2p.py: agregada funcion transmission_cb para mostrar datos de transmission.
 
 2009-08-15  GatoLoko  <GatoLoko@gmail.com>
 

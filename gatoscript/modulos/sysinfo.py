@@ -20,14 +20,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
+Modulo SysInfo del GatoScript.
 
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+Este modulo se contiene funciones para mostrar informacion del sistema
+facilmente en GatoScript.
 """
 
-__module_name__ = "GatoScript"
+__module_name__ = "GatoScript SysInfo"
 __module_version__ = "1.0alpha1"
-__module_description__ = "GatoScript para XChat"
+__module_description__ = "Modulo SysInfo para el GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
