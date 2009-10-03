@@ -1,3 +1,9 @@
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: agregada funcion para pasar bytes a su multiplo mas legible
+ * p2p.py: simplificada la funcion amule_cb utilizando la nueva funcion auxiliar
+ * p2p.py: agregada funcion transmission_cb para mostrar datos de transmission
+
 2009-08-15  GatoLoko  <GatoLoko@gmail.com>
 
  * whois.py: refactorizadas algunas lineas, resultando en la funcion espacios()
@@ -5,7 +11,6 @@
  * whois.py: gestionados los raws 310, 313 y 316.
  * auxiliar.py: arreglado la docstring de priv_imprime.
  * auxiliar.py: eliminada la funcion prueba() que no tenia utilidad.
-
 
 2009-06-25  GatoLoko  <GatoLoko@gmail.com>
 

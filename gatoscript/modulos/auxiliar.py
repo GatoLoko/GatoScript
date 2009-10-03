@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo AntiSpam del GatoScript.
+Modulo Auxiliar del GatoScript.
 
 Este modulo contiene las funciones auxiliares para el GatoScript.
 """
@@ -177,6 +177,26 @@ def gato_info_cb(word, word_eol, userdata):
     version = xchat.get_info("version")
     xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
     return xchat.EAT_ALL
+
+def unidades(origen):
+    valor = str(origen/2**80) + 'YBytes'
+    if origen < 2**80:
+        valor = str(origen/2**70) + 'ZBytes'
+    if origen < 2**70:
+        valor = str(origen/2**60) + 'EBytes'
+    if origen < 2**60:
+        valor = str(origen/2**50) + 'PBytes'
+    if origen < 2**50:
+        valor = str(origen/2**40) + 'TBytes'
+    if origen < 2**40:
+        valor = str(origen/2**30) + 'GBytes'
+    if origen < 2**30:
+        valor = str(origen/2**20) + 'MBytes'
+    if origen < 2**20:
+        valor = str(origen/2**10) + 'KBytes'
+    if origen < 2**10:
+        valor = str(origen) + 'Bytes'
+    return valor
 
 
 #############################################################################

@@ -44,6 +44,7 @@ import xml.dom.minidom
 _HOME = path.expanduser("~")
 _AMULESIG = _HOME + "/.aMule/amulesig.dat"
 _AZUREUSSTATS = _HOME + "/.azureus/Azureus_Stats.xml"
+_TRANSMISSIONSTATS = _HOME + "/.transmission/stats.benc"
 
 ##############################################################################
 # Inicializamos el modulo
@@ -107,19 +108,13 @@ def amule_cb(word, word_eol, userdata):
         if lineas_amule[0] == "0":
             auxiliar.gprint("No estas conectado a aMule")
         else:
-            vdescarga = (lineas_amule[6])[0:len(lineas_amule[6])-1]
-            vsubida = (lineas_amule[7])[0:len(lineas_amule[7])-1]
-            desc_len = len(lineas_amule[11]) - 1
-            if (int(lineas_amule[11]) < 1048576):
-                total_descargado = str(lineas_amule[11][0:desc_len]) + 'Bytes'
-            elif (int(lineas_amule[11][0:desc_len]) >= 1048576) and (int(lineas_amule[11][0:desc_len]) < 1073741824):
-                total_descargado = str(int((lineas_amule[11])[0:desc_len])/1048576) + 'MB'
-            else:
-                total_descargado = str(int((lineas_amule[11])[0:desc_len])/1073741824) + 'GB'
-            version = lineas_amule[13][0:len(lineas_amule[13]) - 1]
+            vdescarga = (lineas_amule[6])[0:-1]
+            vsubida = (lineas_amule[7])[0:-1]
+            total_descargado = auxiliar.unidades(int(lineas_amule[11]))
+            version = lineas_amule[13][0:-1]
             xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version, vdescarga, vsubida, total_descargado))
     else:
-        auxiliar.gprint("No existe el archivo " + _AMULESIG + ", compruebe que activo la firma online en la configuracion de aMule")
+        auxiliar.gprint("No existe el archivo " + _AMULESIG + ", compruebe que activo la firma online en la configuracion de aMule.")
     return xchat.EAT_ALL
 
 def azureus_cb(word, word_eol, userdata):
@@ -141,8 +136,36 @@ def azureus_cb(word, word_eol, userdata):
         xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga, vsubida))
         del descarga, vdescarga, subida, vsubida, glob, stats, dom1
     else:
-        auxiliar.gprint("No existe el archivo " + _AZUREUSSTATS + ", compruebe su configuracion de Azureus")
+        auxiliar.gprint("No existe el archivo " + _AZUREUSSTATS + ", compruebe su configuracion de Azureus.")
     return xchat.EAT_ALL
+
+def transmission_cb(word, word_eol, userdata):
+    """Lee el archivo stats.benc (estadisticas) de Transmission y muestra parte
+    de la informacion en el canal activo.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if path.exists(_TRANSMISSIONSTATS):
+        textos = [[1, 3], [17, 3], [12,3], [15, 3], [14, 3], [15, 2]]
+        parte = []
+        archivo = file(_TRANSMISSIONSTATS, "r")
+        partes = archivo.readline().split(':')
+        #print partes
+        archivo.close()
+        for i in range(1, len(partes)):
+            parte.append(partes[i][textos[i][0]:-textos[i][1]])
+        #print parte
+        #print "Descargados " + parte[0] + "Bytes"
+        #print "Subidos     " + parte[4] + "Bytes"
+        #print "Trabajados  " + parte[2] + "Segundos"
+        descargado = auxiliar.unidades(int(parte[0]))
+        subido = auxiliar.unidades(int(parte[4]))
+        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" %(descargado, subido))
+    else:
+        auxiliar.gprint("No existe el archivo " + _TRANSMISSIONSTATS + ", compruebe su configuracion de Transmission.")
+    
 
 #############################################################################
 # Definimos la funcion para la descarga del programa
@@ -154,10 +177,11 @@ def unload_cb(userdata):
     """
     # Desconectamos los comandos
     # Peer to Peer
-    xchat.unhook(hookamule)
-    xchat.unhook(hookazureus)
+    xchat.unhook(HOOKAMULE)
+    xchat.unhook(HOOKAZUREUS)
+    xchat.unhook(HOOKTRANSMISSION)
     # Descarga
-    xchat.unhook(hookunload)
+    xchat.unhook(HOOKP2P)
 
 
 #############################################################################
@@ -167,6 +191,7 @@ def unload_cb(userdata):
 # Peer to Peer
 HOOKAMULE = xchat.hook_command('amule', amule_cb)
 HOOKAZUREUS = xchat.hook_command('azureus', azureus_cb)
+HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
 # Descarga del script
 HOOKP2P = xchat.hook_unload(unload_cb)
 
@@ -177,3 +202,4 @@ HOOKP2P = xchat.hook_unload(unload_cb)
 xchat.command('menu ADD "GatoScript/Descargas"')
 xchat.command('menu ADD "GatoScript/Descargas/aMule" "amule"')
 xchat.command('menu ADD "GatoScript/Descargas/Azureus" "azureus"')
+xchat.command('menu ADD "GatoScript/Descargas/Transmission" "transmission"')
