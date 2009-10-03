@@ -1,5 +1,11 @@
 2009-10-03  GatoLoko  <GatoLoko@gmail.com>
 
+ * protecciones.py: agregada la funcion anti_drone_cb para deteccion y expulsion
+   de Drones publicitarios.
+ * protecciones.py: limpieza general del modulo.
+
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
  * remotos.py: Arreglada la cabecera del archivo.
 
 2009-10-03  GatoLoko  <GatoLoko@gmail.com>

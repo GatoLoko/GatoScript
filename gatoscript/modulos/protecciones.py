@@ -48,15 +48,6 @@ _SCRIPTDIR = xchat.get_info("xchatdir")
 _GATODIR = join(_SCRIPTDIR, "gatoscript")
 _GATODB_PATH = join(_SCRIPTDIR, "gatoscript.conf")
 _GATODB = join(_GATODIR, "gatoscript.db")
-
-# Incluimos el directorio de modulos en el path
-#sys.path.append(moddir)
-
-# Importamos el modulo de funciones auxiliares
-import auxiliar
-# Importamos el modulo antispam
-import antispam
-
 num_abusos_mayus = []
 num_abusos_colores = []
 
@@ -185,21 +176,15 @@ def anti_colores_cb(word, word_eol, userdata):
                         xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores/negrillas/subrayado en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
     return xchat.EAT_NONE
 
-def proteccion_cb(word, word_eol, userdata):
-    """Detecta el envio de SPAM a canales y expulsa al autor
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    if auxiliar.lee_conf("protecciones", "spam") == "1":
-        chanspam = auxiliar.lee_conf("protecciones", "chanspam").split(",")
-        for i in range(len(chanspam)):
-            if word_eol[3].find(chanspam[i]) > 0:
-                ban = "1"
-                mensaje = " Spam"
-                auxiliar.expulsa(mensaje, ban, word)
-    return xchat.EAT_NONE
+
+#def proteccion_cb(word, word_eol, userdata):
+#    """Detecta el envio de SPAM a canales y expulsa al autor
+#    Argumentos:
+#    word     -- array de palabras que envia xchat a cada hook
+#    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+#    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+#    """
+#    return xchat.EAT_NONE
 
 # Anti ClonerX  (on JOIN)
 def anti_clonerx_cb(word, word_eol, userdata):
@@ -223,7 +208,26 @@ def anti_clonerx_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 def anti_drone_cb(word, word_eol, userdata):
+    """Detecta nicks que entran al canal con nick/indent que concuerde con los
+    de un Drone y los banea para evitar el expulsa para evitar el SPAM.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     #print word_eol[0]
+    nickre = re.compile("^[a-z]{4,}_[a-z]{2}$", re.IGNORECASE)
+    identre = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
+    nick = word[0][1:].split("!")[0]
+    ident = word[0][1:].split("!")[1].split("@")[0]
+    if nickre.search(nick) and identre.search(ident):
+        canal = word[2][1:]
+        contexto = xchat.find_context(channel=canal)
+        host = word[0].split("@")[1]
+        comando = "ban *!*@" + host
+        contexto.command(comando)
+        comando = "kick " + nick + " Bot"
+        contexto.command(comando)
     return xchat.EAT_NONE
     
 def anti_away_cb(word, word_eol, userdata):
