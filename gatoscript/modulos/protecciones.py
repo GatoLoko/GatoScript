@@ -156,15 +156,16 @@ def anti_colores_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    if auxiliar.lee_conf("protecciones", "colores") == "1":
-        for canal in auxiliar.lee_conf( "protecciones", "canales" ).split( ',' ):
+    accion = re.compile('^\ACTION')
+    colores = re.compile('\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?(,[0-9]{1,2})?)?')
+    ignorar = False
+    if auxiliar.lee_conf("protecciones", "banea_colores") == "1":
+        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
             if canal.lower() == word[2].lower():
                 mensaje = ""
                 cadena = word_eol[3][1:]
-                accion = re.compile('^\ACTION')
                 if accion.match(cadena):
                     cadena = cadena[7:]
-                colores = re.compile('\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?(,[0-9]{1,2})?)?')
                 if colores.search(cadena):
                     host = word[0][1:].split("@")[1]
                     if host in num_abusos_colores:
@@ -174,7 +175,20 @@ def anti_colores_cb(word, word_eol, userdata):
                     else:
                         num_abusos_colores.append(host)
                         xchat.command("msg " + word[2] + " " + word[0][1:].split("!")[0] + ": no uses colores/negrillas/subrayado en este canal, va contra las normas. La proxima vez seras expulsado. Para desactivarlos escribe: /remote off")
-    return xchat.EAT_NONE
+    if auxiliar.lee_conf("protecciones", "ignora_colores") == "1":
+        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
+            if canal.lower() == word[2].lower():
+                cadena = word_eol[3][1:]
+                if accion.match(cadena):
+                    cadena = cadena[7:]
+                if colores.search(cadena):
+                    ignorar = True
+    if ignorar == True:
+        auxiliar.gprint("Mensaje de %s ignorado por uso de colores" %(word[0][1:].split("!")[0]))
+        return xchat.EAT_ALL
+        
+    else:
+        return xchat.EAT_NONE
 
 
 #def proteccion_cb(word, word_eol, userdata):
@@ -271,7 +285,7 @@ def unload_cb(userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     # Desconectamos las funciones de proteccion
-    xchat.unhook(HOOKPROTECCION)
+    #xchat.unhook(HOOKPROTECCION)
     xchat.unhook(HOOKANTINOTICE)
     xchat.unhook(HOOKANTICLONERX)
     xchat.unhook(HOOKANTIDRONE)
@@ -290,7 +304,7 @@ def unload_cb(userdata):
 ##############################################################################
 
 # Protecciones
-HOOKPROTECCION = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None, priority=10)
+#HOOKPROTECCION = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None, priority=10)
 HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTICLONERX = xchat.hook_server('JOIN', anti_clonerx_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
