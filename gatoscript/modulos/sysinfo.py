@@ -27,7 +27,6 @@ facilmente en GatoScript.
 """
 
 __module_name__ = "GatoScript SysInfo"
-__module_version__ = "1.0alpha1"
 __module_description__ = "Modulo SysInfo para el GatoScript"
 __module_autor__ = "GatoLoko"
 

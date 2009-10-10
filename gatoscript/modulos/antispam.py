@@ -1,4 +1,3 @@
-
 # -*- coding: UTF8 -*-
 
 # CopyRight (C) 2006-2009 GatoLoko
@@ -26,7 +25,6 @@ Este modulo contiene las funciones AntiSpam para el GatoScript.
 """
 
 __module_name__ = "GatoScript AntiSpam"
-__module_version__ = "1.0"
 __module_description__ = "Modulo AntiSpam para el GatoScript"
 __module_autor__ = "GatoLoko"
 

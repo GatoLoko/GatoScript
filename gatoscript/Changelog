@@ -1,3 +1,17 @@
+2009-10-10  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: modificada la funcion anti_colores_cb para que
+   pueda ignorar los mensajes que contienen color de forma opcional.
+ * gatoscript.conf: renombrada la opcion "colores" a "banea_colores" y
+   agregada la opcion "ignora_colores".
+ * gatoscript.conf: eliminadas algunas opciones obsoletas.
+ * Eliminadas las versiones propias de cada modulo.
+ * remotos.py: empezada la revision del codigo para que trabaje como modulo.
+ * auxiliar.py: cambiada la version del script para publicarlo como 0.80.
+ * gatoscript.db: agregados algunos filtros antispam.
+ * gatoscript.py: cambiada la version para publicarlo como 0.80.
+ * gatoscript.py: eliminadas algunas variables innecesarias.
+
 2009-10-03  GatoLoko  <GatoLoko@gmail.com>
 
  * protecciones.py: agregada la funcion anti_drone_cb para deteccion y expulsion

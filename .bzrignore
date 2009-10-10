@@ -6,3 +6,5 @@ gatoscript-funciones.txt
 gatoscript-old.py
 realzaurl.py
 ./antispam.py
+gatoscript/autosend/*
+GatoScript.kpf

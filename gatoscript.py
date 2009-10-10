@@ -26,7 +26,7 @@ Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.80alpha2"
+__module_version__ = "0.80"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
@@ -39,10 +39,7 @@ import sys
 
 # Definimos algunas variables de entorno para poder trabajar comodamente
 scriptdir = xchat.get_info("xchatdir")
-gatodir = join(scriptdir, "gatoscript")
-moddir = join(gatodir, "modulos")
-gatoconf = join(scriptdir, "gatoscript.conf")
-gatodb = join(gatodir, "gatoscript.db")
+moddir = join(scriptdir, "gatoscript", "modulos")
 
 # Incluimos el directorio de modulos en el path
 sys.path.append(moddir)

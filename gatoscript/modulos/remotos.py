@@ -20,22 +20,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
+Modulo Remotos del GatoScript.
 
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+Este modulo contiene las funciones para comandos remotos del GatoScript.
 """
 
-__module_name__ = "GatoScript"
-__module_version__ = "0.80alpha1"
-__module_description__ = "GatoScript para XChat"
+__module_name__ = "GatoScript Remotos"
+__module_description__ = "Modulo Remotos para el GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
 import xchat
-# Importamos la funcion para unir directorios de forma portable
 from os.path import join
-# Importamos la funcion que nos permite definir nuestro directorio de modulos
-import sys
+# Importamos el modulo de funciones auxiliares
+import auxiliar
 
 # Definimos algunas variables de entorno para poder trabajar comodamente
 scriptdir = xchat.get_info("xchatdir")
@@ -43,13 +41,6 @@ gatodir = join(scriptdir, "gatoscript")
 moddir = join(gatodir, "modulos")
 gatoconf = join(scriptdir, "gatoscript.conf")
 gatodb = join(gatodir, "gatoscript.db")
-
-# Incluimos el directorio de modulos en el path
-sys.path.append(moddir)
-
-# Importamos el modulo de funciones auxiliares
-import auxiliar
-
 ## Cargamos las librerias y funciones que necesitamos
 #import xchat, re, datetime, xml.dom.minidom, commands
 #from os import popen3, path, system
