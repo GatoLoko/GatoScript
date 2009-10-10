@@ -20,13 +20,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
+Modulo Resaltados del GatoScript.
 
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+Este modulo contiene las funciones resalte/"des-resalte" de textos para el
+GatoScript.
 """
 
 __module_name__ = "GatoScript Resaltados"
-__module_version__ = "1.0alpha"
 __module_description__ = "Modulo Resaltados para GatoScript"
 __module_autor__ = "GatoLoko"
 

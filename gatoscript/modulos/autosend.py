@@ -25,7 +25,6 @@ Este modulo distribuye archivos de forma automatizada.
 """
 
 __module_name__ = "GatoScript AutoSend"
-__module_version__ = "1.0"
 __module_description__ = "Modulo AutoSend para el GatoScript"
 __module_autor__ = "GatoLoko"
 
