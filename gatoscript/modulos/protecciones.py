@@ -251,12 +251,14 @@ def anti_away_cb(word, word_eol, userdata):
     userdata -- variable opcional que se envia a un hook (ignorado)
     """
     if auxiliar.lee_conf("protecciones", "away") == "1":
-        awaystr = auxiliar.lee_conf("protecciones", "awaystr").split(",")
-        for i in range(len(awaystr)):
-            if word_eol[3].find(awaystr[i]) > 0:
-                ban = "1"
-                mensaje = " Quita los mensajes de away automaticos, si no estas callate"
-                auxiliar.expulsa(mensaje, ban, word)
+        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
+            if canal.lower() == word[2].lower():
+                awaystr = auxiliar.lee_conf("protecciones", "awaystr").split(",")
+                for i in range(len(awaystr)):
+                    if word_eol[3].find(awaystr[i]) > 0:
+                        ban = "1"
+                        mensaje = " Quita los mensajes de away automaticos, si no estas callate"
+                        auxiliar.expulsa(mensaje, ban, word)
     return xchat.EAT_NONE
 
 
