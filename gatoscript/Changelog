@@ -6,6 +6,9 @@
  * auxiliar.py: simplificada la funcion unidades.
  * auxiliar.py: agregada la funcion kbtemporal_cb que fue eliminada durante la
    modularizacion del script.
+ * autosend.py: modificados varios mensajes para hacerlos mas genericos y
+   correctos.
+ * gatoscript.conf: cambiado el disparador para el autoenvio.
 
 2009-10-10  GatoLoko  <GatoLoko@gmail.com>
 
