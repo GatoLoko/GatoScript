@@ -78,7 +78,7 @@ import p2p
 #############################################################################
 def unload_cb(userdata):
     xchat.command('menu del GatoScript')
-    print "Se ha descargado GatoScript %s" % __module_version__
+    print("Se ha descargado GatoScript %s" % __module_version__)
 
 #############################################################################
 # Conectamos la funcion de descarga del script

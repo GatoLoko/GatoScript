@@ -76,7 +76,6 @@ def rss_cb(word, word_eol, userdata):
     fecha = str(datetime.datetime.now())[:19]
     limitador = int(auxiliar.lee_conf("rss", "limitador"))
     for servidor in servidores:
-        print "Debug: " + servidor
         auxiliar.priv_linea(servidor + " - " + fecha)
         auxiliar.priv_linea("")
         archivo = xml.dom.minidom.parse(urlopen(servidor))

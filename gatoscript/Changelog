@@ -9,6 +9,10 @@
  * autosend.py: modificados varios mensajes para hacerlos mas genericos y
    correctos.
  * gatoscript.conf: cambiado el disparador para el autoenvio.
+ * rss.py: eliminado un antiguo mensaje de depuración.
+ * gatoscript.py: modificado el uso de la funcion print para que sea compatible
+   con las futuras versiones de python.
+ * gatoscript.db: agregados algunos filtros.
 
 2009-10-10  GatoLoko  <GatoLoko@gmail.com>
 
