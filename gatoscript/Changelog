@@ -1,3 +1,12 @@
+2009-11-23  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: sustituido el uso de ConfigParser.ConfigParser por
+   ConfigParser.SafeConfigParser, que es mas recomendable (requiere python 2.3
+   o superior).
+ * auxiliar.py: simplificada la funcion unidades.
+ * auxiliar.py: agregada la funcion kbtemporal_cb que fue eliminada durante la
+   modularizacion del script.
+
 2009-10-10  GatoLoko  <GatoLoko@gmail.com>
 
  * protecciones.py: modificada la funcion anti_colores_cb para que

@@ -33,7 +33,7 @@ __module_autor__ = "GatoLoko"
 # Cargamos las librerias y funciones que necesitamos
 import xchat
 from os import path
-from ConfigParser import ConfigParser
+from ConfigParser import SafeConfigParser
 
 #############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
@@ -45,7 +45,7 @@ _GATODIR = _SCRIPTDIR + "/gatoscript/"
 _CONFIGFILE = _GATODIR + "gatoscript.conf"
 #home = xchat.get_info("xchatdir")[:-7]
 HOME = path.expanduser("~")
-CP = ConfigParser()
+CP = SafeConfigParser()
 
 #############################################################################
 # Inicializamos el modulo
@@ -158,9 +158,9 @@ def opciones_cb(word, word_eol, userdata):
         priv_linea("")
     elif info_param == 2:
         if word[1] == "prueba":
-            print "Prueba con un solo parametro"
+            print("Prueba con un solo parametro")
         else:
-            print "Parametro erroneo"
+            print("Parametro erroneo")
     elif info_param == 4:
         escribe_conf(word[1], word[2], word[3])
     else:
@@ -178,26 +178,54 @@ def gato_info_cb(word, word_eol, userdata):
     xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
     return xchat.EAT_ALL
 
-def unidades(origen):
-    valor = str(origen/2**80) + 'YBytes'
-    if origen < 2**80:
-        valor = str(origen/2**70) + 'ZBytes'
-    if origen < 2**70:
-        valor = str(origen/2**60) + 'EBytes'
-    if origen < 2**60:
-        valor = str(origen/2**50) + 'PBytes'
-    if origen < 2**50:
-        valor = str(origen/2**40) + 'TBytes'
-    if origen < 2**40:
-        valor = str(origen/2**30) + 'GBytes'
-    if origen < 2**30:
-        valor = str(origen/2**20) + 'MBytes'
-    if origen < 2**20:
-        valor = str(origen/2**10) + 'KBytes'
-    if origen < 2**10:
-        valor = str(origen) + 'Bytes'
-    return valor
+def unidades(valor):
+    SUFIJOS = {1024: ['KByte', 'MByte', 'GByte', 'TByte', 'PByte', 'EByte', \
+                      'ZByte', 'YByte']}
+    if valor < 0:
+        raise ValueError('los valores negativos no son validos')
+    for sufijo in SUFIJOS[1024]:
+        valor /= 1024
+        if valor < 1024:
+            return '{0:.1f}{1}'.format(valor, sufijo)
+    raise ValueError('numero demasiado grande')
+    
+    #valor = str(origen/2**80) + 'YBytes'
+    #if origen < 2**80:
+    #    valor = str(origen/2**70) + 'ZBytes'
+    #if origen < 2**70:
+    #    valor = str(origen/2**60) + 'EBytes'
+    #if origen < 2**60:
+    #    valor = str(origen/2**50) + 'PBytes'
+    #if origen < 2**50:
+    #    valor = str(origen/2**40) + 'TBytes'
+    #if origen < 2**40:
+    #    valor = str(origen/2**30) + 'GBytes'
+    #if origen < 2**30:
+    #    valor = str(origen/2**20) + 'MBytes'
+    #if origen < 2**20:
+    #    valor = str(origen/2**10) + 'KBytes'
+    #if origen < 2**10:
+    #    valor = str(origen) + 'Bytes'
+    #return valor
 
+def kbtemporal_cb(word, word_eol, userdata):
+    """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    if (len(word_eol) > 2):
+        xchat.command("ban %s!*@*" %word[1])
+        xchat.command("kick %s Expulsado 5 minutos (%s)" %(word[1], word_eol[2]))
+        xchat.command("timer -repeat 1 300 unban %s!*@*" %word[1])
+    elif (len(word_eol) > 1):
+        xchat.command("ban %s!*@*" %word[1])
+        xchat.command("kick %s Expulsado 5 minutos" %word[1])
+        xchat.command("timer -repeat 1 300 unban %s!*@*" %word[1])
+    else:
+        gprint("Hay que especificar un nick a patear")
+    return xchat.EAT_ALL
 
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del modulo
@@ -228,6 +256,8 @@ def unload_cb(userdata):
     xchat.unhook(HOOKOPCIONES)
     # Informacion del script
     xchat.unhook(HOOKGINFO)
+    # KickBan Temporal
+    xchat.unhook(HOOKKBTEMP)
     # Descarga
     xchat.unhook(HOOKAUXILIAR)
 
@@ -241,6 +271,8 @@ def unload_cb(userdata):
 HOOKOPCIONES = xchat.hook_command('opciones', opciones_cb)
 # Informacion del script
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
+# KickBan Temporal
+HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
 # Descarga del script
 HOOKAUXILIAR = xchat.hook_unload(unload_cb)
 
