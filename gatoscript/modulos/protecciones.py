@@ -89,12 +89,13 @@ def anti_notice_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     """
     #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hola
-    canales = auxiliar.lee_conf("protecciones", "canales").split(',')
-    for canal in canales:
-        if word[2].lower() == canal.lower():
-            partes = word[0][1:].split("!")
-            comando = "kickban " + partes[0] + " Putos scriptkidies...."
-            xchat.command(comando)
+    if auxiliar.lee_conf("protecciones", "notices") == "1":
+        canales = auxiliar.lee_conf("protecciones", "canales").split(',')
+        for canal in canales:
+            if word[2].lower() == canal.lower():
+                partes = word[0][1:].split("!")
+                comando = "kickban " + partes[0] + " Putos scriptkidies...."
+                xchat.command(comando)
     return xchat.EAT_NONE
 
 def anti_hoygan_cb(word, word_eol, userdata):
@@ -208,16 +209,17 @@ def anti_clonerx_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    bots = re.compile("^[a-z]{1}(\d){2,4}$")
-    ident = word[0][1:].split("!")[1].split("@")[0]
-    if bots.search(ident):
-        canal = word[2][1:]
-        contexto = xchat.find_context(channel=canal)
-        host = word[0].split("@")[1]
-        comando = "ban *!*@" + host
-        contexto.command(comando)
-        mensaje = "Ident de ClonerX en " + canal
-        auxiliar.gprint(mensaje)
+    if auxiliar.lee_conf("protecciones", "clonerx") == "1":
+        bots = re.compile("^[a-z]{1}(\d){2,4}$")
+        ident = word[0][1:].split("!")[1].split("@")[0]
+        if bots.search(ident):
+            canal = word[2][1:]
+            contexto = xchat.find_context(channel=canal)
+            host = word[0].split("@")[1]
+            comando = "ban *!*@" + host
+            contexto.command(comando)
+            mensaje = "Ident de ClonerX en " + canal
+            auxiliar.gprint(mensaje)
     return xchat.EAT_NONE
 
 def anti_drone_cb(word, word_eol, userdata):
@@ -229,18 +231,19 @@ def anti_drone_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     #print word_eol[0]
-    nickre = re.compile("^[a-z]{4,}_[a-z]{2}$", re.IGNORECASE)
-    identre = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
-    nick = word[0][1:].split("!")[0]
-    ident = word[0][1:].split("!")[1].split("@")[0]
-    if nickre.search(nick) and identre.search(ident):
-        canal = word[2][1:]
-        contexto = xchat.find_context(channel=canal)
-        host = word[0].split("@")[1]
-        comando = "ban *!*@" + host
-        contexto.command(comando)
-        comando = "kick " + nick + " Bot"
-        contexto.command(comando)
+    if auxiliar.lee_conf("protecciones", "drones") == "1":
+        nickre = re.compile("^[a-z]{4,}_[a-z]{2}$", re.IGNORECASE)
+        identre = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
+        nick = word[0][1:].split("!")[0]
+        ident = word[0][1:].split("!")[1].split("@")[0]
+        if nickre.search(nick) and identre.search(ident):
+            canal = word[2][1:]
+            contexto = xchat.find_context(channel=canal)
+            host = word[0].split("@")[1]
+            comando = "ban *!*@" + host
+            contexto.command(comando)
+            comando = "kick " + nick + " Bot"
+            contexto.command(comando)
     return xchat.EAT_NONE
     
 def anti_away_cb(word, word_eol, userdata):

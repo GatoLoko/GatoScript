@@ -1,3 +1,12 @@
+2009-11-27  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: modificada la funcion anti_notice_cb para que pueda ser
+   desactivada en la configuracion del script.
+ * protecciones.py: modificada la funcion anti_clonerx_cb para que pueda ser
+   desactivada en la configuracion del script.
+ * protecciones.py: modificada la funcion anti_drone_cb para que pueda ser
+   desactivada en la configuracion del script.
+
 2009-11-23  GatoLoko  <GatoLoko@gmail.com>
 
  * auxiliar.py: sustituido el uso de ConfigParser.ConfigParser por
