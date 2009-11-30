@@ -179,6 +179,10 @@ def gato_info_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def unidades(valor):
+    """Convierte cantidades de bytes a alguno de sus multiplos
+    Argumentos:
+    valor    -- entero con la cantidad en bytes que queremos convertir
+    """
     SUFIJOS = {1024: ['KByte', 'MByte', 'GByte', 'TByte', 'PByte', 'EByte', \
                       'ZByte', 'YByte']}
     if valor < 0:
@@ -188,25 +192,6 @@ def unidades(valor):
         if valor < 1024:
             return '{0:.1f}{1}'.format(valor, sufijo)
     raise ValueError('numero demasiado grande')
-    
-    #valor = str(origen/2**80) + 'YBytes'
-    #if origen < 2**80:
-    #    valor = str(origen/2**70) + 'ZBytes'
-    #if origen < 2**70:
-    #    valor = str(origen/2**60) + 'EBytes'
-    #if origen < 2**60:
-    #    valor = str(origen/2**50) + 'PBytes'
-    #if origen < 2**50:
-    #    valor = str(origen/2**40) + 'TBytes'
-    #if origen < 2**40:
-    #    valor = str(origen/2**30) + 'GBytes'
-    #if origen < 2**30:
-    #    valor = str(origen/2**20) + 'MBytes'
-    #if origen < 2**20:
-    #    valor = str(origen/2**10) + 'KBytes'
-    #if origen < 2**10:
-    #    valor = str(origen) + 'Bytes'
-    #return valor
 
 def kbtemporal_cb(word, word_eol, userdata):
     """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
