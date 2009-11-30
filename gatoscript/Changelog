@@ -1,3 +1,7 @@
+2009-11-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * instalador: arreglado (otra vez), esto no termina de funcionar nunca
+
 2009-11-27  GatoLoko  <GatoLoko@gmail.com>
 
  * protecciones.py: modificada la funcion anti_notice_cb para que pueda ser

@@ -32,14 +32,15 @@ def conf_cambia(conf,nuevo):
     archivo = file(xchatconf, "r")
     memoria = archivo.read().split("\n")
     archivo.close
-    print len(memoria)
+    #print len(memoria)
     for i in range(len(memoria)-1):
         if memoria[i] != "":
             opcion, valor = memoria[i].split(' = ')
             if (opcion == conf):
-                memoria[i] = opcion + " = " + nuevo + "\n"
+                memoria[i] = opcion + " = " + nuevo
     archivo = file(xchatconf, "w")
-    archivo.writelines(memoria)
+    for i in range(len(memoria)):
+        archivo.write(memoria[i] + "\n")
     archivo.close
 
 # La siguiente variable contiene las lineas que deben añadirse al archivo de
@@ -77,6 +78,8 @@ if actualizacion != 1:
             archivo = file(archivo_ctcp, "a")
             archivo.writelines(lineas_ctcp)
             archivo.close()
+    else:
+        archivo = file(archivo_ctcp, "a")
     # Cambiamos el orden de completado de nicks por uno que comete menos errores
     conf_cambia("completion_sort", "1")
     # Cambiamos el tipo de ban por uno que mejora las protecciones del script
@@ -92,10 +95,10 @@ else:
 # Mensajes de aviso para que quienes lo instalen
 mensaje = """Para algunas funciones de GatoScript son necesarias las librerias externas indicadas a continuacion:
 
-Uso                   | Libreria
------------------------------------
-Control de XMMS       | python-xmms
-Control de Rhythmbox  | python-dbus
+Uso                                 | Libreria
+-------------------------------------------------
+Control de XMMS                     | python-xmms
+Control de Rhythmbox mediante DBUS  | python-dbus
 
 Si quiere utilizar alguna de esas funciones, instale la libreria correspondiente."""
 print mensaje
