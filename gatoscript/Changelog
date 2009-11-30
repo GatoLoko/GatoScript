@@ -2,7 +2,8 @@
 
  * instalador: arreglado (otra vez), esto no termina de funcionar nunca.
  * auxiliar.py: agregado el docstring a la funcion unidades.
- * auxiliar.py: eliminadas varias lineas comentadas que ya no son necesarias
+ * auxiliar.py: eliminadas varias lineas comentadas que ya no son necesarias.
+ * auxiliar.py: ordenadas las funciones dependiendo de su utilidad.
 
 2009-11-27  GatoLoko  <GatoLoko@gmail.com>
 

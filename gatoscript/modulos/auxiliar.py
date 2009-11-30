@@ -54,6 +54,7 @@ CP = SafeConfigParser()
 #############################################################################
 # Definimos las funciones de uso interno en el GatoScript
 #############################################################################
+# Configuracion
 def lee_conf(seccion, opcion):
     """Lee una opcion del archivo de configuracion.
     Argumentos:
@@ -66,6 +67,21 @@ def lee_conf(seccion, opcion):
     CP.read(_CONFIGFILE)
     return CP.get(seccion, opcion)
 
+def escribe_conf(seccion, opcion, valor):
+    """Guarda una opcion en el archivo de configuracion.
+    Argumentos:
+    seccion -- cadena con el nombre de la seccion del archivo de
+    configuracion, en caso de no suministrarse se utilizara "comun"
+    opcion  -- cadena con el nombre de la opcion que queremos guardar
+    valor   -- cadena con el valor que queremos asignar a esa opcion
+    """
+    if (seccion == ""):
+        seccion = "comun"
+    CP.read(_CONFIGFILE)
+    CP.set(seccion, opcion, valor)
+    CP.write(file(_CONFIGFILE, "w"))
+
+# Mostrar mensajes
 def gprint(mensaje):
     """Escribe "Gatoscript >> " seguido de la cadena que recibe como
     parametro. Util para mostrar mensajes del script al usuario.
@@ -105,20 +121,7 @@ def priv_linea(mensaje):
     contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
 
-def escribe_conf(seccion, opcion, valor):
-    """Guarda una opcion en el archivo de configuracion.
-    Argumentos:
-    seccion -- cadena con el nombre de la seccion del archivo de
-    configuracion, en caso de no suministrarse se utilizara "comun"
-    opcion  -- cadena con el nombre de la opcion que queremos guardar
-    valor   -- cadena con el valor que queremos asignar a esa opcion
-    """
-    if (seccion == ""):
-        seccion = "comun"
-    CP.read(_CONFIGFILE)
-    CP.set(seccion, opcion, valor)
-    CP.write(file(_CONFIGFILE, "w"))
-
+#Expulsion
 def expulsa(mensaje, ban, word):
     """Expulsa un usuario del canal dependiendo de las opciones configuradas
     Argumentos:
@@ -137,6 +140,23 @@ def expulsa(mensaje, ban, word):
         comando = "kick " + partes[0] + mensaje
         xchat.command(comando)
 
+#Conversion de unidades
+def unidades(valor):
+    """Convierte cantidades de bytes a alguno de sus multiplos
+    Argumentos:
+    valor    -- entero con la cantidad en bytes que queremos convertir
+    """
+    SUFIJOS = {1024: ['KByte', 'MByte', 'GByte', 'TByte', 'PByte', 'EByte', \
+                      'ZByte', 'YByte']}
+    if valor < 0:
+        raise ValueError('los valores negativos no son validos')
+    for sufijo in SUFIJOS[1024]:
+        valor /= 1024
+        if valor < 1024:
+            return '{0:.1f}{1}'.format(valor, sufijo)
+    raise ValueError('numero demasiado grande')
+
+# Comandos
 def opciones_cb(word, word_eol, userdata):
     """Esta funcion se encarga de mostrar y modificar las configuraciones del
     script.
@@ -177,21 +197,6 @@ def gato_info_cb(word, word_eol, userdata):
     version = xchat.get_info("version")
     xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
     return xchat.EAT_ALL
-
-def unidades(valor):
-    """Convierte cantidades de bytes a alguno de sus multiplos
-    Argumentos:
-    valor    -- entero con la cantidad en bytes que queremos convertir
-    """
-    SUFIJOS = {1024: ['KByte', 'MByte', 'GByte', 'TByte', 'PByte', 'EByte', \
-                      'ZByte', 'YByte']}
-    if valor < 0:
-        raise ValueError('los valores negativos no son validos')
-    for sufijo in SUFIJOS[1024]:
-        valor /= 1024
-        if valor < 1024:
-            return '{0:.1f}{1}'.format(valor, sufijo)
-    raise ValueError('numero demasiado grande')
 
 def kbtemporal_cb(word, word_eol, userdata):
     """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
