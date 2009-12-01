@@ -6,6 +6,7 @@
  * auxiliar.py: cambiadas algunas variables para que sean privadas del modulo.
  * rss.py: modificado para usar el acceso a la base de datos mediante las
    funciones del modulo auxiliar.
+ * protecciones.py: varios arreglos de formato.
 
 2009-11-30  GatoLoko  <GatoLoko@gmail.com>
 
