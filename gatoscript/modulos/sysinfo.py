@@ -36,25 +36,14 @@ import xchat
 from os import path
 #importamos la funcion para ejecutar comandos externos
 from subprocess import Popen, PIPE
-# Importamos la funcion que nos permite definir nuestro directorio de modulos
-import sys
+# Importamos el modulo de funciones auxiliares
+import auxiliar
 
 
 #############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
 # opcionales.
 #############################################################################
-scriptdir = xchat.get_info("xchatdir")
-gatodir = path.join(scriptdir, "gatoscript")
-moddir = path.join(gatodir, "modulos")
-gatoconf = path.join(scriptdir, "gatoscript.conf")
-gatodb = path.join(gatodir, "gatoscript.db")
-
-# Incluimos el directorio de modulos en el path
-sys.path.append(moddir)
-
-# Importamos el modulo de funciones auxiliares
-import auxiliar
 
 
 #############################################################################
@@ -87,7 +76,7 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(uptime / 3600)
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say ( Uptime ) %s horas y %s minutos" %(horas, minutos))
+        xchat.command("say Uptime: %s horas y %s minutos" %(horas, minutos))
     else:
         if dias > 1:
             cadena_dias = "dias"
@@ -96,23 +85,25 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(resto_dias / 3600)
         resto_horas = int(resto_dias % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say ( Uptime ) %s %s, %s horas y %s minutos" %(dias, cadena_dias, horas, minutos))
+        xchat.command("say Uptime: %s %s, %s horas y %s minutos" \
+                      %(dias, cadena_dias, horas, minutos))
     return xchat.EAT_ALL
 
 def sistema_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre el sistema operativo que usamos.
+    """Muestra en el canal activo informacion sobre el sistema operativo que
+    estamos usando.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if path.exists("/etc/lsb-release"):
-        LSB = file("/etc/lsb-release", "r")
-        lineas_LSB = LSB.readlines()
-        LSB.close()
-        distro = (lineas_LSB[0])[11:len(lineas_LSB[0])-1]
-        version = (lineas_LSB[1])[16:len(lineas_LSB[1])-1]
-        codigo = (lineas_LSB[2])[17:len(lineas_LSB[2])-1]
+        lsb = file("/etc/lsb-release", "r")
+        lineas_lsb = lsb.readlines()
+        lsb.close()
+        distro = (lineas_lsb[0])[11:len(lineas_lsb[0])-1]
+        version = (lineas_lsb[1])[16:len(lineas_lsb[1])-1]
+        codigo = (lineas_lsb[2])[17:len(lineas_lsb[2])-1]
         uname = Popen("uname -r", shell=True, stdout=PIPE, stderr=PIPE)
         error = uname.stderr.readlines()
         if len(error) > 0:
@@ -120,13 +111,16 @@ def sistema_cb(word, word_eol, userdata):
         else:
             kernel = uname.stdout.readlines()
             kernel2 = kernel[0][:-1]
-        xchat.command("say ( Distribucion ) %s   ( Version ) %s %s   ( Kernel ) %s" %(distro, version, codigo, kernel2))
+        xchat.command("say Distribucion: %s  - Version: %s %s  - Kernel: %s" \
+                      %(distro, version, codigo, kernel2))
     else:
         auxiliar.gprint("La distribucion no cumple con LSB")
     return xchat.EAT_ALL
 
 def software_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre las versiones del software basico.
+    """Muestra en el canal activo informacion sobre las versiones de KERNEL,
+    LIBC, X11 y GCC.
+    
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -151,15 +145,17 @@ def software_cb(word, word_eol, userdata):
         if salida[0].split()[0] == "GNU":
             licencia = "GLIBC"
         libc = licencia + " " + salida[0].split()[6][:-1]
-    xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE, stderr=PIPE)
+    xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE, \
+                     stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
             auxiliar.gprint(error[i])
-        X11 = "Indeterminable"
+        x11 = "Indeterminable"
     else:
         servidor = xdpyinfo.stdout.readlines()[0].split()
-    xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True, stdout=PIPE, stderr=PIPE)
+    xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True, \
+                     stdout=PIPE, stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
@@ -168,7 +164,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        X11 = xversion + " " + servidor[len(servidor)-1]
+        x11 = xversion + " " + servidor[len(servidor)-1]
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
     if len(error) > 0:
@@ -182,12 +178,14 @@ def software_cb(word, word_eol, userdata):
         else:
             partes = salida[0].split()
             gcc = partes[2]
-    xchat.command("say ( Kernel ) %s - ( LIBC ) %s - ( X11 ) %s - ( GCC ) %s" %(sistema, libc, X11, gcc))
-    del glibc, xdpyinfo, gcc, uname, salida, error, x_version, xversion, X11, sistema
+    xchat.command("say Kernel: %s  - LIBC: %s  - X11: %s  - GCC: %s" \
+                  %(sistema, libc, x11, gcc))
+    del glibc, xdpyinfo, gcc, uname, salida, error, x_version, xversion, x11
+    del sistema
     return xchat.EAT_ALL
 
 def fecha_cb(word, word_eol, userdata):
-    """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de filtros antispam.
+    """Muestra en el canal activo la fecha actual.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -237,7 +235,11 @@ def pc_cb(word, word_eol, userdata):
     usada = int(freemem) + int(bufmem) + int(cachemem)
     libre = int(memoria) - usada
     # Mensaje
-    mensaje = "[Informacion del PC] CPU: " + cpu + " - Velocidad: " + velocidad + "MHz - Memoria instalada: " + memoria + unidad + " - Memoria usada: " + str(libre) + unidad
+    parte1 = "[Informacion del PC] CPU: %s  - Velocidad: %sMHz  - Memoria " \
+             % (cpu, velocidad)
+    parte2 = "instalada: %s%s  - Memoria usada: %s%s" % (memoria, unidad, \
+                                                        str(libre), unidad)
+    mensaje = "%s%s" % (parte1, parte2)
     xchat.command("say " + mensaje)
     return xchat.EAT_ALL
 
@@ -252,21 +254,21 @@ def red_cb(word, word_eol, userdata):
     hostname = archivo.read()
     archivo.close()
     auxiliar.gprint("( Hostname ) " + hostname)
-
+    return xchat.EAT_ALL
 
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script
 #############################################################################
-#def ayuda():
+def ayuda():
     """Muestra la ayuda de sysinfo"""
     mensajes = [
         "",
         "Informacion del sistema:",
-        "    /gup:                Muestra el uptime del sistema",
-        "    /gos:                Muestra la distribucion y su version",
-        "    /gsoft:              Muestra en el canal la version de los programas mas importantes",
-        "    /gpc:                Muestra en el canal informacion sobre el hardware del pc",
-        "    /hora:               Muestra en el canal la hora del sistema",
+        "    /gup:    Muestra el uptime del sistema",
+        "    /gos:    Muestra la distribucion y su version",
+        "    /gsoft:  Muestra en el canal la version de los programas mas importantes",
+        "    /gpc:    Muestra en el canal informacion sobre el hardware del pc",
+        "    /hora:   Muestra en el canal la hora del sistema",
         ""]
     return mensajes
 

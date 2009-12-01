@@ -41,7 +41,8 @@ import auxiliar
 # Redireccion de resaltados
 #############################################################################
 def resaltados_cb(word, word_eol, userdata):
-    """Detecta palabras resaltadas (en la configuracion del xchat) y copia la linea que las contiene a la pestaña "GatoScript"
+    """Detecta palabras resaltadas (en la configuracion del xchat) y copia la
+    linea que las contiene a la pestaña "GatoScript"
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
@@ -56,11 +57,18 @@ def resaltados_cb(word, word_eol, userdata):
                 palabra = re.compile(resaltado, re.IGNORECASE)
                 if palabra.search(word_eol[3][1:]):
                     nick = word[0].split("!")[0][1:]
-                    mensaje = nick + " ha mencionado '" + resaltado + "' en " + canal + ": " + "<" + nick + "> " + word_eol[3][1:]
+                    mensaje = "%s ha mencionado '%s' en %s: <%s> %s" \
+                              % (nick, resaltado, canal, nick, word_eol[3][1:])
                     auxiliar.priv_linea(mensaje)
     return xchat.EAT_NONE
 
 def realza_url_cb(word, word_eol, userdata):
+    """Detecta URLs y les aplica un color distinto al texto normal
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     if auxiliar.lee_conf("comun", "realze") == "1":
         urls = [ "(ftp://.*|http://.*|https://.*)", "(www|ftp)..*\..*" ]
         nuevo_mensaje = ""
@@ -76,9 +84,10 @@ def realza_url_cb(word, word_eol, userdata):
         for palabra in palabras:
             if palabra in direccion:
                 if nuevo_mensaje == "":
-                    nuevo_mensaje = " \003" + color + palabra + "\003"
+                    nuevo_mensaje = " \003%s%s\003" % (color, palabra)
                 else:
-                    nuevo_mensaje = nuevo_mensaje + " \003" + color + palabra + "\003"
+                    nuevo_mensaje = "%s \003%s%s\003" \
+                                    % (nuevo_mensaje, color, palabra)
             else:
                 if nuevo_mensaje == "":
                     nuevo_mensaje = palabra
@@ -89,7 +98,7 @@ def realza_url_cb(word, word_eol, userdata):
         else:
             xchat.command("query -nofocus %s" %word[0].split("!")[0][1:])
             contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
-        #   >> :Anti_Bots!GatoBot@BWo1ST.CvIJLu.virtual PRIVMSG #GatoScript :ACTION hola
+        #   >> :nick!ident@host PRIVMSG #canal :ACTION hola
         if word[3] == ":ACTION":
             #print "action"
             #contexto.emit_print("Action", word[0].split("!")[0][1:], nuevo_mensaje)
@@ -122,8 +131,8 @@ def ayuda_cb(word, word_eol, userdata):
             mensajes = [
             "",
             "Informacion:",
-            "    /gato:               Muestra esta informacion",
-            "    /ginfo:              Muestra en el canal activo la publicidad sobre el script",
+            "    /gato:   Muestra esta informacion",
+            "    /ginfo:  Muestra en el canal activo la publicidad sobre el script",
             ""]
         else:
             mensajes = [
@@ -138,16 +147,17 @@ def ayuda_cb(word, word_eol, userdata):
 # Definimos la funcion para la descarga del programa
 #############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+    """Esta funcion debe desenlazar todas las funciones del modulo al
+    descargarse el script
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     # Desconectamos los comandos
     # Resaltados
-    xchat.unhook(hookresaltados)
-    xchat.unhook(hookrealzaurl)
+    xchat.unhook(HOOKRESALTADOS)
+    xchat.unhook(HOOKREALZAURL)
     # Descarga
-    xchat.unhook(hookunload)
+    xchat.unhook(HOOKUNLOAD)
 
 
 #############################################################################
@@ -155,7 +165,7 @@ def unload_cb(userdata):
 # para ellos
 #############################################################################
 # Resaltados
-hookresaltados = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
-hookrealzaurl = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None, priority=-10)
+HOOKRESALTADOS = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
+HOOKREALZAURL = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None, priority=-10)
 # Descarga del script
-hookunload = xchat.hook_unload(unload_cb)
+HOOKUNLOAD = xchat.hook_unload(unload_cb)

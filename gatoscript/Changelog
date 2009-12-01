@@ -12,6 +12,12 @@
  * antispam.py: reformas y arreglos varios.
  * gatoscript.db: agregados varios filtros y mejorados algunos de los ya
    existentes para ser mas eficientes.
+ * whois.py: agregado el docstring a la funcion espacios.
+ * whois.py: multiples arreglos de formato y eliminadas lineas innecesarias.
+ * sysinfo.py: multiples arreglos de formato y eliminadas lineas innecesarias.
+ * resaltados.py: agregado el docstring a la funcion realza_url_cb.
+ * resaltados.py: multiples arreglos de formato.
+ 
  
 2009-11-30  GatoLoko  <GatoLoko@gmail.com>
 
