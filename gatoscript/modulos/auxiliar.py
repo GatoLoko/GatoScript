@@ -34,6 +34,7 @@ __module_autor__ = "GatoLoko"
 import xchat
 from os import path
 from ConfigParser import SafeConfigParser
+import sqlite3
 
 #############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
@@ -43,13 +44,20 @@ from ConfigParser import SafeConfigParser
 _SCRIPTDIR = xchat.get_info("xchatdir")
 _GATODIR = _SCRIPTDIR + "/gatoscript/"
 _CONFIGFILE = _GATODIR + "gatoscript.conf"
+_GATODB_PATH = _GATODIR + "gatoscript.db"
 #home = xchat.get_info("xchatdir")[:-7]
-HOME = path.expanduser("~")
-CP = SafeConfigParser()
+#_HOME = path.expanduser("~")
+_CP = SafeConfigParser()
 
 #############################################################################
 # Inicializamos el modulo
 #############################################################################
+if path.exists(_GATODB_PATH):
+    _CONEXIONDB = sqlite3.connect(_GATODB_PATH)
+    _CURSOR = _CONEXIONDB.cursor()
+    CONECTADO = 1
+else:
+    CONECTADO = 0
 
 #############################################################################
 # Definimos las funciones de uso interno en el GatoScript
@@ -64,8 +72,8 @@ def lee_conf(seccion, opcion):
     """
     if (seccion == ""):
         seccion = "comun"
-    CP.read(_CONFIGFILE)
-    return CP.get(seccion, opcion)
+    _CP.read(_CONFIGFILE)
+    return _CP.get(seccion, opcion)
 
 def escribe_conf(seccion, opcion, valor):
     """Guarda una opcion en el archivo de configuracion.
@@ -77,9 +85,21 @@ def escribe_conf(seccion, opcion, valor):
     """
     if (seccion == ""):
         seccion = "comun"
-    CP.read(_CONFIGFILE)
-    CP.set(seccion, opcion, valor)
-    CP.write(file(_CONFIGFILE, "w"))
+    _CP.read(_CONFIGFILE)
+    _CP.set(seccion, opcion, valor)
+    _CP.write(file(_CONFIGFILE, "w"))
+
+def gatodb_cursor_execute(sql):
+    try:
+        resultado = _CURSOR.execute(sql)
+        return resultado
+    except sqlite3.Error, e:
+        mensaje = "Se ha producido un error SQL: %s" % e.args[0]
+        gprint(mensaje)
+        return None
+
+def gatodb_commit():
+    _CONEXIONDB.commit()
 
 # Mostrar mensajes
 def gprint(mensaje):
@@ -167,13 +187,13 @@ def opciones_cb(word, word_eol, userdata):
     """
     info_param = len(word_eol)
     if info_param == 1:
-        CP.read(_CONFIGFILE)
+        _CP.read(_CONFIGFILE)
         priv_linea("")
         priv_linea("Lista de secciones y opciones de configuracion:")
-        for seccion in CP.sections():
+        for seccion in _CP.sections():
             priv_linea(seccion)
-            for opcion in CP.options(seccion):
-                mensaje =  " " + opcion + "=" + CP.get(seccion, opcion)
+            for opcion in _CP.options(seccion):
+                mensaje =  " " + opcion + "=" + _CP.get(seccion, opcion)
                 priv_linea(mensaje)
         priv_linea("")
     elif info_param == 2:

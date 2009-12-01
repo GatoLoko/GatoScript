@@ -32,32 +32,19 @@ __module_autor__ = "GatoLoko"
 # Cargamos la libreria de funciones de X-Chat
 import xchat
 # Importamos las librerias externas
-from os import path
-import sqlite3
 import xml.dom.minidom
-import datetime
 from urllib import urlopen
 import auxiliar
 
 ##############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Definimos algunas variables que describen el entorno de trabajo
 ##############################################################################
-_SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = path.join(_SCRIPTDIR, "gatoscript")
-_GATODB_PATH = path.join(_GATODIR, "gatoscript.db")
-_GATOCONF = path.join(_SCRIPTDIR, "gatoscript.conf")
+
 
 ##############################################################################
 # Inicializamos el modulo
 ##############################################################################
-# Conectamos a la base de datos
-if path.exists(_GATODB_PATH):
-    CONEXIONDB = sqlite3.connect(_GATODB_PATH)
-    CURSOR = CONEXIONDB.cursor()
-    _CONECTADO = 1
-else:
-    _CONECTADO = 0
+
 
 ##############################################################################
 ## Definimos las funciones del lector rss
@@ -71,26 +58,29 @@ def rss_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    feeds = CURSOR.execute("SELECT feeds limite FROM feeds")
-    servidores = auxiliar.lee_conf("rss", "feeds").split(',')
-    fecha = str(datetime.datetime.now())[:19]
-    limitador = int(auxiliar.lee_conf("rss", "limitador"))
-    for servidor in servidores:
-        auxiliar.priv_linea(servidor + " - " + fecha)
-        auxiliar.priv_linea("")
-        archivo = xml.dom.minidom.parse(urlopen(servidor))
-        if len(archivo.getElementsByTagName('item')) < limitador:
-            limite = len(archivo.getElementsByTagName('item'))
-        else:
-            limite = limitador
-        for i in range(limite):
-            objeto = archivo.getElementsByTagName('item')[i]
-            titulo = objeto.getElementsByTagName('title')[0].firstChild.data
-            enlace = objeto.getElementsByTagName('link')[0].firstChild.data
-            auxiliar.priv_linea("Enlace: " + enlace.encode('latin-1', 'replace') + " <--> Titulo: " + titulo.encode('latin-1', 'replace'))
-            #i = i + 1
-        auxiliar.priv_linea("")
-    del servidores, fecha, servidor
+    feeds = auxiliar.gatodb_cursor_execute("SELECT feeds,limite FROM feeds")
+    if feeds != None:
+        for entrada in feeds:
+            servidor = entrada[0]
+            limitador = entrada[1]
+            auxiliar.priv_linea(entrada[0])
+            auxiliar.priv_linea("")
+            archivo = xml.dom.minidom.parse(urlopen(servidor))
+            if len(archivo.getElementsByTagName('item')) < limitador:
+                limite = len(archivo.getElementsByTagName('item'))
+            else:
+                limite = limitador
+            for i in range(limite):
+                objeto = archivo.getElementsByTagName('item')[i]
+                titulo = objeto.getElementsByTagName('title')[0].firstChild.data
+                enlace = objeto.getElementsByTagName('link')[0].firstChild.data
+                auxiliar.priv_linea("Enlace: " + \
+                                    enlace.encode('latin-1', 'replace') + \
+                                    " <--> Titulo: " + \
+                                    titulo.encode('latin-1', 'replace'))
+                #i = i + 1
+            auxiliar.priv_linea("")
+        del feeds, servidor, limitador
     return xchat.EAT_ALL
 
 def rsslista_cb(word, word_eol, userdata):
@@ -100,11 +90,11 @@ def rsslista_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    servidores = auxiliar.lee_conf("rss", "feeds").split(',')
+    servidores = auxiliar.gatodb_cursor_execute("SELECT feeds FROM feeds")
     auxiliar.priv_linea("")
     auxiliar.priv_linea("Lista de feeds RSS:")
     for servidor in servidores:
-        auxiliar.priv_linea(servidor)
+        auxiliar.priv_linea(servidor[0])
     auxiliar.priv_linea("")
     del servidores
     return xchat.EAT_ALL
@@ -122,11 +112,11 @@ def rssadd_cb(word, word_eol, userdata):
     elif info_param > 2:
         auxiliar.gprint("De momento solo se admite un rss cada vez")
     else:
-        actuales = auxiliar.lee_conf("rss", "feeds")
-        nuevos = actuales + "," + word[1]
-        auxiliar.escribe_conf("rss", "feeds", nuevos)
-        auxiliar.gprint("Se ha agregado '" + word[1] + "' a la lista de feeds")
-    del actuales, nuevos
+        sql = 'INSERT INTO feeds ("id", "feeds", "limite") \
+              VALUES (null, "%s", "10")' % word[1]
+        auxiliar.gatodb_cursor_execute(sql)
+        auxiliar.gatodb_commit()
+        auxiliar.gprint("Se ha agregado '%s' a la lista de filtros" % word[1])
     return xchat.EAT_ALL
 
 def rssdel_cb(word, word_eol, userdata):
@@ -142,18 +132,11 @@ def rssdel_cb(word, word_eol, userdata):
     elif info_param > 2:
         auxiliar.gprint("De momento solo se admite un feed cada vez")
     else:
-        actuales = auxiliar.lee_conf("rss", "feeds").split(',')
         try:
-            actuales.remove(word_eol[1])
-            temporal = ""
-            for feed in range(len(actuales)):
-                if (actuales[feed] != word_eol[1]) and (actuales[feed] != ""):
-                    temporal = temporal + actuales[feed]
-                    if feed < len(actuales)-1:
-                        temporal = temporal + ','
-            auxiliar.escribe_conf("rss", "feeds", temporal)
-            auxiliar.gprint("Se ha eliminado '" + word_eol[1] + "'")
-            del actuales, temporal, feed
+            sql = "DELETE FROM feeds WHERE feeds='%s'" % word_eol[1]
+            auxiliar.gatodb_cursor_execute(sql)
+            auxiliar.gatodb_commit()
+            auxiliar.gprint("Se ha eliminado '%s'" % word_eol[1])
         except ValueError:
             auxiliar.gprint("No existe ningun feed que coincida con el indicado")
     return xchat.EAT_ALL
@@ -167,10 +150,10 @@ def ayuda():
     mensajes = [
         "",
         "Gestion RSS",
-        "    /rss:             Muestra las noticias actuales en los feeds actuales",
-        "    /rsslista:        Muestra la lista de feeds actuales",
-        "    /rssadd:          Añade un nuevo feed a la lista (No disponible aun)",
-        "    /rssdel:          Elimina un feed de la lista actual (No disponible aun)",
+        "    /rss:      Muestra las noticias actuales en los feeds actuales",
+        "    /rsslista: Muestra la lista de feeds actuales",
+        "    /rssadd:   Añade un nuevo feed a la lista (No disponible aun)",
+        "    /rssdel:   Elimina un feed de la lista actual (No disponible aun)",
         ""]
     return mensajes
 
@@ -186,24 +169,24 @@ def unload_cb(userdata):
     """
     ## Desconectamos los comandos
     # Lector de feeds RSS
-    xchat.unhook(hookrss)
-    xchat.unhook(hooklistarss)
-    xchat.unhook(hookrssadd)
-    xchat.unhook(hookrssdel)
+    xchat.unhook(HOOKRSS)
+    xchat.unhook(HOOKLISTARSS)
+    xchat.unhook(HOOKRSSADD)
+    xchat.unhook(HOOKRSSDEL)
     # Descarga
-    xchat.unhook(hookunload)
+    xchat.unhook(HOOKUNLOAD)
 
 
 #############################################################################
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 # para ellos
 #############################################################################
-hookrss = xchat.hook_command('rss', rss_cb)
-hooklistarss = xchat.hook_command('listarss', rsslista_cb)
-hookrssadd = xchat.hook_command('rssadd', rssadd_cb)
-hookrssdel = xchat.hook_command('rssdel', rssdel_cb)
+HOOKRSS = xchat.hook_command('rss', rss_cb)
+HOOKLISTARSS = xchat.hook_command('listarss', rsslista_cb)
+HOOKRSSADD = xchat.hook_command('rssadd', rssadd_cb)
+HOOKRSSDEL = xchat.hook_command('rssdel', rssdel_cb)
 # Descarga del script
-hookunload = xchat.hook_unload(unload_cb)
+HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
