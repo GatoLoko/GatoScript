@@ -7,7 +7,12 @@
  * rss.py: modificado para usar el acceso a la base de datos mediante las
    funciones del modulo auxiliar.
  * protecciones.py: varios arreglos de formato.
-
+ * antispam.py: modificado para usar el acceso a la base de datos mediante las
+   funciones del modulo auxiliar.
+ * antispam.py: reformas y arreglos varios.
+ * gatoscript.db: agregados varios filtros y mejorados algunos de los ya
+   existentes para ser mas eficientes.
+ 
 2009-11-30  GatoLoko  <GatoLoko@gmail.com>
 
  * instalador: arreglado (otra vez), esto no termina de funcionar nunca.
