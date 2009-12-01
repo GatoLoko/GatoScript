@@ -94,7 +94,8 @@ _TRANSMISSIONSTATS = _HOME + "/.transmission/stats.benc"
 ## Definimos las funciones para mostrar informacion P2P
 ##############################################################################
 def amule_cb(word, word_eol, userdata):
-    """Lee el archivo onlinesig (firma online) de amule y muestra parte de la informacion en el canal activo.
+    """Lee el archivo onlinesig (firma online) de amule y muestra parte de la
+    informacion en el canal activo.
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
@@ -111,9 +112,14 @@ def amule_cb(word, word_eol, userdata):
             vsubida = (lineas_amule[7])[0:-1]
             total_descargado = auxiliar.unidades(int(lineas_amule[11]))
             version = lineas_amule[13][0:-1]
-            xchat.command("say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s - Total descargado: %s" %(version, vdescarga, vsubida, total_descargado))
+            parte1 = "say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s " \
+                     % (version, vdescarga, vsubida)
+            parte2 = "- Total descargado: %s" % total_descargado
+            xchat.command("%s%s" % (parte1, parte2))
     else:
-        auxiliar.gprint("No existe el archivo " + _AMULESIG + ", compruebe que activo la firma online en la configuracion de aMule.")
+        parte1 = "No existe el archivo %s, compruebe que activada" % _AMULESIG
+        parte2 = " la firma online en la configuracion de aMule."
+        auxiliar.gprint("%s%s" % (parte1, parte2))
     return xchat.EAT_ALL
 
 def azureus_cb(word, word_eol, userdata):
@@ -132,10 +138,14 @@ def azureus_cb(word, word_eol, userdata):
         vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
         subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
         vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" %(vdescarga, vsubida))
+        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" \
+                      % (vdescarga, vsubida))
         del descarga, vdescarga, subida, vsubida, glob, stats, dom1
     else:
-        auxiliar.gprint("No existe el archivo " + _AZUREUSSTATS + ", compruebe su configuracion de Azureus.")
+        parte1 = "No existe el archivo %s, compruebe su configuracion de" \
+                 % _AZUREUSSTATS
+        parte2 =  " Azureus."
+        auxiliar.gprint("%s%s" % (parte1, parte2))
     return xchat.EAT_ALL
 
 def transmission_cb(word, word_eol, userdata):
@@ -147,7 +157,7 @@ def transmission_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if path.exists(_TRANSMISSIONSTATS):
-        textos = [[1, 3], [17, 3], [12,3], [15, 3], [14, 3], [15, 2]]
+        textos = [[1, 3], [17, 3], [12, 3], [15, 3], [14, 3], [15, 2]]
         parte = []
         archivo = file(_TRANSMISSIONSTATS, "r")
         partes = archivo.readline().split(':')
@@ -161,16 +171,20 @@ def transmission_cb(word, word_eol, userdata):
         #print "Trabajados  " + parte[2] + "Segundos"
         descargado = auxiliar.unidades(int(parte[0]))
         subido = auxiliar.unidades(int(parte[4]))
-        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" %(descargado, subido))
+        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
+                      % (descargado, subido))
     else:
-        auxiliar.gprint("No existe el archivo " + _TRANSMISSIONSTATS + ", compruebe su configuracion de Transmission.")
+        parte1 = "No existe el archivo %s, compruebe su " % _TRANSMISSIONSTATS
+        parte2 = "configuracion de Transmission."
+        auxiliar.gprint("%s%s" % (parte1, parte2))
     
 
 #############################################################################
 # Definimos la funcion para la descarga del programa
 #############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+    """Esta funcion debe desenlazar todas las funciones del modulo al
+    descargarse el script
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """

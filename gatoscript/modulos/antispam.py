@@ -51,7 +51,7 @@ if auxiliar.CONECTADO == 1:
     for filtro in filtros:
         compilados.append(re.compile(".*" + filtro[0] + ".*", re.IGNORECASE))
 else:
-    print("AntiSpam esta desactivado o no se puede cargar la lista de filtros")
+    auxiliar.gprint("AntiSpam esta desactivado o no se puede cargar la lista de filtros")
     ANTISPAM = 0
     SPAMBOTS = 0
 

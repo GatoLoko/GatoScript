@@ -17,7 +17,10 @@
  * sysinfo.py: multiples arreglos de formato y eliminadas lineas innecesarias.
  * resaltados.py: agregado el docstring a la funcion realza_url_cb.
  * resaltados.py: multiples arreglos de formato.
- 
+ * p2p.py: multiples arreglos de formato.
+ * ejemplo.py: pequeño arreglo.
+ * antispam.py: pequeño arreglo.
+ * gatoscript.conf: activado por defecto el realce de urls.
  
 2009-11-30  GatoLoko  <GatoLoko@gmail.com>
 

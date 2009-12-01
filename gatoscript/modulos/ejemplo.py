@@ -95,7 +95,7 @@ def unload_cb(userdata):
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    # Desconectamos las funciones AntiSpam
+    # Desconectamos las funciones
     xchat.unhook(HOOKEJEMPLO1)
     # Descargamos el 
     xchat.unhook(HOOKEJEMPLO)
@@ -105,6 +105,6 @@ def unload_cb(userdata):
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 # para ellos
 #############################################################################
-HOOKEJEMPLO1 = xchat.hook_command('ejemplo', antispam_cb, userdata=None)
+HOOKEJEMPLO1 = xchat.hook_command('ejemplo', ejemplo_publico, userdata=None)
 # Descarga del modulo
 HOOKEJEMPLO = xchat.hook_unload(unload_cb)
