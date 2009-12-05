@@ -84,10 +84,14 @@ def anti_notice_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     """
     #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hola
+    #>> :CHaN!-@- NOTICE #canal :nick añade en #canal a nick2 con nivel 499
     if auxiliar.lee_conf("protecciones", "notices") == "1":
         canales = auxiliar.lee_conf("protecciones", "canales").split(',')
         for canal in canales:
-            if word[2].lower() == canal.lower():
+            if (word[2].lower() == canal.lower()) and \
+            (word[0].lower() != ":chan!-@-"): #Excepcion para IRC-Hispano
+                print word[0]
+                print "este ban lo pone por notice"
                 partes = word[0][1:].split("!")
                 comando = "kickban " + partes[0] + " Putos scriptkidies...."
                 xchat.command(comando)

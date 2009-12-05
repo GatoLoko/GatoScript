@@ -1,3 +1,8 @@
+2009-12-06  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: agregada una excepcion al anti_notice para que no expulse
+   al bot de gestion de canales de IRC-Hispano.
+
 2009-12-01  GatoLoko  <GatoLoko@gmail.com>
 
  * auxiliar.py: agregadas las funciones gatodb_cusor_execute() y
