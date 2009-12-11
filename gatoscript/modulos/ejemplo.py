@@ -33,8 +33,7 @@ import xchat
 import auxiliar
 
 #############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Definimos algunas variables que describen el entorno de trabajo
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
@@ -55,9 +54,7 @@ def ejemplo_interno():
 
 
 #############################################################################
-# Definimos la funcion antispam para filtrado de mensajes privados.
-# El sistema antispam eliminara todas las lineas que contengan alguna de las
-# cadenas definidas en el archivo antispam.conf
+# Definimos las funcion publicas del modulo
 #############################################################################
 def ejemplo_publico(word, word_eol, userdata):
     """Ejemplo de funcion publica

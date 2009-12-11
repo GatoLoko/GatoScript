@@ -8,6 +8,7 @@
    filtros a la base de datos.
  * notas.py: agregado nuevo modulo para gestionar notas.
  * gatoscript.py: activados los modulos: remotos.py y notas.py
+ * ejemplo.py: arreglados algunos comentarios.
 
 2009-12-06  GatoLoko  <GatoLoko@gmail.com>
 
