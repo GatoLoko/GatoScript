@@ -112,9 +112,9 @@ def anti_hoygan_cb(word, word_eol, userdata):
                     partes = word[0][1:].split("@")
                     xchat.command("ban *!*@" + partes[len(partes)-1])
                     partes = word[0][1:].split("!")
-                    xchat.command("kick " + partes[0] + \
-                                  " Los hoygan son la version electronica del \
-                                  payaso de la clase y no son graciosos")
+                    mensaje = " Los hoygan son la version electronica del" \
+                              + " payaso de la clase y no son graciosos."
+                    xchat.command("kick " + partes[0] + mensaje)
     return xchat.EAT_NONE
 
 def anti_mayusculas_cb(word, word_eol, userdata):
@@ -142,16 +142,16 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                     host = word[0][1:].split("@")[1]
                     if host in _NUM_ABUSOS_MAYUS:
                         _NUM_ABUSOS_MAYUS.remove(host)
-                        mensaje = " Escribir todo en mayusculas va contra las \
-                                  normas y estabas avisado."
+                        mensaje = " Escribir todo en mayusculas va contra" + \
+                                  " las normas y estabas avisado."
                         auxiliar.expulsa(mensaje, "1", word)
                     else:
                         _NUM_ABUSOS_MAYUS.append(host)
+                        mensaje = ": no escribas todo en mayusculas, va" + \
+                                  " contra las normas. La proxima vez" + \
+                                  " seras expulsado."
                         xchat.command("msg " + word[2] + " " + \
-                                      word[0][1:].split("!")[0] + ": no \
-                                      escribas todo en mayusculas, va contra \
-                                      las normas. La proxima vez seras \
-                                      expulsado.")
+                                      word[0][1:].split("!")[0] + mensaje)
     return xchat.EAT_NONE
 
 def anti_colores_cb(word, word_eol, userdata):
@@ -176,17 +176,17 @@ def anti_colores_cb(word, word_eol, userdata):
                     host = word[0][1:].split("@")[1]
                     if host in _NUM_ABUSOS_COLORES:
                         _NUM_ABUSOS_COLORES.remove(host)
-                        mensaje = " El uso de colores va contra las normas y \
-                                  estabas avisado."
+                        mensaje = " El uso de colores va contra las normas y" \
+                                  + " estabas avisado."
                         auxiliar.expulsa(mensaje, "1", word)
                     else:
                         _NUM_ABUSOS_COLORES.append(host)
+                        mensaje = ": no uses colores/negrillas/subrayado en" \
+                                  + " este canal, va contra las normas. La" \
+                                  + " proxima vez seras expulsado. Para" \
+                                  + " desactivarlos escribe:  /remote off"
                         xchat.command("msg " + word[2] + " " + \
-                                      word[0][1:].split("!")[0] + ": no uses \
-                                      colores/negrillas/subrayado en este \
-                                      canal, va contra las normas. La proxima \
-                                      vez seras expulsado. Para desactivarlos \
-                                      escribe: /remote off")
+                                      word[0][1:].split("!")[0] + mensaje)
     if auxiliar.lee_conf("protecciones", "ignora_colores") == "1":
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
             if canal.lower() == word[2].lower():
@@ -273,8 +273,8 @@ def anti_away_cb(word, word_eol, userdata):
                 for i in range(len(awaystr)):
                     if word_eol[3].find(awaystr[i]) > 0:
                         ban = "1"
-                        mensaje = " Quita los mensajes de away automaticos, si \
-                                  no estas callate"
+                        mensaje = " Quita los mensajes de away automaticos," \
+                                  + " si no estas callate"
                         auxiliar.expulsa(mensaje, ban, word)
     return xchat.EAT_NONE
 

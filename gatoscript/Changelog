@@ -3,6 +3,7 @@
  * remotos.py: revision completa del modulo y adaptado para gestionar los
    remotos en la base de datos.
  * gatoscript.db: agregada la tabla "remotos".
+ * protecciones.py: arreglados varios errores de formato.
 
 2009-12-06  GatoLoko  <GatoLoko@gmail.com>
 
