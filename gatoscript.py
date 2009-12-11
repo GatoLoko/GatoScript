@@ -67,9 +67,11 @@ import autosend
 # Importamos el modulo p2p
 import p2p
 # Importamos el modolo remotos
-# import remotos
+import remotos
 # Importamos el modulo consejos
 # import consejos
+# Importamos el modulo de notas
+import notas
 # Importamos el modulo ejemplo
 # import ejemplo
 
