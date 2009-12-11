@@ -147,7 +147,7 @@ def antispam_add_cb(word, word_eol, userdata):
     """
     if auxiliar.CONECTADO == 1:
         sql = 'INSERT INTO filtros ("id", "filtro", "creado", "usado", "veces") \
-              VALUES (null, %s, date("now"), date("now"), "1")' % word[1]
+              VALUES (null, "%s", date("now"), date("now"), "1")' % word[1]
         auxiliar.gatodb_cursor_execute(sql)
         auxiliar.gatodb_commit()
         mensaje = "Se ha añadido '" + word[1] + "' a la lista de filtros"
