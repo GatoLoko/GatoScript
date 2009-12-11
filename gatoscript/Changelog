@@ -4,6 +4,8 @@
    remotos en la base de datos.
  * gatoscript.db: agregada la tabla "remotos".
  * protecciones.py: arreglados varios errores de formato.
+ * antispam.py: corregido un fallo en la consulta sql usada para añadir nuevos
+   filtros a la base de datos.
 
 2009-12-06  GatoLoko  <GatoLoko@gmail.com>
 
