@@ -31,51 +31,23 @@ __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
 import xchat
-from os.path import join
-# Importamos el modulo de funciones auxiliares
+import re
 import auxiliar
 
-# Definimos algunas variables de entorno para poder trabajar comodamente
-scriptdir = xchat.get_info("xchatdir")
-gatodir = join(scriptdir, "gatoscript")
-moddir = join(gatodir, "modulos")
-gatoconf = join(scriptdir, "gatoscript.conf")
-gatodb = join(gatodir, "gatoscript.db")
-## Cargamos las librerias y funciones que necesitamos
-#import xchat, re, datetime, xml.dom.minidom, commands
-#from os import popen3, path, system
-#from random import randint
-#from ConfigParser import ConfigParser
-#from urllib import urlopen
+#############################################################################
+# Definimos algunas variables que describen el entorno de trabajo
+#############################################################################
 
-
-##############################################################################
-## Definimos algunas variables que describen el entorno de trabajo y librerias
-## opcionales.
-##############################################################################
-
-#scriptdir = xchat.get_info("xchatdir")
-#gatodir = scriptdir + "/gatoscript/"
-#filtros_path = gatodir + "antispam.conf"
-#consejos_path = gatodir + "consejos.txt"
-#configfile = gatodir + "gatoscript.conf"
-#rssfile = gatodir + "rss.conf"
-##home = xchat.get_info("xchatdir")[0:len(xchat.get_info("xchatdir"))-7]
-#home = path.expanduser("~")
-#amulesig = home + "/.aMule/amulesig.dat"
-#azureusstats = home + "/.azureus/Azureus_Stats.xml"
-#cp = ConfigParser()
-#num_abusos_mayus = []
-#num_abusos_colores = []
-#NoXmms = 0
-#NoDBus = 0
-#global DBusIniciado
-#DBusIniciado = 0
-#global rbplayerobj
-#global rbplayer
-#global rbshellobj
-#global rbshell
-
+#############################################################################
+# Inicializamos el modulo
+#############################################################################
+if auxiliar.CONECTADO:
+    remotos_db = auxiliar.gatodb_cursor_execute("SELECT disparador,respuesta,es_comando FROM remotos")
+    remotos = []
+    for elemento in remotos_db:
+        expresion = elemento[0]
+        remoto = elemento[0], elemento[1], elemento[2], re.compile(expresion, re.IGNORECASE)
+        remotos.append(remoto)
 
 ##############################################################################
 ## Definimos las funciones de informacion y ayuda sobre el manejo del script
@@ -93,31 +65,7 @@ gatodb = join(gatodir, "gatoscript.db")
         #"",
         #"Solo se puede usar un parametro cada vez",
         #""]
-    #elif info_param < 2:
-        #mensajes = [
-        #"",
-        #"Añada uno de los siguientes parametros en funcion del tipo de ayuda que quiera",
-        #"    -g         Comandos para informacion del GatoScript",
-        #"    -a         Comandos para Antispam",
-        #"    -m         Comandos para informacion de reproductores Multimedia",
-        #"    -s         Comandos para informacion del Sistema",
-        #"    -c         Comandos para uso de los Consejos del Gato",
-        #"    -d         Comandos para informacion de Descargas",
-        #"    -u         Comandos para control de Usuarios",
-        #"    -o         Comandos para establecer las Opciones",
-        #"    -r         Comandos para gestion RSS",
-        #"",
-        #"Por ejemplo: /gato -s",
-        #""]
     #else:
-        #elif word[1] == "-c":
-            #mensajes = [
-            #"",
-            #"Consejos:",
-            #"    /consejos:           Muestra un consejo aleatorio",
-            #"    /consejo <opcion>:   Muestra el consejo que concuerde con la opcion especificada",
-            #"        Las opciones disponibles son: preguntar, ayudar, noayudar, planteamiento, manual, manual2, manual3, manual4 y buscador",
-            #""]
         #else:
             #mensajes = [
             #"",
@@ -130,51 +78,59 @@ gatodb = join(gatodir, "gatoscript.db")
 ##############################################################################
 ## Definimos las funcion de controles remotos
 ##############################################################################
-#def remoto_cb(word, word_eol, userdata):
-    #"""Esta funcion revisa los mensajes recibidos en busca de comandos remotos
-    #y cuando los encuentra, actua en consecuencia.
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook
-    #word_eol -- array de cadenas que envia xchat a cada hook
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #remotos_activo = lee_conf("comun", "remotos")
-    #if (remotos_activo == "1"):
-        ##Definimos la expresion regular que actuara como activador
-        #consejo_rem = re.compile("!consejo", re.IGNORECASE)
-        #hola_rem = re.compile("!hola", re.IGNORECASE)
-        #version_rem = re.compile("!version", re.IGNORECASE)
-        ##Si se ha encontrado actuamos
-        #if consejo_rem.search(word[1]):
+def remoto_cb(word, word_eol, userdata):
+    """Esta funcion revisa los mensajes recibidos en busca de comandos remotos
+    y cuando los encuentra, actua en consecuencia.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    remotos_activo = auxiliar.lee_conf("comun", "remotos")
+    if (remotos_activo == "1"):
+        #Definimos la expresion regular que actuara como activador
+        consejo_rem = re.compile("!consejo", re.IGNORECASE)
+        hola_rem = re.compile("!hola", re.IGNORECASE)
+        version_rem = re.compile("!version", re.IGNORECASE)
+        #Si se ha encontrado actuamos
+        if consejo_rem.search(word[1]):
             #consejo_aleatorio_cb("0", "0", "0")
-        #elif hola_rem.search(word[1]):
-            #xchat.command("say Hola %s!!" %word[0])
-        #elif version_rem.search(word[1]):
-            #software_cb("", "", "")
-            #xchat.command("say (GatoScript) %s" % __module_version__)
+            xchat.command("say No hay consejos disponibles en este momento")
+        elif hola_rem.search(word[1]):
+            xchat.command("say Hola %s!!" %word[0])
+        elif version_rem.search(word[1]):
+            xchat.command("gsoft")
+            xchat.command("ginfo")
+        for remoto in remotos:
+            if remoto[3].search(word[1]):
+                if remoto[3] == 1:
+                    #respuestas = remoto[1].split(",")
+                    xchat.command("say Esto no esta implementado aun")
+                else:
+                    xchat.command("say %s" % remoto[1])
 
 
 ##############################################################################
 ## Definimos la funcion para la descarga del programa
 ##############################################################################
-#def unload_cb(userdata):
-    #"""Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
-    #Argumentos:
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    ## Desconectamos los comandos
-    ## Controles remotos
-    #xchat.unhook(hookremoto)
-    ## Descarga
-    #xchat.unhook(hookunload)
+def unload_cb(userdata):
+    """Esta funcion debe desenlazar todas las funciones del modulo al
+    descargarse el script.
+    Argumentos:
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    # Desconectamos los comandos
+    # Controles remotos
+    xchat.unhook(HOOKREMOTO)
+    # Descarga
+    xchat.unhook(HOOKREMOTOS)
 
 
 ##############################################################################
 ## Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 ## para ellos
 ##############################################################################
-
-## Controles remotos
-#hookremoto = xchat.hook_print('Channel Message', remoto_cb)
-## Descarga del script
-#hookunload = xchat.hook_unload(unload_cb)
+# Controles remotos
+HOOKREMOTO = xchat.hook_print('Channel Message', remoto_cb)
+# Descarga del script
+HOOKREMOTOS = xchat.hook_unload(unload_cb)

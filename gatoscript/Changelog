@@ -1,3 +1,9 @@
+2009-12-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * remotos.py: revision completa del modulo y adaptado para gestionar los
+   remotos en la base de datos.
+ * gatoscript.db: agregada la tabla "remotos".
+
 2009-12-06  GatoLoko  <GatoLoko@gmail.com>
 
  * protecciones.py: agregada una excepcion al anti_notice para que no expulse
