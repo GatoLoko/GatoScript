@@ -51,11 +51,12 @@ if auxiliar.CONECTADO == 1:
     for filtro in filtros:
         compilados.append(re.compile(".*" + filtro[0] + ".*", re.IGNORECASE))
 else:
-    auxiliar.gprint("AntiSpam esta desactivado o no se puede cargar la lista de filtros")
+    mensaje = "AntiSpam esta desactivado o no se puede cargar la lista de " + \
+              "filtros"
+    auxiliar.gprint(mensaje)
     ANTISPAM = 0
     SPAMBOTS = 0
 
-#prueba = re.compile("FREE FREE!! Don't Register , Don't Money Only Click Here =>|Full teen girls|Girlss\.tr\.cx|Hard & teens|http://adult\.edu\.tc|Http://AduLts\.eu\.tp|Http://Beklenen\.Net|Http://downloads\.fr\.mn|Http://Movies\.jp\.tp|http://nehirim\.net/freemoney\.htm|http://tamer\.us\.pn|http://www\.dartanyan\.net/girls\.exe|http://www\.seker\.net\.ms|Http://www\.sexymovies\.tr\.cx|naked from msn|p0rn|pornstar|realcoder\.net|sexgirl\.tc\.gs|sexigirls\.it|Simge\.tk|SizinAlem\.Net|sonia21\.firez\.org|www\.belesvideo\.ne|\www\.guapa\.now\.nu|WWW\.LOVEORHONEY\.COM|WWW\.LOVEORLOVE\.COM|You Win To For Money|bahanem\.org|grupsgirl\.net|porno\.exe|bestupload|analtime\.us\.pn|www\.moviesus\.net|hot-teens\.such\.info|/teengirl\.|Http://AduLt\.tc\.vg|pikolata|NAZ\.tr\.cx|free girls|KralHack\.cjb\.net|Free porno|Http://hanibana\.net|http://Moviesus\.net|http://lolita\.dd\.am|Moviesus\.net|bulusturma|Sunucumuz sohbete|olita\.dd\.am|kizadresleri\.bulunur\.com|v1rg1n|g1rl|http://sexhouse\.dd\.am|Bedava filim|Http://pikoLata\.net|video\.exe|Annelerinizi|www\.LIGUEYA\.COM|gelmeyenin|KnightonLine\.exe|AduLt\.es\.tp|http://arzuLu|http://mitglied\.lycos\.de|PikoLata|lolita\.exe|kirazLi|Sende indir izle|En cok oLduqu|F-ree P-orno V-ideo|Double ClicK|manymany|virgin girl|superkizmsnleri|hersey Burda|supernacho|www\.suskun\.net|free-movie-mpeg\.exe|http://www\.camlisex\.com|karagece|rap-fm|free adult|qelsin Bari|xicasendirecto|www\.mamellas\.com|maria1cam|\?santos|Miraquegolfas|gracia_lagolosa|erotikam|www\.doreag\.es|asdgo\.com|consupermiso\.com|www\.slordjp\.tk|www\.tuylostuyos\.com|traviesas_mv88|yamile_mb87|koonymara|jesica_sexy_amor|www\.geocities\.com/octubre122005|www\.dominiosteca\.biz|es-facil.com/ganar|WWW\.ELECTRIKSOUND\.COM|www\.fororelax\.net|www\.shateros\.com|www\.chaterosforever\.com|neverendingnovel\.wordpress\.com|criticonomicon\.wordpress\.com|crazyvideos\.zapto\.org|youtube\.com/mryorx|myminicity\.es|nokia n73|lasegundapuerta\.com|www\.myspace\.com/joaquinbello|www\.ircap\.es|\@hotmail\.com|www\.proteinasyfitness\.com|WWW\.SERIALCRACK\.ES|suellencastillo|UnVoto\.asp|mileurazos\.es\.tl|web/mviiiax|anhely_cielo|yorxpatri|www\.antitaurino\.org|midmind|usadastangas|carolina-cerezuela|lordserer|WWW\.CHEO\.HAZBLOG\.COM|moccia|jordiponsi|tuatubolayyoalamia\.blogspot\.com|AGREGAME AMI KORREO|calientita_sexyxcam|quelocochat\.com|morenita_cam_luciax|#m7x0|www\.13mensistas\.com|WWW\.MISECRETITO\.COM\.AR|loscirculosviciosos\.blogspot\.com|esohavuelto\.blogspot\.com|www\.darkzone\.ar\.kz|esohavuelto|usuarios\.lycos\.es/girasfotos|numberone\.foroactivo\.net|slordjp|nutricionysalud3000|messagemagic|hombres-maltratados|acceso-virtual|WWW\.NEWSTD\.COM\.AR|CONTACTOS REALES|diabulusradio|agregame.*hotmail\.com|paiporta\.creatuforo\.com|tiasjuguetonas\.com|chatrd\.net|xag-mamporros|diariodeoriente|rincondeleuro|LA LL!!|primigratis|gandisex|contactoreal\.tk|trinityatierra\.wordpress\.com|canaltravestis|samburinya\.blogspot\.com|www\.tuloarreglas\.com|http.elbruto\.es|verme por webcam, sin tener que mandar .* sms .*|www\.elotrolado\.net/foro_xbox-360_137|www\.masmediamail\.com/durarealidad/|www\.readysoft\.es|zebal|ganadinerocon|contactos\.esmiweb\.com|kedar\.es|chatdeligar\.com|www\.chatconvideo\.com|caramelito\.xbox-site\.info", re.IGNORECASE)
 
 #############################################################################
 # Definimos las funciones de uso interno en el modulo
@@ -100,6 +101,8 @@ def antispam_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
+    global SPAMBOTS
+    global ANTISPAM
     if auxiliar.lee_conf("protecciones", "spam") == "1":
         for spam_exp in compilados:
             if (spam_exp.search(word_eol[3][1:])):
@@ -215,7 +218,7 @@ def testspam_cb(word, word_eol, userdata):
             contexto.command("say %s" %auxiliar.lee_conf("protecciones", \
                     "botmensaje"))
             contexto.command("close")
-            sql = "INSERT INTO goodboys VALUES (null, %s)" % usuario.nick
+            sql = "INSERT INTO goodboys VALUES (null, '%s')" % usuario.nick
             auxiliar.gatodb_cursor_execute(sql)
     auxiliar.gatodb_commit()
     contexto_orig.set()
