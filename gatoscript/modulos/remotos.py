@@ -88,26 +88,31 @@ def remoto_cb(word, word_eol, userdata):
     """
     remotos_activo = auxiliar.lee_conf("comun", "remotos")
     if (remotos_activo == "1"):
-        #Definimos la expresion regular que actuara como activador
-        consejo_rem = re.compile("!consejo", re.IGNORECASE)
-        hola_rem = re.compile("!hola", re.IGNORECASE)
-        version_rem = re.compile("!version", re.IGNORECASE)
-        #Si se ha encontrado actuamos
-        if consejo_rem.search(word[1]):
-            #consejo_aleatorio_cb("0", "0", "0")
-            xchat.command("say No hay consejos disponibles en este momento")
-        elif hola_rem.search(word[1]):
-            xchat.command("say Hola %s!!" %word[0])
-        elif version_rem.search(word[1]):
-            xchat.command("gsoft")
-            xchat.command("ginfo")
-        for remoto in remotos:
-            if remoto[3].search(word[1]):
-                if remoto[3] == 1:
-                    #respuestas = remoto[1].split(",")
-                    xchat.command("say Esto no esta implementado aun")
-                else:
-                    xchat.command("say %s" % remoto[1])
+        canales = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
+        for canal in canales:
+            canal = canal[0].lower()
+        print word
+        if (word[2].lower() in canales) or (word[2] == xchat.get_info("nick")):
+            #Definimos la expresion regular que actuara como activador
+            consejo_rem = re.compile("!consejo", re.IGNORECASE)
+            hola_rem = re.compile("!hola", re.IGNORECASE)
+            version_rem = re.compile("!version", re.IGNORECASE)
+            #Si se ha encontrado actuamos
+            if consejo_rem.search(word[1]):
+                #consejo_aleatorio_cb("0", "0", "0")
+                xchat.command("say No hay consejos disponibles en este momento")
+            elif hola_rem.search(word[1]):
+                xchat.command("say Hola %s!!" %word[0])
+            elif version_rem.search(word[1]):
+                xchat.command("gsoft")
+                xchat.command("ginfo")
+            for remoto in remotos:
+                if remoto[3].search(word[1]):
+                    if remoto[3] == 1:
+                        #respuestas = remoto[1].split(",")
+                        xchat.command("say Esto no esta implementado aun")
+                    else:
+                        xchat.command("say %s" % remoto[1])
 
 
 ##############################################################################
@@ -131,6 +136,6 @@ def unload_cb(userdata):
 ## para ellos
 ##############################################################################
 # Controles remotos
-HOOKREMOTO = xchat.hook_print('Channel Message', remoto_cb)
+HOOKREMOTO = xchat.hook_server('PRIVMSG', remoto_cb)
 # Descarga del script
 HOOKREMOTOS = xchat.hook_unload(unload_cb)

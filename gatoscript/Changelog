@@ -7,6 +7,7 @@
  * antispam.py: pequeña correccion de formato.
  * media.py: dos correcciones de formato.
  * media.py: corregido un comentario.
+ * remotos.py: modificado para que solo actue en los canales especificados.
 
 2009-12-11  GatoLoko  <GatoLoko@gmail.com>
 
