@@ -1,3 +1,13 @@
+2010-01-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: corregido otro fallo en la consulta sql usada para añadir
+   nuevos filtros a la base de datos.
+ * antispam.py: eliminado codigo residual de una antigua prueba.
+ * antispam.py: corregido un fallo en el sistema anti spambots.
+ * antispam.py: pequeña correccion de formato.
+ * media.py: dos correcciones de formato.
+ * media.py: corregido un comentario.
+
 2009-12-11  GatoLoko  <GatoLoko@gmail.com>
 
  * remotos.py: revision completa del modulo y adaptado para gestionar los

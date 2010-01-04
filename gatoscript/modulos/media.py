@@ -72,7 +72,8 @@ if (repro_activo == "1"):
             import xmms.control
         except ImportError:
             NoXmms = 1
-            print "No se pudo cargar la libreria 'xmms', no funcionaran los controles de XMMS"
+            auxiliar.gprint("No se pudo cargar la libreria 'xmms', no \
+                            funcionaran los controles de XMMS")
     elif (repro == "rhythmbox-dbus"):
         try:
             import dbus
@@ -81,13 +82,15 @@ if (repro_activo == "1"):
             bus = dbus.SessionBus()
         except ImportError:
             NoDBus = 1
-            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Rhythmbox"
+            auxiliar.gprint("No se pudo cargar la libreria 'dbus', no \
+                            funcionaran los controles de Rhythmbox-DBUS")
     elif (repro == "banshee"):
         try:
             import dbus
         except ImportError:
             NoDBus = 1
-            print "No se pudo cargar la libreria 'dbus', no funcionaran los controles de Banshee"
+            auxiliar.gprint("No se pudo cargar la libreria 'dbus', no \
+                            funcionaran los controles de Banshee")
 
 
 ##############################################################################
@@ -266,8 +269,8 @@ def media_cb(word, word_eol, userdata):
         # El siguiente codigo accede a rhythmbox sin necesidad de usar dbus, 
         # pero necesita una version reciente de "rhythmbox-client". Debe
         # funcionar a partir de rhythmbox 0.11.6.
-        # El bugreport y el parche estan disponibles que envie para que
-        # proporcionase parte de la informacion que usamos esta disponible en:
+        # El bugreport y el parche que envie para que proporcionase parte de la
+        # informacion que usamos esta disponible en:
         # http://bugzilla.gnome.org/show_bug.cgi?id=541725
         elif reproductor == "rhythmbox":
             if userdata == "reproductor":
@@ -287,6 +290,7 @@ def media_cb(word, word_eol, userdata):
                     # En etiquetas id3, %ta representa al artista/grupo y %tt al titulo
                     informacion = getoutput('rhythmbox-client --no-present --print-playing-format "%ta - %tt"')
                 xchat.command("me esta escuchando: %s (%s) - Rhythmbox" %(informacion, duracion))
+                #xchat.command("me esta escuchando: %s (%s) - Rhythmbox" %(informacion.split("\n")[2], duracion.split("\n")[2]) )
             elif userdata == "anterior":
                 system("rhythmbox-client --previous")
             elif userdata == "siguiente":
