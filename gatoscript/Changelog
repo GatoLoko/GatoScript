@@ -8,6 +8,8 @@
  * media.py: dos correcciones de formato.
  * media.py: corregido un comentario.
  * remotos.py: modificado para que solo actue en los canales especificados.
+ * p2p.py: adaptado transmission_cb para soportar la nueva ubicacion y formato
+   de las estadisticas.
 
 2009-12-11  GatoLoko  <GatoLoko@gmail.com>
 

@@ -43,7 +43,8 @@ import xml.dom.minidom
 _HOME = path.expanduser("~")
 _AMULESIG = _HOME + "/.aMule/amulesig.dat"
 _AZUREUSSTATS = _HOME + "/.azureus/Azureus_Stats.xml"
-_TRANSMISSIONSTATS = _HOME + "/.transmission/stats.benc"
+_TRANSMISSIONSTATSOLD = _HOME + "/.transmission/stats.benc"
+_TRANSMISSIONSTATSNEW = _HOME + "/.config/transmission/stats.json"
 
 ##############################################################################
 # Inicializamos el modulo
@@ -156,10 +157,10 @@ def transmission_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    if path.exists(_TRANSMISSIONSTATS):
+    if path.exists(_TRANSMISSIONSTATSOLD):
         textos = [[1, 3], [17, 3], [12, 3], [15, 3], [14, 3], [15, 2]]
         parte = []
-        archivo = file(_TRANSMISSIONSTATS, "r")
+        archivo = file(_TRANSMISSIONSTATSOLD, "r")
         partes = archivo.readline().split(':')
         #print partes
         archivo.close()
@@ -173,10 +174,19 @@ def transmission_cb(word, word_eol, userdata):
         subido = auxiliar.unidades(int(parte[4]))
         xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
                       % (descargado, subido))
+    elif path.exists(_TRANSMISSIONSTATSNEW):
+        archivo = file(_TRANSMISSIONSTATSNEW, "r")
+        lineas = archivo.readlines()
+        archivo.close()
+        descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]))
+        subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]))
+        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
+                      % (descargado, subido))
     else:
-        parte1 = "No existe el archivo %s, compruebe su " % _TRANSMISSIONSTATS
-        parte2 = "configuracion de Transmission."
-        auxiliar.gprint("%s%s" % (parte1, parte2))
+        parte1 = "No existe el archivo de estadisticas en sus ubicaciones "
+        parte2 = "habituales. Por favor, compruebe su configuracion de "
+        parte3 = "Transmission."
+        auxiliar.gprint("%s%s%s" % (parte1, parte2, parte3))
     
 
 #############################################################################
