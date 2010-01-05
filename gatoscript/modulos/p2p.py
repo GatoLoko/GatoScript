@@ -187,6 +187,7 @@ def transmission_cb(word, word_eol, userdata):
         parte2 = "habituales. Por favor, compruebe su configuracion de "
         parte3 = "Transmission."
         auxiliar.gprint("%s%s%s" % (parte1, parte2, parte3))
+    return xchat.EAT_ALL
     
 
 #############################################################################

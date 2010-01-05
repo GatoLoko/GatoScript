@@ -1,3 +1,8 @@
+2010-01-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * p2p.py: eliminado un mensaje de error al mostrar las estadisticas de
+   transmission.
+
 2010-01-04  GatoLoko  <GatoLoko@gmail.com>
 
  * antispam.py: corregido otro fallo en la consulta sql usada para añadir
