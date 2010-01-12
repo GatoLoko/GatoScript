@@ -70,10 +70,14 @@ def realza_url_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if auxiliar.lee_conf("comun", "realze") == "1":
-        urls = [ "(ftp://.*|http://.*|https://.*)", "(www|ftp)..*\..*" ]
+        urls = [ "(ftp://.*|http://.*|https://.*)", "(www|ftp)\..*\..*" ]
         nuevo_mensaje = ""
         color = auxiliar.lee_conf("comun", "colorrealze")
-        palabras = word_eol[3][1:].split(" ")
+        # Algunas redes agregan un caracter extra a los mensajes
+        if "freenode" in xchat.get_info("server"):
+            palabras = word_eol[3][2:].split(" ")
+        else:
+            palabras = word_eol[3][1:].split(" ")
         direccion = []
         for i in urls:
             #print i
