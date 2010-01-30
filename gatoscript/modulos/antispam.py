@@ -44,8 +44,9 @@ import auxiliar
 #############################################################################
 # Cargamos la lista de filtros para el antispam y compilamos las regexps
 if auxiliar.CONECTADO == 1:
-    ANTISPAM = 1
+    ANTISPAM = int(auxiliar.lee_conf("protecciones", "spam"))
     SPAMBOTS = int(auxiliar.lee_conf("protecciones", "spambots"))
+    CANALES = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
     filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
     compilados = []
     for filtro in filtros:
@@ -56,6 +57,7 @@ else:
     auxiliar.gprint(mensaje)
     ANTISPAM = 0
     SPAMBOTS = 0
+    CANALES = ""
 
 
 #############################################################################
@@ -73,9 +75,11 @@ def antispam_reload():
     # funcionamiento del modulo completo
     global ANTISPAM
     global SPAMBOTS
+    global CANALES
     if auxiliar.CONECTADO == 1:
-        ANTISPAM = 1
+        ANTISPAM = int(auxiliar.lee_conf("protecciones", "spam"))
         SPAMBOTS = int(auxiliar.lee_conf("protecciones", "spambots"))
+        CANALES = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
         # Cargamos la nueva lista de filtros y compilamos las regexps
         filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
         compilados = []
@@ -83,9 +87,10 @@ def antispam_reload():
             compilados.append(re.compile(".*" + filtro[0] + ".*", \
                                          re.IGNORECASE))
     else:
-        auxiliar.gprint("No se pueden cargar los filtros, AntiSpam desactivado")
+        auxiliar.gprint("No se pueden recargar los filtros, AntiSpam desactivado")
         ANTISPAM = 0
         SPAMBOTS = 0
+        CANALES = ""
 
 
 #############################################################################
@@ -103,40 +108,41 @@ def antispam_cb(word, word_eol, userdata):
     """
     global SPAMBOTS
     global ANTISPAM
-    if auxiliar.lee_conf("protecciones", "spam") == "1":
-        for spam_exp in compilados:
-            if (spam_exp.search(word_eol[3][1:])):
-                ban = "1"
-                mensaje = " Spam/Troll"
-                auxiliar.expulsa(mensaje, ban, word)
-    # Comprobamos si el mensaje se ha recibido en un privado o en alguno de
-    # nuestros canales protegidos
-    canales = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
-    if (word[2] in canales) or (word[2] == xchat.get_info("nick")):
-        # Si esta activada la gestion de bots spammers...
-        if SPAMBOTS == 1:
+    global CANALES
+    # Comprobamos si el antispam esta activado.
+    if ANTISPAM == 1:
+        #canales = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
+        # Comprobamos si el mensaje se ha recibido en un canal protegido
+        if word[2] in CANALES:
+            for spam_exp in compilados:
+                if spam_exp.search(word_eol[3][1:]):
+                    ban = "1"
+                    mensaje = " Spam/Troll"
+                    auxiliar.expulsa(mensaje, ban, word)
+            # Una vez expulsado el spammer, nos tragamos el mensaje y
+            # devolvemos el control a X-Chat para que no se ejecute la
+            # comprobacion de privados cuando el mensaje se ha recibido en un
+            # canal publico.
+            xchat.EAT_ALL
+    # Comprobamos si el antibots esta activado.
+    if SPAMBOTS == 1:
+        # Comprobamos si el mensaje se ha recibido en un privado
+        if word[2] == xchat.get_info("nick"):
             # Si es asi, comprobamos si el mensaje contiene spam
             for spam_exp in compilados:
-                if (spam_exp.search(word_eol[3][1:])):
+                if spam_exp.search(word_eol[3][1:]):
                     # Si contiene spam, expulsamos al bot responsable
-                    auxiliar.expulsa(" Bot spammer", "1", word)
-                    # Y quitamos su nick de la lista de niños buenos
-                    nick = word[0].split("!")[0].split(":")[1]
-                    if nick in auxiliar.gatodb_cursor_execute("SELECT goodboy FROM goodboys"):
-                        auxiliar.gatodb_cursor_execute("DELETE FROM goodboys WHERE goodboy \
-                            IN (?)", (nick,))
-                        auxiliar.gatodb_commit()
-                    if word[2] in canales:
-                        ban = "1"
-                        mensaje = " Spam"
-                        auxiliar.expulsa(mensaje, ban, word)
-        # Comprobamos si esta activada la funcion anti spam
-        if ANTISPAM == 1:
-            # Si esta activada, comprobamos si el texto recibido contiene spam y
-            # si es asi, ignoramos la linea    
-            for spam_exp in compilados:
-                if (spam_exp.search(word_eol[3][1:])):
-                    return xchat.EAT_ALL
+                    ban = "1"
+                    mensaje = " Bot spammer"
+                    auxiliar.expulsa(mensaje, ban, word)
+            # Quitamos el nick del spammer de la lista de niños buenos
+            nick = word[0].split("!")[0].split(":")[1]
+            sql = "SELECT goodboy FROM goodboys"
+            if nick in auxiliar.gatodb_cursor_execute(sql):
+                sql = "DELETE FROM goodboys WHERE goodboy IN (?)"
+                auxiliar.gatodb_cursor_execute(sql, (nick,))
+                auxiliar.gatodb_commit()
+    return xchat.EAT_ALL
 
 
 def antispam_add_cb(word, word_eol, userdata):

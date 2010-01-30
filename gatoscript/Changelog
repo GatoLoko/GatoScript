@@ -1,3 +1,12 @@
+2010-01-29  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: comprobar DE VERDAD si el antispam esta activado o no en la
+   configuracion y actuar en consecuencia.
+ * antispam.py: diferenciada la gestion de spam (mensajes en canales publicos)
+   de la gestion de bots (mensajes privados). Ahora antibots no depende de que
+   antispam este activado. Si el mensaje se ha recibido en un canal, no se
+   comprueba si se ha recibido en un privado (pequeña optimizacion).
+
 2010-01-12  GatoLoko  <GatoLoko@gmail.com>
 
  * resaltados.py: corregido un error tipografico en la expresion regular que
