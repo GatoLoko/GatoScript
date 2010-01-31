@@ -1,3 +1,11 @@
+2010-01-31  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: arreglado un bug que producia que no se mostrase ningun mensaje
+   en canales publicos.
+ * antispam.py: arreglado un bug que producia la eliminacion de usuarios de la
+   lista "goodboys" incluso cuando no enviaban spam (fallo de indentacion).
+ * antispam.py: recuperada la eliminacion de mensajes privados con spam.
+
 2010-01-29  GatoLoko  <GatoLoko@gmail.com>
 
  * antispam.py: comprobar DE VERDAD si el antispam esta activado o no en la
