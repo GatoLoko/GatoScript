@@ -1,0 +1,662 @@
+2010-01-31  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: arreglado un bug que producia que no se mostrase ningun mensaje
+   en canales publicos.
+ * antispam.py: arreglado un bug que producia la eliminacion de usuarios de la
+   lista "goodboys" incluso cuando no enviaban spam (fallo de indentacion).
+ * antispam.py: recuperada la eliminacion de mensajes privados con spam.
+
+2010-01-29  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: comprobar DE VERDAD si el antispam esta activado o no en la
+   configuracion y actuar en consecuencia.
+ * antispam.py: diferenciada la gestion de spam (mensajes en canales publicos)
+   de la gestion de bots (mensajes privados). Ahora antibots no depende de que
+   antispam este activado. Si el mensaje se ha recibido en un canal, no se
+   comprueba si se ha recibido en un privado (pequeña optimizacion).
+
+2010-01-12  GatoLoko  <GatoLoko@gmail.com>
+
+ * resaltados.py: corregido un error tipografico en la expresion regular que
+   identifica algunas URLs.
+ * resaltados.py: corregido un bug que introducia un caracter extraño en los
+   mensajes de la red Freenode.
+
+2010-01-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * p2p.py: eliminado un mensaje de error al mostrar las estadisticas de
+   transmission.
+
+2010-01-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: corregido otro fallo en la consulta sql usada para añadir
+   nuevos filtros a la base de datos.
+ * antispam.py: eliminado codigo residual de una antigua prueba.
+ * antispam.py: corregido un fallo en el sistema anti spambots.
+ * antispam.py: pequeña correccion de formato.
+ * media.py: dos correcciones de formato.
+ * media.py: corregido un comentario.
+ * remotos.py: modificado para que solo actue en los canales especificados.
+ * p2p.py: adaptado transmission_cb para soportar la nueva ubicacion y formato
+   de las estadisticas.
+
+2009-12-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * remotos.py: revision completa del modulo y adaptado para gestionar los
+   remotos en la base de datos.
+ * gatoscript.db: agregada la tabla "remotos".
+ * protecciones.py: arreglados varios errores de formato.
+ * antispam.py: corregido un fallo en la consulta sql usada para añadir nuevos
+   filtros a la base de datos.
+ * notas.py: agregado nuevo modulo para gestionar notas.
+ * gatoscript.py: activados los modulos: remotos.py y notas.py
+ * ejemplo.py: arreglados algunos comentarios.
+
+2009-12-06  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: agregada una excepcion al anti_notice para que no expulse
+   al bot de gestion de canales de IRC-Hispano.
+
+2009-12-01  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: agregadas las funciones gatodb_cusor_execute() y
+   gatodb_commit() para centralizar el acceso a la base de datos en un solo
+   modulo.
+ * auxiliar.py: cambiadas algunas variables para que sean privadas del modulo.
+ * rss.py: modificado para usar el acceso a la base de datos mediante las
+   funciones del modulo auxiliar.
+ * protecciones.py: varios arreglos de formato.
+ * antispam.py: modificado para usar el acceso a la base de datos mediante las
+   funciones del modulo auxiliar.
+ * antispam.py: reformas y arreglos varios.
+ * gatoscript.db: agregados varios filtros y mejorados algunos de los ya
+   existentes para ser mas eficientes.
+ * whois.py: agregado el docstring a la funcion espacios.
+ * whois.py: multiples arreglos de formato y eliminadas lineas innecesarias.
+ * sysinfo.py: multiples arreglos de formato y eliminadas lineas innecesarias.
+ * resaltados.py: agregado el docstring a la funcion realza_url_cb.
+ * resaltados.py: multiples arreglos de formato.
+ * p2p.py: multiples arreglos de formato.
+ * ejemplo.py: pequeño arreglo.
+ * antispam.py: pequeño arreglo.
+ * gatoscript.conf: activado por defecto el realce de urls.
+ 
+2009-11-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * instalador: arreglado (otra vez), esto no termina de funcionar nunca.
+ * auxiliar.py: agregado el docstring a la funcion unidades.
+ * auxiliar.py: eliminadas varias lineas comentadas que ya no son necesarias.
+ * auxiliar.py: ordenadas las funciones dependiendo de su utilidad.
+
+2009-11-27  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: modificada la funcion anti_notice_cb para que pueda ser
+   desactivada en la configuracion del script.
+ * protecciones.py: modificada la funcion anti_clonerx_cb para que pueda ser
+   desactivada en la configuracion del script.
+ * protecciones.py: modificada la funcion anti_drone_cb para que pueda ser
+   desactivada en la configuracion del script.
+
+2009-11-23  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: sustituido el uso de ConfigParser.ConfigParser por
+   ConfigParser.SafeConfigParser, que es mas recomendable (requiere python 2.3
+   o superior).
+ * auxiliar.py: simplificada la funcion unidades.
+ * auxiliar.py: agregada la funcion kbtemporal_cb que fue eliminada durante la
+   modularizacion del script.
+ * autosend.py: modificados varios mensajes para hacerlos mas genericos y
+   correctos.
+ * gatoscript.conf: cambiado el disparador para el autoenvio.
+ * rss.py: eliminado un antiguo mensaje de depuración.
+ * gatoscript.py: modificado el uso de la funcion print para que sea compatible
+   con las futuras versiones de python.
+ * gatoscript.db: agregados algunos filtros.
+
+2009-10-10  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: modificada la funcion anti_colores_cb para que
+   pueda ignorar los mensajes que contienen color de forma opcional.
+ * gatoscript.conf: renombrada la opcion "colores" a "banea_colores" y
+   agregada la opcion "ignora_colores".
+ * gatoscript.conf: eliminadas algunas opciones obsoletas.
+ * Eliminadas las versiones propias de cada modulo.
+ * remotos.py: empezada la revision del codigo para que trabaje como modulo.
+ * auxiliar.py: cambiada la version del script para publicarlo como 0.80.
+ * gatoscript.db: agregados algunos filtros antispam.
+ * gatoscript.py: cambiada la version para publicarlo como 0.80.
+ * gatoscript.py: eliminadas algunas variables innecesarias.
+
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
+ * protecciones.py: agregada la funcion anti_drone_cb para deteccion y expulsion
+   de Drones publicitarios.
+ * protecciones.py: limpieza general del modulo.
+
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
+ * remotos.py: Arreglada la cabecera del archivo.
+
+2009-10-03  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: agregada funcion para pasar bytes a su multiplo mas legible.
+ * p2p.py: simplificada la funcion amule_cb utilizando la nueva funcion
+   auxiliar.unidades para convertir las catidades de bytes a KB, MB, GB, ...
+ * p2p.py: agregada funcion transmission_cb para mostrar datos de transmission.
+
+2009-08-15  GatoLoko  <GatoLoko@gmail.com>
+
+ * whois.py: refactorizadas algunas lineas, resultando en la funcion espacios()
+   para ayudar a formatear la salida del whois.
+ * whois.py: gestionados los raws 310, 313 y 316.
+ * auxiliar.py: arreglado la docstring de priv_imprime.
+ * auxiliar.py: eliminada la funcion prueba() que no tenia utilidad.
+
+2009-06-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * auxiliar.py: modificadas las funciones priv_linea y priv_imprime para
+   comportarse de forma mas similar a un privado real.
+ * antispam.py: arreglada la funcion antilist para que funcione con los filtros
+   de la base de datos.
+
+2009-04-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * gatoscript.conf: agregada seccion para el nuevo modulo AutoSend
+ * autosend.py: nuevo modulo para envio automatico de archivos
+
+2009-03-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * sysinfo.py: sustituido el uso de os.popen3 por subprocess.Popen de acuerdo al
+   Python Enhacement Proposal 324 (http://www.python.org/dev/peps/pep-0324/).
+ * sysinfo.py: aumentado el numero de version al 1.0alpha1
+ * ejemplo.py: renombrada una variable para mejorar la uniformidad general
+   dentro del script.
+ * media.py: aumentado el numero de version al 1.0alpha1
+ * protecciones.py: corregida una falta de ortografia en un mensaje.
+ * rss-py: corregido el numero de version al 1.0alpha1
+ * Agregado un enlace a la base de datos con extension sqlite para facilitar su
+   acceso desde algunos gestores de bases de datos.
+ * Agregado el archivo "Authors" y su enlace "Autores" para dar credito a
+   quienes participan en el script.
+
+
+2009-02-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * antispam.py: varias modificaciones para arreglar el uso de la base de datos.
+ * auxiliar.py: modificada la direccion web en la funcion gato_info_cb para que
+   apunte a la pagina correcta.
+ * protecciones.py: corregido un pequeño bug en la funcion anti_ctcp_cb y otro
+   en anti_clonerx_cb relacionados con la modularizacion.
+ 
+ 
+2009-01-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido pequeño bug en el instalador.
+ * Eliminado el archivo TODO, en adelante se gestionaran las tareas pendientes
+   en el gestor de proyectos de launchpad.
+ * rss.py:rss_cb() modificado para usar los servidores almacenados en la base
+   de datos.
+ * antispam.py: modificado todo el modulo para almacenar los filtros en la base
+   de datos en lugar de archivos de texto.
+ * Agregada base de datos sqlite al script.
+ * Modificadas las funciones de los modulos para utilizar las funciones
+   auxilires contenidas en el modulo auxiliar.
+ * Desechada la version 0.18rc2
+ * Iniciada la modularizacion del script para la version 1.0. Se ha dividido el
+   script principal en diferentes modulos por tipo de funciones. 
+
+
+2008-10-12  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion realza_url_cb para que sea desactivable en la
+   configuracion.
+
+
+2008-10-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_spam_cb para que opcionalmente expulse spambots.
+ * Modificada la funcion antispam_reload para que tambien recargue la lista
+   blanca usada para no enviarle el mensaje anti bots a usuarios conocidos.
+ * Agregados comentarios a la funcion anti_spam_cb para aclarar como funciona.
+ * Agregada la funcion testspam_cb, conectada al comando /test, para enviar de
+   forma automatica un mensaje de prueba a los nicks no conocidos del canal
+   actual, para detectar bots.
+ * Modificado el mensaje de expulsion en la funcion anti_colores_cb.
+ * Agregada funcion realza_url_cb para realzar de forma local las direcciones
+   url recibidas en un color establecido por nosotros.
+ * Descomentada la seccion de codigo que se creo para gestionar Rhythmbox sin
+   utilizar dbus, ya que se ha publicado una version de Rhythmbox que lo
+   soporta.
+   El metodo anterior queda activo para soportar versiones anteriores.
+ * Modificado el menu de forma que se pueda seleccionar el metodo antiguo de
+   gestion para Rhythmbox.
+ * Corregido un error tipografico que impedia la correcta desactivacion de la
+   funcion anti ctcp cuando se descargaba el script.
+ * Actualizada la lista de filtros antispam.
+
+2008-07-26  GatoLoko  <GatoLoko@gmail.com>
+
+ * Completada la revision del instalador y agregados algunos comentarios.
+ * Publicado como 0.17.
+
+
+2008-07-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Correccion menor en la informacion de ayuda.
+ * Modificado el mensaje de aviso en anti_colores_cb para informar como
+   desactivar los colores en mirc, por ser el cliente de irc que en mas
+   ocasiones avisamos.
+ * Agregadas algunas opciones de configuracion al menu del script.
+
+
+2008-07-07  GatoLoko  <GatoLoko@gmail.com>
+
+ * Limpieza de codigo. Eliminadas multiples lineas de codigo antiguo que se
+   comentaron provisionalmente al ser substituidas por otras y no se
+   eliminaron cuando correspondia
+ * Agregada referencia a la seleccion de Amarok como reproductor en el texto
+   de ayuda.
+ * Simplificacion de la funcion anti_hoygan_cb.
+
+
+2008-07-07  GatoLoko  <GatoLoko@gmail.com>
+
+ * Añadida seccion de codigo para gestionar Rhythmbox sin utilizar dbus. Esto
+   corregiria varios bugs y simplificaria el codigo, pero depende de una
+   funcionalidad aun no disponible en rhythmbox-client, asi que esta sección
+   queda comentada hasta que esté disponible.
+   Ademas he creado una entrada en el bugzilla de rhythmbox notificando esto y
+   proporcionando el parche para solucionarlo, quedando a la espera de
+   aprobacion. http://bugzilla.gnome.org/show_bug.cgi?id=541725
+ * Revisado y parcialmente reescrito el instalador.
+
+
+2008-07-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Parcialmente reescrita la funcion media_cb para gestionar Banshee sin
+   utilizar dbus. Esto elimina varios bugs existentes y simplifica
+   el codigo.
+ * Agregado soporte para amarok en la funcion media_cb.
+ * Modificada la funcion opciones_cb de forma que permita editar cualquier
+   opcion de la configuracion.
+ * Modificado el menu de opciones para que utilice correctamente la funcion
+   opciones_cb de acuerdo a las nuevas modificaciones.   
+
+
+2008-07-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Reorganizadas algunas lineas de la funcion anti_clonerx_cb de forma que
+   solo se ejecuten cuando son necesarias.
+
+
+2008-06-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Migrado el repositorio subversion a bazaar.
+ * Publicado como 0.16 final.
+
+
+2008-05-30  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un fallo en la funcion media_cb que mostraba una duración
+   incorrecta de la reproduccion (0m0s) con algunas emisoras de radio. Ahora
+   muestra la etiqueta "Radio" y el bitrate de la emisora.
+ * Modificada la funcion media_cb para que muestre el titulo de cancion que
+   reproduce la radio en vez de dejar el campo vacio.
+
+
+2008-05-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Mejorada la funcion antispam_del_cb.
+ * Modificada la funcion anti_mayusculas_cb para que envie un mensaje publico
+   en el canal, ya que los notices parecen pasar desapercibidos para algunos
+   usuarios.
+
+
+2008-04-27  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_colores_cb para que envie un mensaje publico en
+   el canal, ya que los notices parecen pasar desapercibidos para algunos
+   usuarios.
+
+
+2008-04-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada funcion anti_colores_cb contra el uso de colores, desactivable por
+   el usuario. Notifica en la primera ocurrencia y expulsa en la segunda.
+ * Cambiadas todas las llamadas a open() por file(). Ya que se usaban las dos
+   para lo mismo, es mas coherente usar solo una.
+
+
+2008-04-13  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayusculas_cb de forma que avise al infractor en
+   la primera ocasion, y lo expulse en la segunda, basado en un parche enviado
+   por Foxandxss.
+
+
+2008-03-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregado limite de entradas al lector rss.
+ * Agregada opcion al archivo de configuracion para el limitador del rss.
+ * Actualizada la lista de webs de spam.
+
+
+2008-02-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * Cambios en la gestion de remotos para banshee.
+ * Revision general de codigo.
+
+
+2008-01-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada funcion anti_notice_cb para detectar y expulsar a quienes envian
+   notices de forma masiva a canales.
+ * Modificada la funcion anti_hoygan_cb para que actue tambien ante la cadena
+   "h 0 y g 4 n" usada por algunos para saltarse la norma.
+
+
+2007-11-11  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificado el mensaje de expulsion para los hoygan
+ * Agregado el encabezado de seccion a los mensajes de ayuda de antispam
+ * Completada y activada la funcion anti_away_cb
+ * Mejorada la funcion proteccion_cb
+ 
+
+2007-09-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayusculas_cb para tener en cuenta solo los
+   caracteres alfabeticos.
+
+
+2007-09-14  GatoLoko  <GatoLoko@gmail.com>
+
+ * Extraida la lista de webs consideradas spam al archivo de configuracion.
+ * Modificada las proteccion anti_ctcp, anti_hoygan, anti_mayusculas para que
+   solo actue en los canales definidos.
+ * Creada funcion anti_away_cb independiente (incompleta y no funcional).
+
+
+2007-09-08  GatoLoko  <GatoLoko@gmail.com>
+
+ * Añadida la consola de python al menu principal.
+ * Añadida la opcion "Usuarios" al menu de canal (hace un /who al canal).
+ * Pequeño reordenamiento de funciones.
+ * Pequeña refactorizacion en las funciones de proteccion (incompleta). Se
+   crea la funcion "expulsa"
+ * Renombrada la funcion "proteccion2_cb" a "anti_clonerx_cb" para ser mas
+   explicitos.
+
+
+2007-08-05  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un bug en la funcion "consejo_aleatorio_cb". Calculaba mal la
+   cantidad de consejos a tener en cuenta.
+
+
+2007-06-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido un bug en la funcion "software_cb". Usaba "split(cadena)" en
+   lugar de "cadena.split()"
+ * Corregido un fallo en el menu, no existe la funcion "hora"
+
+
+2007-05-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion anti_mayus_cb para que solo expulse a quien escribe
+    TODO en mayusculas.
+ * Limpiada la funcion de proteccion general del antiguo contenido anti
+    mayusculas que ya estaba en desuso.
+
+
+2007-04-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregado anti-away
+
+
+2007-04-07  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificados los formatos de mensajes en algunas funciones para ser
+    más consistentes.
+ * Modificadas las URLs para apuntar al nuevo dominio.
+ * Cambiada la numeracion a "0.16alpha"
+
+
+2007-03-21  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificada la funcion "amule_cb" para mostrar la version de aMule.
+ * Corregidos los fallos en la funcion multimedia para control de
+    remoto de Rhythmbox.
+ * Publicado como 0.15 final.
+
+
+2007-02-04  GatoLoko  <GatoLoko@gmail.com>
+
+ * Documentadas las funciones para gestion de feeds RSS/RDF.
+ * Modificadas las opciones del menu para poder añadir o quitar nuevos feeds
+    de forma grafica.
+ * Publicado como RC2
+ * Reescrita la funcion "rssdel_cb" para ser mas eficiente.
+
+
+2007-02-02  GatoLoko  <GatoLoko@gmail.com>
+
+ * Modificadas las funciones rss_cb y rsslista_cb para que almacenen y lean
+     la lista de feeds del archivo de configuracion en lugar de un archivo
+     independiente.
+ * Agregado el comando "rssadd" para agregar un nuevo feed a la lista.
+ * Agregado el comando "rssdel" para eliminar un feed de la lista.
+
+
+2007-01-25  GatoLoko  <GatoLoko@gmail.com>
+
+ * Corregido el bug que probocaba la ejecucion de Rhythmbox o Banshee al
+    cargar el script.
+ * Publicado como RC1
+
+
+2007-01-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada la funcion azureus_cb y el comando "/azureus" para mostrar
+     informacion sobre las transferencias de este programa.
+ * Modificado el menu para activar el acceso a la funcion azureus_cb.
+
+
+2007-01-22  GatoLoko  <GatoLoko@gmail.com>
+
+ * Agregada la funcion "rss_cb" que muestra las noticias recientes de los
+     de los feeds configurados.
+ * Agregada la funcion "rsslista_cb" que muestra la lista de feeds.
+ * Cambiado el formato del Changelog. Las entradas anteriores se conservan
+    con fecha 31 de diciembre del 2006.
+ * Agregada la ayuda para las funciones de gestion RSS.
+ * Publicado como beta2.
+
+
+2006-12-31  GatoLoko  <GatoLoko@gmail.com>
+
+###############################################################################
+#
+# Cambios en versiones anteriores a la 0.3:
+#    No lleve la cuenta :p
+#
+# Cambios en 0.3:
+#    Extraidos los consejos al archivo "consejos.txt".
+#    Agregado el comando "/consejos" para mostrar consejos aleatorios.
+#    Agregado el comando "/consejo" para mostrar consejos concretos.
+#    Agregado el comando "/gato" para mostrar una lista de comandos disponibles
+#    Limpiada la salida del uptime.
+#    Corregido el numero de pista mostrado por "/gxm".
+#
+# Cambios en 0.4:
+#    Aumentada la prioridad del filtro antispam, asi debe actuar antes que
+#        otras funciones del mismo u otro script que se active por los privados.
+#    Hay que tener en cuenta que puse un valor al azar porque no encuentro
+#        informacion sobre las prioridades, si algo falla habra que probar con
+#        otros valores.
+#    Agregado el comando "/gos" para mostrar la distribucion y su version. Solo
+#        funciona en distribuciones que cumplan con el Linux Standard Base.
+#    Agregado codigo de control de errores en la apertura de archivos ( como en
+#        el caso de los consejos).
+#    Agregada la funcion remota con los comandos "!consejos" y "hola".
+#    Modificado la salida del comando "gxm" para que tambien muestre la version
+#        de XMMS.
+#    Movidos los archivos de consejos y filtros antispam al un subdirectorio
+#        para mantener las cosas ordenadas y facilitar la identificacion se los
+#        componentes del script (util a la hora de eliminarlo por ejemplo).
+#    Actualizada la informacion de ayuda (parcialmente).
+#
+# Cambios en 0.5:
+#    Extraidos los filtros a un archivo externo y modificada la funcion
+#        antispam para que los use. Un filtro por linea y cada linea terminada
+#        con un retorno de linea excepto la ultima (osea, no quedara una linea
+#        vacia al final del archivo).
+#    Agregado el comando "/antiadd" para agregar filtros al sistema antispam.
+#    Agregado el comando "/antidel" para eliminar filtros del sistema antispam
+#    Agregado el comando "/antilist" para mostrar los filtros.
+#    Redirigidos los mensajes del script a un nuevo tab/ventana (segun la
+#        configuracion de privados que tengamos).
+#
+# Cambios en 0.6:
+#    Sustituida la funcion de "/gup" por otra nueva que debe solucionar los
+#        fallos encontrados en la anterior (uso del plural para referirse a un
+#        solo dia, fallo en el calculo cuando era menos de 24 horas, ...).
+#    Agregado el comando "/kbtemp" para expulsar gente durante 5 minutos.
+#    Actualizada la informacion de ayuda (totalmente).
+#    Agregada lista de tareas pendientes.
+#    Extraida la lista de tareas pendientes a un archivo independiente (aunque
+#        pueda parecer raro que ponga dos lineas sobre la lista de tareas,
+#        tiene  un motivo, en el svn que uso hice un commit antes de extraerla
+#        a un archivo aparte, asi que consta como dos commits distintos).
+#    Extraida la lista de cambios a un archivo independiente.
+#
+# Cambios en 0.7:
+#    Eliminados restos de pruebas en versiones anteriores.
+#    Eliminada la funcion que mostraba informacion del sistema con colores.
+#    Agregado el comando "/gsoft" para mostrar informacion sobre el software
+#        basico del sistema.
+#    Agregada comprobacion de errores a la carga del modulo para xmms y en caso
+#        de no estar presente desactivamos todas las funciones que dependen de
+#        el.
+#    Eliminada la antigua funcion de "/gup" (estaba comentada mientras se
+#        probaba la nueva).
+#
+# Cambios en 0.8:
+#    Agregado "/gsoft" a la informacion de ayuda.
+#    Reescrita la funcion que genera el menu de ayuda para el comando "/gato"
+#        de forma que se divida en secciones.
+#    Arreglado un fallo en la carga de librerias (agregue control de errores
+#        a la carga de xmms pero olvide eliminar la carga anterior).
+#    Arreglado un fallo en la funcion de los consejos.
+#    Reordenada la cabecera del script.
+#    Agregada desactivacion de las funciones cuando se descarga el script.
+#
+# Cambios en 0.9:
+#    Modificada la funcion antispam para que soporte expresiones regulares y
+#        que no tenga en cuenta la capitalizacion (mayusculas/minusculas) del
+#        texto ni de los filtros (asi el filtro "p0rn" afecta tambien a "P0RN".
+#    La funcion antigua queda comentada por si falla la nueva y es necesario
+#        recuperarla.
+#    Arregladas algunas cosillas que quedaron pendientes.
+#    Actualizada la lista de filtros en base al soporte de expresiones
+#        regulares. Con el nuevo funcionamiento algunos eran redundantes y
+#        otros podian filtrar mensajes que no debian.
+#
+# Cambios en 0.10:
+#    Arreglado un fallo en la salida del comando "/gxm" y cambiado el orden de
+#        la informacion.
+#    Actualizada la lista de filtros antispam para filtrar nuevas basuras
+#        frecuentes.
+#    Correcciones en el instalador, agregada linea de codificacion del archivo
+#        para evitar problemas en algunos sistemas, corregido un error
+#        tipografico en una llamada a una funcion.
+#    Agregadas varias funciones para el control del comando whois, los
+#        mensajes se reenviaran a la ventana activa. y se modifica ligeramente
+#        el formato.
+#
+# Cambios en 0.11:
+#    Arreglado el tiempo que muestra "/gxm" cuando se reproduce un stream
+#        desde una emisora de radio
+#    Aqui se colaron algunos arreglos que no apunte :p
+#
+# Cambios en 0.12:
+#    Modificada la funcion "antispam_add_cb" para que no recorra todo el
+#        archivo cada vez que se agrege una entrada nueva. Ahora se agrega al
+#        final directamente.
+#    Modificada la funcion "antispam_del_cb" de forma que no use un archivo
+#        temporal. Asi es mas rapida y se reduce el acceso a disco.
+#    Modificada la funcion "antispam_cb" para manejar la lista de filtros en
+#        memoria en vez de en disco.
+#    Modificadas todas las funciones relacionadas con antispam para actualizar
+#        la lista de filtros en memoria despues de cada cambio en el archivo de
+#        filtros.
+#
+#  Cambios en 0.13:
+#    Corregido un fallo en el acceso a la variable "filtros" en los filtros
+#        antispam que impedia la correcta actualizacion de la lista al agregar
+#        o eliminar un filtro nuevo.
+#    Corregido un fallo en la funcion de consejos aleatorios que enviaba
+#        comandos indebidos al servidor.
+#    Modificada la funcion "software_cb" para gestionar mejor los errores
+#        cuando no puede determinar el software.
+#    Mejorado el instalador para que active los menus ocultos en xchat 2.6.x
+#    Mejorado el control de respuestas al whois. Ahora controlamos y
+#        redirigimos mas respuestas (401 para nicks desconectados y 342 para
+#        nick con modo +R). Tambien se ha modificado ligeramente el formato
+#        para que no se descomponga con nicks largos (soporta hasta 15
+#        caracteres de largo, que es la longitud maxima en el irc-hispano).
+#        Ademas mejora el control de las respuesta 317 (whoisidle).
+#    Modificada la funcion "amule_cb" para que use "Bytes", "MB" o "GB" en
+#        funcion de la longitud de descargas.
+#    Actualizada la lista de filtros antispam.
+#
+#  Cambios en 0.14:
+#    Creado un mecanismo de configuracion (archivo de configuracion mas
+#        funciones de control).
+#    Agregada funcion "media_cb" para control de reproductores externos. El
+#        reproductor es seleccionable mediante el archivo de configuracion.
+#    Integradas las funciones de control de xmms en la funcion "media_cb".
+#    Integradas las funciones de control de Rhythmbox en la funcion "media_cb".
+#    Arreglados varios bugs de la version anterior.
+#    Fundidas las funciones relacionadas con el whois en una sola. Ahora es
+#        desactivable mediante el archivo de configuracion.
+#    Agregada una funcion de proteccion contra envios CTCP a canales.
+#    Agregada una funcion de proteccion contra ClonerX.
+#    Corregido un fallo en la informacion de Rhythmbox. Este reproductor no da
+#        informacion sobre el bitrate de la cancion actual, asi que siempre se
+#        mostraba "0kbps".
+#    Agregada una funcion que copia los mensajes resaltados en la pestaña
+#        "GatoScript".
+#    Agregada la funcion "pc_cb" que muestra informacion sobre el hardware
+#        (aun esta incompleta, aunque funciona).
+#    Agregada la funcion "hora_cb" que muestra la hora del sistema (tambien
+#        incompleta, aunque funcional).
+#    Agregadas lineas de documentacion a las funciones (para desarrolladores).
+#    Editado el ChangeLog a 79 caracteres por linea, para facilitar su lectura
+#        en terminales de solo texto estandard.
+#    Actualizados los menus del GatoScript.
+#
+#  Cambios en 0.15beta:
+#    Agregada comprobacion de errores a la carga del modulo bonobo.ui para el
+#        control de Rhythmbox y en caso de no estar presente desactivamos todas
+#        las funciones que dependen de el.
+#    Agregada una funcion contra abuso de mayusculas.
+#    Agregada una funcion de proteccion contra los "HOYGAN".
+#    Corregido un fallo en la funcion de resaltados que generaba exceso de
+#        mensajes cuando no se debia resaltar nada.
+#    Modificada la funcion ginfo_cb para incluir la version de X-Chat.
+#    Agregado control del raw 378 a la funcion que gestiona y formatea las
+#        respuestas al whois.
+#    Modificada la prioridad de la varias funciones de proteccion.
+#    Arreglado un fallo en la funcion software_cb. Se mostraba mal la
+#        informacion sobre libc.
+#    Agregados cuatro nuevos filtros antispam.
+#    Reescritas las funciones de control de Rhythmbox. Las nuevas versiones ya
+#        no soportan bonobo, asi que ahora lo controlamos mediante D-Bus
+#    Agregado soporte para el reproductor Banshee (tambien mediante D-Bus)
+#    Agregado menu principal del GatoScript.
+#    Eliminado el menu de las pestañas.
+#    Modificado la funcion contra abuso de mayusculas para ser una proteccion
+#        mas general. Tambien expulsa a quienes pongan ciertos mensajes.
+#
+###############################################################################
