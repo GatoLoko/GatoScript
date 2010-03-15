@@ -161,19 +161,21 @@ def expulsa(mensaje, ban, word):
         xchat.command(comando)
 
 #Conversion de unidades
-def unidades(valor):
+def unidades(valor, base):
     """Convierte cantidades de bytes a alguno de sus multiplos
     Argumentos:
     valor    -- entero con la cantidad en bytes que queremos convertir
     """
-    SUFIJOS = {1024: ['KByte', 'MByte', 'GByte', 'TByte', 'PByte', 'EByte', \
-                      'ZByte', 'YByte']}
+    SUFIJOS = {1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'], \
+        1000: ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']}
     if valor < 0:
         raise ValueError('los valores negativos no son validos')
-    for sufijo in SUFIJOS[1024]:
-        valor /= 1024
+    for sufijo in SUFIJOS[base]:
+        # Agregamos ".0" a la base para forzar el uso de decimales
+        valor /= base/1.0
         if valor < 1024:
-            return '{0:.1f}{1}'.format(valor, sufijo)
+            # ".2f" limita los decimales mostrados a 2
+            return '{0:.2f}{1}'.format(valor, sufijo)
     raise ValueError('numero demasiado grande')
 
 # Comandos
