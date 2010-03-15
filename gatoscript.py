@@ -89,7 +89,7 @@ HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que
 # mostramos el mensaje de carga
-mensaje = "Cargado GatoScript " + __module_version__
+mensaje = "Cargado GatoScript %s" % __module_version__
 auxiliar.gprint(mensaje)
 
 ##############################################################################
