@@ -111,7 +111,7 @@ def amule_cb(word, word_eol, userdata):
         else:
             vdescarga = (lineas_amule[6])[0:-1]
             vsubida = (lineas_amule[7])[0:-1]
-            total_descargado = auxiliar.unidades(int(lineas_amule[11]))
+            total_descargado = auxiliar.unidades(int(lineas_amule[11]), 1024)
             version = lineas_amule[13][0:-1]
             parte1 = "say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s " \
                      % (version, vdescarga, vsubida)
@@ -170,16 +170,16 @@ def transmission_cb(word, word_eol, userdata):
         #print "Descargados " + parte[0] + "Bytes"
         #print "Subidos     " + parte[4] + "Bytes"
         #print "Trabajados  " + parte[2] + "Segundos"
-        descargado = auxiliar.unidades(int(parte[0]))
-        subido = auxiliar.unidades(int(parte[4]))
+        descargado = auxiliar.unidades(int(parte[0]), 1024)
+        subido = auxiliar.unidades(int(parte[4]), 1024)
         xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
                       % (descargado, subido))
     elif path.exists(_TRANSMISSIONSTATSNEW):
         archivo = file(_TRANSMISSIONSTATSNEW, "r")
         lineas = archivo.readlines()
         archivo.close()
-        descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]))
-        subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]))
+        descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]), 1024)
+        subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]), 1024)
         xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
                       % (descargado, subido))
     else:
