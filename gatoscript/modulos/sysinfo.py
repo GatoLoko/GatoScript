@@ -259,9 +259,9 @@ def red_cb(word, word_eol, userdata):
             partes = linea[:-1].split(":")[1].split()
             recibido = auxiliar.unidades(int(partes[0]), 1024)
             enviado = auxiliar.unidades(int(partes[8]), 1024)
-            mensaje1 = "( Red ) Dispositivo: %s | Hostname: %s | " \
-                      %(dispositivo, hostname)
-            mensaje2 = "Recibidos: %s | Enviados: %s" %(recibido, enviado)
+            mensaje1 = "[ Red ] Hostname: %s  - Dispositivo: %s  - " \
+                      %(hostname, dispositivo)
+            mensaje2 = "Recibidos: %s  - Enviados: %s" %(recibido, enviado)
             xchat.command("say %s%s" %(mensaje1, mensaje2))
     return xchat.EAT_ALL
 
