@@ -265,6 +265,26 @@ def red_cb(word, word_eol, userdata):
             xchat.command("say %s%s" %(mensaje1, mensaje2))
     return xchat.EAT_ALL
 
+def graficos_cb(word, word_eol, userdata):
+    """  """
+    datos = Popen("lspci | grep VGA", shell=True, stdout=PIPE, stderr=PIPE)
+    error = datos.stderr.readlines()
+    if len(error) > 0:
+        auxiliar.gprint(error)
+        grafica = "No se pudo determinar el modelo"
+    else:
+        grafica = datos.stdout.readlines()[0].split(": ")[1][:-1]
+    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE, stderr=PIPE)
+    error = datos.stderr.readlines()
+    if len(error) > 0:
+        auxiliar.gprint(error)
+        resolucion = "No se pudo determinar el modelo"
+    else:
+        resolucion = datos.stdout.readlines()[0].split(":    ")[1][:-1]
+    xchat.command("say [ Graficos ] Dispositivo: %s  - Resolucion: %s" \
+                  %(grafica, resolucion))
+    return xchat.EAT_ALL
+
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script
 #############################################################################
@@ -277,6 +297,8 @@ def ayuda():
         "    /gos:    Muestra la distribucion y su version",
         "    /gsoft:  Muestra en el canal la version de los programas mas importantes",
         "    /gpc:    Muestra en el canal informacion sobre el hardware del pc",
+        "    /gnet:   Muestra en el canal informacion sobre la red",
+        "    /ggraf:  Muestra en el canal la tarjeta grafica y la resolucion",
         "    /hora:   Muestra en el canal la hora del sistema",
         ""]
     return mensajes
@@ -298,6 +320,7 @@ def unload_cb():
     xchat.unhook(HOOKFECHA)
     xchat.unhook(HOOKGPC)
     xchat.unhook(HOOKNET)
+    xchat.unhook(HOOKGRAF)
     # Descarga
     xchat.unhook(HOOKSYSINFO)
 
@@ -313,6 +336,7 @@ HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
 HOOKFECHA = xchat.hook_command('fecha', fecha_cb)
 HOOKGPC = xchat.hook_command('gpc', pc_cb)
 HOOKNET = xchat.hook_command('gnet', red_cb)
+HOOKGRAF = xchat.hook_command('ggraf', graficos_cb)
 # Descarga del script
 HOOKSYSINFO = xchat.hook_unload(unload_cb)
 
