@@ -112,7 +112,7 @@ def sistema_cb(word, word_eol, userdata):
         else:
             kernel = uname.stdout.readlines()
             kernel2 = kernel[0][:-1]
-        xchat.command("say Distribucion: %s  - Version: %s %s  - Kernel: %s" \
+        xchat.command("say [ Sistema ] Distribucion: %s  - Version: %s %s  - Kernel: %s" \
                       %(distro, version, codigo, kernel2))
     else:
         auxiliar.gprint("La distribucion no cumple con LSB")
@@ -179,7 +179,7 @@ def software_cb(word, word_eol, userdata):
         else:
             partes = salida[0].split()
             gcc = partes[2]
-    xchat.command("say Kernel: %s  - LIBC: %s  - X11: %s  - GCC: %s" \
+    xchat.command("say [ Software ] Kernel: %s  - LIBC: %s  - X11: %s  - GCC: %s" \
                   %(sistema, libc, x11, gcc))
     del glibc, xdpyinfo, gcc, uname, salida, error, x_version, xversion, x11
     del sistema
