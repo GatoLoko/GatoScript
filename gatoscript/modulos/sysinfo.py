@@ -36,6 +36,7 @@ import xchat
 from os import path
 #importamos la funcion para ejecutar comandos externos
 from subprocess import Popen, PIPE
+import re
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 
@@ -250,10 +251,18 @@ def red_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    archivo = file("/etc/hostname")
-    hostname = archivo.read()
-    archivo.close()
-    auxiliar.gprint("( Hostname ) " + hostname)
+    red = re.compile('eth|ath|wlan|ra([0-9]):')
+    hostname = file("/etc/hostname").readline().split("\n")[0]
+    for linea in file("/proc/net/dev"):
+        if red.search(linea):
+            dispositivo = linea.split(":")[0].split()[-1]
+            partes = linea[:-1].split(":")[1].split()
+            recibido = auxiliar.unidades(int(partes[0]), 1024)
+            enviado = auxiliar.unidades(int(partes[8]), 1024)
+            mensaje1 = "( Red ) Dispositivo: %s | Hostname: %s | " \
+                      %(dispositivo, hostname)
+            mensaje2 = "Recibidos: %s | Enviados: %s" %(recibido, enviado)
+            xchat.command("say %s%s" %(mensaje1, mensaje2))
     return xchat.EAT_ALL
 
 #############################################################################
