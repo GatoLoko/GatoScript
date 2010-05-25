@@ -1,4 +1,92 @@
 ------------------------------------------------------------
+revno: 90
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-05-25 20:49:27 +0200
+message:
+  * Agregada la docstring a la funcion graficos_cb.
+------------------------------------------------------------
+revno: 89
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-05-25 20:46:31 +0200
+message:
+  * Descomentada la docstring de la funcion de descarga del modulo.
+  * Varios cambios de estilo en el codigo.
+------------------------------------------------------------
+revno: 88
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-03-16 12:22:05 +0100
+message:
+  Mas cambios esteticos para mantener la uniformidad dentro del script.
+------------------------------------------------------------
+revno: 87
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-03-16 12:18:05 +0100
+message:
+  Pequeño cambio estetico en la salida de la funcion red_cb().
+------------------------------------------------------------
+revno: 86
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-03-16 12:14:32 +0100
+message:
+  Agregada la funcion graficos_cb(), conectada al comando ggraf para
+  mostrar que tarjeta grafica y resolucion se esta usando.
+------------------------------------------------------------
+revno: 85
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-03-16 11:30:13 +0100
+message:
+  Agregado la funcion red_cb(), conectada al comando gnet, para mostrar
+  informacion sobre la red.
+------------------------------------------------------------
+revno: 84
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Tue 2010-03-16 11:26:31 +0100
+message:
+  Ignorados algunos archivos locales
+------------------------------------------------------------
+revno: 83
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Mon 2010-03-15 06:40:23 +0100
+message:
+  Actualizacion de filtros antispam.
+------------------------------------------------------------
+revno: 82
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Mon 2010-03-15 06:26:06 +0100
+message:
+  Desactivado el realce de URLs temporalmente porque causa problemas con la recepcion de algunos mensajes.
+  Pequeño cambio el script principal para unir cadenas usando substitucion de %s en vez de suma.
+------------------------------------------------------------
+revno: 81
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Mon 2010-03-15 06:17:35 +0100
+message:
+  Adaptado el uso de auxiliar.unidades() para elegir la bytes binarios.
+------------------------------------------------------------
+revno: 80
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Mon 2010-03-15 06:15:20 +0100
+message:
+  Modificada la funcion "unidades" para que permita elegir entre bytes decimales o bytes binarios y aplique el divisor+sufijo apropiado.
+------------------------------------------------------------
+revno: 79
+committer: Raúl Soriano <GatoLoko@gmail.com>
+branch nick: trunk
+timestamp: Mon 2010-03-15 06:09:55 +0100
+message:
+  Cambiada la forma en que se gestiona el changelog. No tiene sentido complicarse manteniendo un registro de cambios de forma manual y otro en bazaar, asi que a partir de ahora el registro se actualizara con "bzr log > Changelog".
+------------------------------------------------------------
 revno: 78
 committer: Raúl Soriano <GatoLoko@gmail.com>
 branch nick: trunk
