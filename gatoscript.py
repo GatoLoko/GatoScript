@@ -26,7 +26,7 @@ Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
 """
 
 __module_name__ = "GatoScript"
-__module_version__ = "0.80"
+__module_version__ = "1.0"
 __module_description__ = "GatoScript para XChat"
 __module_autor__ = "GatoLoko"
 
