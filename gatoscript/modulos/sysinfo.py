@@ -266,7 +266,12 @@ def red_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 def graficos_cb(word, word_eol, userdata):
-    """  """
+    """Muestra en el canal activo, informacion sobre la interfaz grafica.
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook (ignorado)
+    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     datos = Popen("lspci | grep VGA", shell=True, stdout=PIPE, stderr=PIPE)
     error = datos.stderr.readlines()
     if len(error) > 0:
