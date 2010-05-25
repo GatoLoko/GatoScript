@@ -48,8 +48,8 @@ _GATODB_PATH = _GATODIR + "gatoscript.db"
 # Inicializamos el modulo
 #############################################################################
 if auxiliar.lee_conf("autosend", "activo") == "1":
-    activo = True
-    almacen = _GATODIR + auxiliar.lee_conf("autosend", "directorio")
+    ACTIVO = True
+    ALMACEN = _GATODIR + auxiliar.lee_conf("autosend", "directorio")
 
 # Conectamos a la base de datos
 if path.exists(_GATODB_PATH):
@@ -73,7 +73,7 @@ else:
 # Definimos las funciones de uso publico en el modulo
 #############################################################################
 def torrent_cb(word, word_eol, userdata):
-#    """Ejemplo de funcion publica
+#    """Docstring incompleta
 #    Argumentos:
 #    Recibimos los 3 argumentos que utiliza xchat, aunque no los queramos
 #    word     -- array de palabras que envia xchat a cada hook
@@ -84,7 +84,7 @@ def torrent_cb(word, word_eol, userdata):
     protegidos = []
     for i in CURSOR.execute("SELECT canales FROM canales"):
         protegidos.append(i[0])
-    if activo == True:
+    if ACTIVO == True:
         #Definimos la expresion regular que actuara como disparador
         texto = auxiliar.lee_conf("autosend", "disparador")
         disparador = re.compile("^" + texto, re.IGNORECASE)
@@ -92,25 +92,27 @@ def torrent_cb(word, word_eol, userdata):
             if disparador.search(word[3][1:]):
                 partes = word_eol[3].split()
                 if len(partes) == 1:
-                    lista = listdir(almacen)
+                    lista = listdir(ALMACEN)
                     if len(lista) == 0:
                         xchat.command("say No hay archivos disponibles")
                     elif len(lista) > 0:
                         archivos = ""
                         for archivo in lista:
                             archivos += archivo + " "
-                        xchat.command("say Tengo los siguientes archivos: " + archivos)
-                        xchat.command("say Para pedir uno pon: %s archivo" % texto)
+                        xchat.command("say Tengo los siguientes archivos: %s" \
+                                      % archivos)
+                        xchat.command("say Para pedir uno pon: %s archivo" \
+                                      % texto)
                 elif len(partes) == 2:
-                    lista = listdir(almacen)
+                    lista = listdir(ALMACEN)
                     if partes[1] in lista:
-                        envio = "dcc send " + word[0][1:].split("!")[0] + " " + almacen + "/" + partes[1]
+                        envio = "dcc send %s %s/%s" \
+                                %(word[0][1:].split("!")[0], ALMACEN, partes[1])
                         xchat.command(envio)
                     else:
-                        xchat.command("say No tengo ese archivo, revisa la lista")
+                        xchat.command("say No tengo archivos con ese nombre")
                 elif len(partes) > 2:
-                    xchat.command("say ¡No seas abuson! ¡Un solo archivo cada vez!")
-                
+                    xchat.command("say ¡No seas abuson!¡Un archivo cada vez!")
     return xchat.EAT_NONE
     
 
@@ -133,11 +135,11 @@ def torrent_cb(word, word_eol, userdata):
 # Definimos la funcion para la descarga del programa
 #############################################################################
 def unload_cb(userdata):
-#    """Esta funcion debe desconectar todas las funciones del modulo al
-#    descargarse el script
-#    Argumentos:
-#    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-#    """
+    """Esta funcion debe desconectar todas las funciones del modulo al
+    descargarse el script
+    Argumentos:
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
     # Desconectamos las funciones del modulo
     xchat.unhook(HOOKTORRENT)
     # Descargamos el 
