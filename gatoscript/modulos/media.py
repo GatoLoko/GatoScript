@@ -52,7 +52,6 @@ gatodb = join(gatodir, "gatoscript.db")
 # opcionales.
 #############################################################################
 
-NoXmms = 0
 NoDBus = 0
 global DBusIniciado
 DBusIniciado = 0
@@ -271,7 +270,7 @@ def media_cb(word, word_eol, userdata):
                 system("banshee --pause")
             else:
                 auxiliar.gprint("Funcion no soportada")
-        if reproductor == "amarok":
+        elif reproductor == "amarok":
             if userdata == "reproductor":
                 auxiliar.gprint("Está utilizando Amarok")
             elif userdata == "escuchando":
@@ -289,6 +288,29 @@ def media_cb(word, word_eol, userdata):
                 system("dcop amarok player play")
             elif userdata == "stop":
                 system("dcop amarok player stop")
+            else:
+                auxiliar.gprint("Funcion no soportada")
+        elif reproductor == "exaile":
+            if userdata == "reproductor":
+                auxiliar.gprint("Está utilizando Exaile")
+            elif userdata == "escuchando":
+                tiempo = int(getoutput("exaile --get-length").split(".")[0])
+                minutos = int(tiempo/60)
+                segundos = tiempo-(minutos*60)
+                duracion = str(minutos) + "m" + str(segundos) + "s"
+                titulo = getoutput("exaile --get-title")
+                artista = getoutput("exaile --get-artist")
+                xchat.command("me esta escuchando: %s - %s (%s) - Exaile" %(artista, titulo, duracion))
+            elif userdata == "anterior":
+                system("exaile --prev")
+            elif userdata == "siguiente":
+                system("exaile --next")
+            elif userdata == "pausa":
+                system("exaile --play-pause")
+            elif userdata == "play":
+                system("exaile --play-pause")
+            elif userdata == "stop":
+                system("exaile --stop")
             else:
                 auxiliar.gprint("Funcion no soportada")
     else:

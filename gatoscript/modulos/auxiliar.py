@@ -26,7 +26,7 @@ Este modulo contiene las funciones auxiliares para el GatoScript.
 """
 
 __module_name__ = "GatoScript Auxiliar"
-__module_version__ = "1.0"
+__module_version__ = "1.1alpha1"
 __module_description__ = "Modulo Auxiliar para el GatoScript"
 __module_autor__ = "GatoLoko"
 
@@ -304,11 +304,11 @@ xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/HOYGAN" "opciones 
 xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam" "opciones protecciones spam 1" "opciones protecciones spam 0"')
 xchat.command('menu ADD "GatoScript/Opciones/-"')
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/XMMS" "opciones media reproductor xmms"')
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox" "opciones media reproductor rhythmbox"')
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox (Metodo antiguo)" "opciones media reproductor rhythmbox-dbus"')
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Banshee" "opciones media reproductor banshee"')
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Amarok" "opciones media reproductor amarok"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Exaile" "opciones media reproductor exaile"')
 xchat.command('menu -t1 ADD "GatoScript/Opciones/Multimedia" "opciones media activo 1" "opciones media activo 0"')
 xchat.command('menu ADD "GatoScript/Opciones/Python" "py console"')
 
