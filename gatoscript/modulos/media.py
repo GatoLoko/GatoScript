@@ -67,14 +67,7 @@ global rbshell
 repro_activo = auxiliar.lee_conf("media", "activo")
 if (repro_activo == "1"):
     repro = auxiliar.lee_conf("media", "reproductor")
-    if (repro == "xmms"):
-        try:
-            import xmms.control
-        except ImportError:
-            NoXmms = 1
-            auxiliar.gprint("No se pudo cargar la libreria 'xmms', no \
-                            funcionaran los controles de XMMS")
-    elif (repro == "rhythmbox-dbus"):
+    if (repro == "rhythmbox-dbus"):
         try:
             import dbus
             DBUS_START_REPLY_SUCCESS = 1
@@ -154,57 +147,7 @@ def media_cb(word, word_eol, userdata):
     media_activo = auxiliar.lee_conf("media", "activo")
     if (media_activo == "1"):
         reproductor = auxiliar.lee_conf("media", "reproductor")
-        if (reproductor == "xmms"):
-            if (NoXmms == 1):
-                auxiliar.gprint("Esta funcion esta desactivada")
-            else:
-                if (userdata == "escuchando"):
-                    entrada, salida, error = popen3("xmms --version", "r")
-                    error2 = error.readlines()
-                    if len(error2) > 0:
-                        auxiliar.gprint(error2)
-                    else:
-                        version = (salida.readlines())[0]
-                        posicion = xmms.control.get_playlist_pos()
-                        titulo = xmms.control.get_playlist_title(posicion)
-                        longitud = xmms.control.get_playlist_time(posicion)/1000
-                        if longitud < 0:
-                            tiempo = "Radio"
-                        else:
-                            minutos = int(longitud/60)
-                            segundos = longitud-(minutos*60)
-                            tiempo = str(minutos) + "m" + str(segundos) + "s"
-                        rate, frec, canal = xmms.get_info()
-                        bitrate = str(rate/1000) + "Kbps"
-                        frecuencia = str(frec/1000) + "KHz"
-                        if canal == 1:
-                            canales = "mono"
-                        else:
-                            canales = "estereo"
-                        xchat.command("me esta escuchando: %s - %s (%s\%s\%s\%s) - %s" % (posicion+1, titulo, tiempo, bitrate, frecuencia, canales, version[0:len(version)-1]))
-                    del entrada, salida, error, error2
-                elif (userdata == "reproductor"):
-                    entrada, salida, error = popen3("xmms --version", "r")
-                    error2 = error.readlines()
-                    if len(error2) > 0:
-                        auxiliar.gprint(error2)
-                    else:
-                        version = salida.readlines()
-                    auxiliar.gprint(version[0])
-                elif (userdata == "siguiente"):
-                    xmms.control.playlist_next()
-                elif (userdata == "anterior"):
-                    xmms.control.playlist_prev()
-                elif (userdata == "pausa"):
-                    xmms.control.pause()
-                elif (userdata == "play"):
-                    xmms.control.play()
-                elif (userdata == "stop"):
-                    xmms.control.stop()
-                else:
-                    mensaje = "La funcion " + userdata + " no esta implementada"
-                    auxiliar.gprint(mensaje)
-        elif (reproductor == "rhythmbox-dbus"):
+        if (reproductor == "rhythmbox-dbus"):
             global DBusIniciado
             global rbplayerobj
             global rbplayer
@@ -387,11 +330,6 @@ hookpausa = xchat.hook_command('pausa', media_cb, userdata="pausa")
 hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
 # Descarga del script
 hookunload = xchat.hook_unload(unload_cb)
-
-
-# Y si hemos desactivado las funciones de XMMS avisamos de que no se usaran
-if NoXmms == 1:
-    auxiliar.gprint("Las funciones de control sobre XMMS no estaran disponibles por no encontrarse python-xmms")
 
 
 #############################################################################
