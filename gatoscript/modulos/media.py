@@ -313,6 +313,26 @@ def media_cb(word, word_eol, userdata):
                 system("exaile --stop")
             else:
                 auxiliar.gprint("Funcion no soportada")
+        elif reproductor == "audacious":
+            if userdata == "reproductor":
+                auxiliar.gprint("Está utilizando Audacious")
+            elif userdata == "escuchando":
+                duracion = getoutput("audtool2 current-song-length")
+                titulo = getoutput("audtool2 current-song")
+                artista = getoutput("audtool2 current-song-tuple-data artist")
+                xchat.command("me esta escuchando: %s - %s (%s) - Audacious" %(artista, titulo, duracion))
+            elif userdata == "anterior":
+                system("audtool2 playlist-reverse")
+            elif userdata == "siguiente":
+                system("audtool2 playlist-advance")
+            elif userdata == "pausa":
+                system("audtool2 playback-pause")
+            elif userdata == "play":
+                system("audtool2 playback-play")
+            elif userdata == "stop":
+                system("audtool2 playback-stop")
+            else:
+                auxiliar.gprint("Funcion no soportada")
     else:
         auxiliar.gprint("Los controles multimedia estan desactivados")
     return xchat.EAT_ALL
