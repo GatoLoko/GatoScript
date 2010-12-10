@@ -333,3 +333,16 @@ HOOKANTICOLORES = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
 HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 # Descargamos el modulo
 HOOKUNLOAD = xchat.hook_unload(unload_cb)
+
+
+#############################################################################
+# Añadimos las opciones del menu
+#############################################################################
+xchat.command('menu ADD "GatoScript/Opciones/Protecciones"')
+xchat.command('menu -t0 ADD "GatoScript/Opciones/Protecciones/Away" "opciones protecciones away 1" "opciones protecciones media 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Ban" "opciones protecciones ban 1" "opciones protecciones ban 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Colores" "opciones protecciones colores 1" "opciones protecciones colores 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/CTCPs" "opciones protecciones ctcps 1" "opciones protecciones ctcps 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Mayusculas" "opciones protecciones mayusculas 1" "opciones protecciones mayusculas 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/HOYGAN" "opciones protecciones hoygan 1" "opciones protecciones hoygan 0"')
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam" "opciones protecciones spam 1" "opciones protecciones spam 0"')

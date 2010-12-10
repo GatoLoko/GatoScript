@@ -377,6 +377,14 @@ hookunload = xchat.hook_unload(unload_cb)
 #############################################################################
 # Añadimos las opciones del menu
 #############################################################################
+xchat.command('menu -t1 ADD "GatoScript/Opciones/Multimedia" "opciones media activo 1" "opciones media activo 0"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox" "opciones media reproductor rhythmbox"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox (Metodo antiguo)" "opciones media reproductor rhythmbox-dbus"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Banshee" "opciones media reproductor banshee"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Amarok" "opciones media reproductor amarok"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Exaile" "opciones media reproductor exaile"')
+xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Audacious" "opciones media reproductor audacious"')
 xchat.command('menu ADD "GatoScript/Multimedia"')
 xchat.command('menu ADD "GatoScript/Multimedia/Cancion actual" "escuchando"')
 xchat.command('menu ADD "GatoScript/Multimedia/Reproductor" "reproductor"')
