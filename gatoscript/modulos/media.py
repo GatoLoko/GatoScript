@@ -250,13 +250,15 @@ def media_cb(word, word_eol, userdata):
                 auxiliar.gprint("Está utilizando Banshee")
             elif userdata == "escuchando":
                 informacion = (getoutput('banshee --query-artist --query-title --query-duration')).split("\n")
-                tiempo = int(informacion[0].split(": ")[1])
-                minutos = int(tiempo/60)
-                segundos = tiempo-(minutos*60)
-                duracion = str(minutos) + "m" + str(segundos) + "s"
-                #duracion = segundos
+                if informacion[2].split(": ")[1] == "":
+                    duracion = "Radio"
+                else:
+                    tiempo = int(informacion[2].split(": ")[1].split(",")[0])
+                    minutos = int(tiempo/60)
+                    segundos = tiempo-(minutos*60)
+                    duracion = str(minutos) + "m" + str(segundos) + "s"
                 titulo = informacion[1].split(": ")[1]
-                artista = informacion[2].split(": ")[1]
+                artista = informacion[0].split(": ")[1]
                 xchat.command("me está escuchando: %s - %s (%s) - Banshee" %(artista, titulo, duracion))
             elif userdata == "anterior":
                 system("banshee --previous")
