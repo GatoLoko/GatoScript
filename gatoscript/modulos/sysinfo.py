@@ -37,6 +37,8 @@ from os import path
 #importamos la funcion para ejecutar comandos externos
 from subprocess import Popen, PIPE
 import re
+# Importamos el modulo platform para sacar informacion del sistema
+import platform
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 
@@ -98,24 +100,13 @@ def sistema_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    if path.exists("/etc/lsb-release"):
-        lsb = file("/etc/lsb-release", "r")
-        lineas_lsb = lsb.readlines()
-        lsb.close()
-        distro = (lineas_lsb[0])[11:len(lineas_lsb[0])-1]
-        version = (lineas_lsb[1])[16:len(lineas_lsb[1])-1]
-        codigo = (lineas_lsb[2])[17:len(lineas_lsb[2])-1]
-        uname = Popen("uname -r", shell=True, stdout=PIPE, stderr=PIPE)
-        error = uname.stderr.readlines()
-        if len(error) > 0:
-            auxiliar.gprint(error)
-        else:
-            kernel = uname.stdout.readlines()
-            kernel2 = kernel[0][:-1]
-        xchat.command("say [ Sistema ] Distribucion: %s  - Version: %s %s  - Kernel: %s" \
-                      %(distro, version, codigo, kernel2))
-    else:
-        auxiliar.gprint("La distribucion no cumple con LSB")
+    datos = platform.linux_distribution()
+    distro = datos[0]
+    version = datos[1]
+    codigo = datos[2]
+    kernel = platform.uname()[2]
+    xchat.command("say [ Sistema ] Distribucion: %s  - Version: %s %s  - Kernel: %s" \
+                          %(distro, version, codigo, kernel))
     return xchat.EAT_ALL
 
 def software_cb(word, word_eol, userdata):
@@ -127,25 +118,10 @@ def software_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    uname = Popen("uname -sr", shell=True, stdout=PIPE, stderr=PIPE)
-    error = uname.stderr.readlines()
-    if len(error) > 0:
-        for i in range(len(error)):
-            auxiliar.gprint(error[i])
-        sistema = "Indeterminable"
-    else:
-        sistema = uname.stdout.readlines()[0][:-1]
-    glibc = Popen("/lib/libc.so.6", shell=True, stdout=PIPE, stderr=PIPE)
-    error = glibc.stderr.readlines()
-    salida = glibc.stdout.readlines()
-    if len(error) > 0:
-        for i in range(len(error)):
-            auxiliar.gprint(error[i])
-        libc = "Indeterminable"
-    else:
-        if salida[0].split()[0] == "GNU":
-            licencia = "GLIBC"
-        libc = licencia + " " + salida[0].split()[6][:-1]
+    partes = platform.uname()
+    sistema = "%s %s" %(partes[0], partes[2])
+    partes = platform.libc_ver()
+    libc = "%s %s" %(partes[0], partes[1])
     xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE, \
                      stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
@@ -181,8 +157,7 @@ def software_cb(word, word_eol, userdata):
             gcc = partes[2]
     xchat.command("say [ Software ] Kernel: %s  - LIBC: %s  - X11: %s  - GCC: %s" \
                   %(sistema, libc, x11, gcc))
-    del glibc, xdpyinfo, gcc, uname, salida, error, x_version, xversion, x11
-    del sistema
+    del partes, sistema, libc, xdpyinfo, gcc, salida, error, x_version, xversion, x11
     return xchat.EAT_ALL
 
 def fecha_cb(word, word_eol, userdata):
