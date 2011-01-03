@@ -140,6 +140,7 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                         abuso = False
                 if (len(letras)) > 10 and abuso == True:
                     host = word[0][1:].split("@")[1]
+                    nick = word[0][1:].split("!")[0]
                     if host in _NUM_ABUSOS_MAYUS:
                         _NUM_ABUSOS_MAYUS.remove(host)
                         mensaje = " Escribir todo en mayusculas va contra" + \
@@ -150,8 +151,9 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                         mensaje = ": no escribas todo en mayusculas, va" + \
                                   " contra las normas. La proxima vez" + \
                                   " seras expulsado."
-                        xchat.command("msg " + word[2] + " " + \
-                                      word[0][1:].split("!")[0] + mensaje)
+                        #if len(letrasre.findall(nick)) < 1:
+                        #    nick = nick[0:6]
+                        xchat.command("msg %s %s%s" %(word[2], nick, mensaje))
     return xchat.EAT_NONE
 
 def anti_colores_cb(word, word_eol, userdata):
