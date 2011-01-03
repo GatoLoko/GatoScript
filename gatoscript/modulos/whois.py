@@ -40,17 +40,6 @@ import auxiliar
 ##############################################################################
 # Definimos las funciones de uso interno del modulo
 ##############################################################################
-def espacios(palabra):
-    """Devuelve una cadena de espacios de tamaño variable para facilitar el
-    alineamiento de textos.
-    Argumentos:
-    palabra   -- palabra a la que se añadiran los espacios
-    """
-    cantidad = 15 - len(palabra)
-    cadena = " "
-    for i in range(cantidad):
-        cadena = cadena + " "
-    return cadena
 
 
 ##############################################################################
@@ -97,34 +86,43 @@ def whois_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
+    color = "3"
+    abre = "\003%s[" % color
+    cierra = "]\003 "
+    ajuste = 16
     whois_activo = auxiliar.lee_conf("comun", "whois")
     if (whois_activo == "1"):
         if (word[1] == "301"):
             # Respuesta al whois: AwayMessage
-            print('\0033[No disponible   ]\003 ' + word_eol[4][1:])
+            cadena = "No disponible".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "310"):
             # Respuesta al whois: Operador de servicios
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + ']\003 ' + word_eol[4][1:])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" % (abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "311"):
             # Respuesta al whois: Usuario
             nick = word[3]
             host = word[4] + "@" + word[5]
             nombre = word_eol[7][1:]
-            print('\0033[Nick            ]\003 ' + nick)
-            print('\0033[Direccion       ]\003 ' + host)
-            print('\0033[Nombre real     ]\003 ' + nombre)
+            cadena = "Nick".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, nick))
+            cadena = "Direccion".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, host))
+            cadena = "Nombre real".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, nombre))
         elif (word[1] == "312"):
             # Respuesta al whois: Servidor
-            print('\0033[Servidor        ]\003 ' + word_eol[4])
+            cadena = "Servidor".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4]))
         elif (word[1] == "313"):
             # Respuesta al whois: IrcOp
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + ']\003 ' + word_eol[4])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4]))
         elif (word[1] == "316"):
             # Respuesta al whois: Bot de la red
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + ']\003 ' + word_eol[4])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4]))
         elif (word[1] == "317"):
             # Respuesta al whois: IDLE
             horas = int(word[4])/3600
@@ -133,40 +131,45 @@ def whois_cb(word, word_eol, userdata):
             tiempo = "%s horas, %s minutos y %s segundos" % (str(horas), \
                                                             str(minutos), \
                                                             str(segundos))
-            print('\0033[IDLE            ]\003 %s' % tiempo)
+            cadena = "IDLE".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, tiempo))
         elif (word[1] == "318"):
             # Respuesta al whois: Fin del whois
-            print('\0033Fin del WHOIS\003')
+            cadena = "Fin del WHOIS".ljust(ajuste)
+            print("%s%s%s" %(abre, cadena, cierra))
         elif (word[1] == "319"):
             # Respuesta al whois: Canales
-            print('\0033[Canales         ]\003 ' + word_eol[4][1:])
+            cadena = "Canales".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "320"):
             # Respuesta al whois: Especial
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + ']\003 ' + word_eol[4][1:])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "335"):
             # Respuesta al whois: Bot
             print('\0033' + word_eol[0] + '\003')
         elif (word[1] == "307"):
             # Respuesta al whois: RegNick
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + '] \003' + word_eol[4][1:])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "342"):
             # Respuesta al whois: Solo admite privados de usuarios registrados
-            cadena = espacios(word[3])
-            print('\0033[' + word[3] + cadena + '] \003' + word_eol[4][1:])
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "378"):
             # Respuesta al whois: VHOST
-            print('\0033[VHost           ]\003 ' + word_eol[6])
+            cadena = "VHost".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[6]))
         elif (word[1] == "379"):
             # Respuesta al whois: whoismodes
-            print('\0033[Modos           ]\003 ' + word_eol[4][1:])
+            cadena = "Modos".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "401"):
             # Respuesta al whois: No such nick
-            print('\0033El nick ' + word[3] + ' no existe o no esta conectado\003')
+            print('\0033El nick %s no existe o no esta conectado\003' % word[3])
         else:
             # Raw no definido
-            print('\0033El raw ' + word[1] + ' no esta definido')
+            print('\0033El raw %s no esta definido' % word[1])
         return xchat.EAT_ALL
     else:
         return xchat.EAT_NONE
@@ -176,7 +179,8 @@ def whois_cb(word, word_eol, userdata):
 # Definimos la funcion para la descarga del programa
 #############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+    """Esta funcion debe desenlazar todas las funciones del GatoScript al
+    descargarse el script.
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
