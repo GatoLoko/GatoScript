@@ -296,7 +296,7 @@ HOOKUNLOAD = xchat.hook_unload(unload_cb)
 xchat.command('menu ADD "GatoScript/-"')
 xchat.command('menu ADD "GatoScript/AntiSpam"')
 xchat.command('menu ADD "GatoScript/AntiSpam/Lista de filtros" "antilist"')
-xchat.command('menu ADD "GatoScript/AntiSpam/Añadir filtro" "getstr # \
+xchat.command('menu ADD "GatoScript/AntiSpam/Añadir filtro" "getstr \b \
               "antiadd" "Filtro:""')
-xchat.command('menu ADD "GatoScript/AntiSpam/Eliminar filtro" "getstr # \
+xchat.command('menu ADD "GatoScript/AntiSpam/Eliminar filtro" "getstr \b \
               "antidel" "Filtro:""')
