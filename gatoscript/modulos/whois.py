@@ -96,6 +96,10 @@ def whois_cb(word, word_eol, userdata):
             # Respuesta al whois: AwayMessage
             cadena = "No disponible".ljust(ajuste)
             print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
+        elif (word[1] == "307"):
+            # Respuesta al whois: RegNick
+            cadena = word[3].ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
         elif (word[1] == "310"):
             # Respuesta al whois: Operador de servicios
             cadena = word[3].ljust(ajuste)
@@ -145,13 +149,19 @@ def whois_cb(word, word_eol, userdata):
             # Respuesta al whois: Especial
             cadena = word[3].ljust(ajuste)
             print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
+        elif (word[1] == "330"):
+            # Respuesta al whois: Logged in as
+            cadena = "Logged in as".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word[4]))
         elif (word[1] == "335"):
             # Respuesta al whois: Bot
             print('\0033' + word_eol[0] + '\003')
-        elif (word[1] == "307"):
-            # Respuesta al whois: RegNick
-            cadena = word[3].ljust(ajuste)
-            print("%s%s%s%s" %(abre, cadena, cierra, word_eol[4][1:]))
+        elif (word[1] == "338"):
+            # Respuesta al whois: user@host, ip
+            cadena = "User@host".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word[4]))
+            cadena = "IP".ljust(ajuste)
+            print("%s%s%s%s" %(abre, cadena, cierra, word[5]))
         elif (word[1] == "342"):
             # Respuesta al whois: Solo admite privados de usuarios registrados
             cadena = word[3].ljust(ajuste)
@@ -167,6 +177,13 @@ def whois_cb(word, word_eol, userdata):
         elif (word[1] == "401"):
             # Respuesta al whois: No such nick
             print('\0033El nick %s no existe o no esta conectado\003' % word[3])
+        elif (word[1] == "671"):
+            cadena = word[3].ljust(ajuste)
+            if word_eol[4] == ":is using a secure connection":
+                respuesta = "está usando una conexión segura"
+            else:
+                respuesta = word_eol[4][1:]
+            print('%s%s%s%s' %(abre, cadena, cierra, respuesta))
         else:
             # Raw no definido
             print('\0033El raw %s no esta definido' % word[1])
@@ -197,11 +214,14 @@ def unload_cb(userdata):
     xchat.unhook(_RAW318)
     xchat.unhook(_RAW319)
     xchat.unhook(_RAW320)
+    xchat.unhook(_RAW330)
     xchat.unhook(_RAW335)
+    xchat.unhook(_RAW338)
     xchat.unhook(_RAW342)
     xchat.unhook(_RAW378)
     xchat.unhook(_RAW379)
     xchat.unhook(_RAW401)
+    xchat.unhook(_RAW671)
     # Descarga
     xchat.unhook(_HOOKUNLOAD)
 
@@ -233,8 +253,12 @@ _RAW318 = xchat.hook_server('318', whois_cb, userdata=None, priority=10)
 _RAW319 = xchat.hook_server('319', whois_cb, userdata=None, priority=10)
 # whoisspecial
 _RAW320 = xchat.hook_server('320', whois_cb, userdata=None, priority=10)
+# loggedinas
+_RAW330 = xchat.hook_server('330', whois_cb, userdata=None, priority=10)
 # whoisbot
 _RAW335 = xchat.hook_server('335', whois_cb, userdata=None, priority=10)
+# user@host, ip
+_RAW335 = xchat.hook_server('338', whois_cb, userdata=None, priority=10)
 # Solo admite privados de usuarios registrados
 _RAW342 = xchat.hook_server('342', whois_cb, userdata=None, priority=10)
 # whoishost (ip virtual)
@@ -243,6 +267,8 @@ _RAW378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10)
 _RAW379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10)
 # No such nick
 _RAW401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10)
+# SSL
+_RAW671 = xchat.hook_server('671', whois_cb, userdata=None, priority=10)
 
 
 # Descarga del script
