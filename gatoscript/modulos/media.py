@@ -253,7 +253,10 @@ def media_cb(word, word_eol, userdata):
                 if informacion[2].split(": ")[1] == "":
                     duracion = "Radio"
                 else:
-                    tiempo = int(informacion[2].split(": ")[1].split(",")[0])
+                    try:
+                        tiempo = int(informacion[2].split(": ")[1].split(',')[0])
+                    except:
+                        tiempo = int(informacion[2].split(": ")[1].split('.')[0])
                     minutos = int(tiempo/60)
                     segundos = tiempo-(minutos*60)
                     duracion = str(minutos) + "m" + str(segundos) + "s"
