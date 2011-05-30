@@ -253,9 +253,14 @@ def media_cb(word, word_eol, userdata):
                 if informacion[2].split(": ")[1] == "":
                     duracion = "Radio"
                 else:
+                    # Banshee muestra el tiempo en segundos con decimales hasta
+                    # la centesima, y usa un separador de decimales diferente
+                    # segun le indique locales, pero puede correr con unas
+                    # locales distintas que el script, asi que solo podemos
+                    # probar cada separador hasta que funcione.
                     try:
                         tiempo = int(informacion[2].split(": ")[1].split(',')[0])
-                    except:
+                    except ValueError:
                         tiempo = int(informacion[2].split(": ")[1].split('.')[0])
                     minutos = int(tiempo/60)
                     segundos = tiempo-(minutos*60)
