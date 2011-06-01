@@ -62,6 +62,15 @@ else:
 #############################################################################
 # Definimos las funciones de uso interno en el GatoScript
 #############################################################################
+# Informacion
+def scriptdirs():
+    """Obtiene el directorio base de xchat."""
+    base = xchat.get_info("xchatdir")
+    script = path.join(base, "gatoscript")
+    modules = path.join(script, "modulos")
+    media = path.join(modules, "players")
+    return base, script, modules, media
+
 # Configuracion
 def lee_conf(seccion, opcion):
     """Lee una opcion del archivo de configuracion.
