@@ -46,9 +46,8 @@ sys.path.append(gatodirs[3])
 #############################################################################
 repro_activo = auxiliar.lee_conf("media", "activo")
 if (repro_activo == "1"):
-    repro = auxiliar.lee_conf("media", "reproductor")
-    repro2 = __import__(repro)
-    player = repro2.Player()
+    repro = __import__(auxiliar.lee_conf("media", "reproductor"))
+    player = repro.Player()
 
 
 ##############################################################################
