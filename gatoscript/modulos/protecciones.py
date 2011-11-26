@@ -225,16 +225,18 @@ def anti_clonerx_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if auxiliar.lee_conf("protecciones", "clonerx") == "1":
-        bots = re.compile("^[a-z]{1}(\d){2,4}$")
-        ident = word[0][1:].split("!")[1].split("@")[0]
-        if bots.search(ident):
-            canal = word[2][1:]
-            contexto = xchat.find_context(channel=canal)
-            host = word[0].split("@")[1]
-            comando = "ban *!*@" + host
-            contexto.command(comando)
-            mensaje = "Ident de ClonerX en " + canal
-            auxiliar.gprint(mensaje)
+        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
+            if canal.lower() == word[2].lower():
+                bots = re.compile("^[a-z]{1}(\d){2,4}$")
+                ident = word[0][1:].split("!")[1].split("@")[0]
+                if bots.search(ident):
+                    canal = word[2][1:]
+                    contexto = xchat.find_context(channel=canal)
+                    host = word[0].split("@")[1]
+                    comando = "ban *!*@" + host
+                    contexto.command(comando)
+                    mensaje = "Ident de ClonerX en " + canal
+                    auxiliar.gprint(mensaje)
     return xchat.EAT_NONE
 
 def anti_drone_cb(word, word_eol, userdata):
