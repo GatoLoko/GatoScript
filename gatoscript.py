@@ -75,16 +75,25 @@ import notas
 # Importamos el modulo ejemplo
 # import ejemplo
 
+
+def media_reload(word, word_eol, userdata):
+    reload(media)
+
+
 #############################################################################
 # Definimos la funcion para descargar el script
 #############################################################################
 def unload_cb(userdata):
     xchat.command('menu del GatoScript')
+    xchat.unhook(HOOKRELOAD)
     print("Se ha descargado GatoScript %s" % __module_version__)
 
+
 #############################################################################
-# Conectamos la funcion de descarga del script
+# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
+# para ellos
 #############################################################################
+HOOKRELOAD = xchat.hook_command('media-reload', media_reload, userdata=None)
 HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 # Si se ha llegado a este punto el script esta cargado completamente, asi que
