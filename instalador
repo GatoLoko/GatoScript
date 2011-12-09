@@ -97,7 +97,6 @@ mensaje = """Para algunas funciones de GatoScript son necesarias las librerias e
 
 Uso                                 | Libreria
 -------------------------------------------------
-Control de XMMS                     | python-xmms
 Control de Rhythmbox mediante DBUS  | python-dbus
 
 Si quiere utilizar alguna de esas funciones, instale la libreria correspondiente."""
