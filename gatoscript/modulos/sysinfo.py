@@ -33,7 +33,7 @@ __module_autor__ = "GatoLoko"
 # Cargamos la libreria de funciones de X-Chat
 import xchat
 # Importamos la funcion para unir directorios de forma portable
-from os import path
+#from os import path
 #importamos la funcion para ejecutar comandos externos
 from subprocess import Popen, PIPE
 import re
@@ -79,7 +79,9 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(uptime / 3600)
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say Uptime: %s horas y %s minutos" %(horas, minutos))
+        parte1 = "say Uptime: {0} horas ".format(horas)
+        parte2 = "y {1} minutos".format(minutos)
+        xchat.command("{0}{1}".format(parte1, parte2))
     else:
         if dias > 1:
             cadena_dias = "dias"
@@ -88,8 +90,9 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(resto_dias / 3600)
         resto_horas = int(resto_dias % 3600)
         minutos = int(resto_horas / 60)
-        xchat.command("say Uptime: %s %s, %s horas y %s minutos" \
-                      %(dias, cadena_dias, horas, minutos))
+        parte1 = "say Uptime: {0} {1}, ".format(dias, cadena_dias)
+        parte2 = "{0} horas y {1} minutos".format(horas, minutos)
+        xchat.command("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
 def sistema_cb(word, word_eol, userdata):
@@ -105,8 +108,9 @@ def sistema_cb(word, word_eol, userdata):
     version = datos[1]
     codigo = datos[2]
     kernel = platform.uname()[2]
-    xchat.command("say [ Sistema ] Distribucion: %s  - Version: %s %s  - Kernel: %s" \
-                          %(distro, version, codigo, kernel))
+    parte1 = "say [ Sistema ] Distribucion: {0}  - ".format(distro)
+    parte2 = "Version: {0} {1}  - Kernel: {2}".format(version, codigo, kernel)
+    xchat.command("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
 def software_cb(word, word_eol, userdata):
@@ -119,9 +123,9 @@ def software_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     partes = platform.uname()
-    sistema = "%s %s" %(partes[0], partes[2])
+    sistema = "{0} {1}".format(partes[0], partes[2])
     partes = platform.libc_ver()
-    libc = "%s %s" %(partes[0], partes[1])
+    libc = "{0} {1}".format(partes[0], partes[1])
     xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE, \
                      stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
@@ -141,7 +145,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = xversion + " " + servidor[len(servidor)-1]
+        x11 = "{0} {1}".format(xversion, servidor[len(servidor)-1])
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
     if len(error) > 0:
@@ -155,9 +159,11 @@ def software_cb(word, word_eol, userdata):
         else:
             partes = salida[0].split()
             gcc = partes[2]
-    xchat.command("say [ Software ] Kernel: %s  - LIBC: %s  - X11: %s  - GCC: %s" \
-                  %(sistema, libc, x11, gcc))
-    del partes, sistema, libc, xdpyinfo, gcc, salida, error, x_version, xversion, x11
+    parte1 = "say [ Software ] Kernel: {0}  - ".format(sistema)
+    parte2 = "LIBC: {0}  - X11: {1}  - GCC: {2}".format(libc, x11, gcc)
+    xchat.command("{0}{1}".format(parte1, parte2))
+    del partes, sistema, libc, xdpyinfo, gcc, salida, error, x_version
+    del xversion, x11
     return xchat.EAT_ALL
 
 def fecha_cb(word, word_eol, userdata):
@@ -174,7 +180,7 @@ def fecha_cb(word, word_eol, userdata):
             auxiliar.gprint(error[i])
     else:
         fecha2 = fecha.stdout.readlines()
-        xchat.command("say %s" % (fecha2[0][:-1]))
+        xchat.command("say {0}".format(fecha2[0][:-1]))
     del fecha, fecha2, error
     return xchat.EAT_ALL
 
@@ -211,12 +217,12 @@ def pc_cb(word, word_eol, userdata):
     usada = int(freemem) + int(bufmem) + int(cachemem)
     libre = int(memoria) - usada
     # Mensaje
-    parte1 = "[Informacion del PC] CPU: %s  - Velocidad: %sMHz  - Memoria " \
-             % (cpu, velocidad)
-    parte2 = "instalada: %s%s  - Memoria usada: %s%s" % (memoria, unidad, \
-                                                        str(libre), unidad)
-    mensaje = "%s%s" % (parte1, parte2)
-    xchat.command("say " + mensaje)
+    parte1 = "[Informacion del PC] CPU: {0}  - ".format(cpu)
+    parte2 = "Velocidad: {0}MHz  - ".format(velocidad)
+    parte3 = "Memoria instalada: {0}{1}  - ".format(memoria, unidad)
+    parte4 = "Memoria usada: {0}{1}".format(str(libre), unidad)
+    mensaje = "{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4)
+    xchat.command("say {0}".format(mensaje))
     return xchat.EAT_ALL
 
 def red_cb(word, word_eol, userdata):
@@ -234,10 +240,12 @@ def red_cb(word, word_eol, userdata):
             partes = linea[:-1].split(":")[1].split()
             recibido = auxiliar.unidades(int(partes[0]), 1024)
             enviado = auxiliar.unidades(int(partes[8]), 1024)
-            mensaje1 = "[ Red ] Hostname: %s  - Dispositivo: %s  - " \
-                      %(hostname, dispositivo)
-            mensaje2 = "Recibidos: %s  - Enviados: %s" %(recibido, enviado)
-            xchat.command("say %s%s" %(mensaje1, mensaje2))
+            parte1 = "[ Red ] Hostname: {0}  - ".format(hostname)
+            parte2 = "Dispositivo: {0}  - ".format(dispositivo)
+            parte3 = "Recibidos: {0}  - ".format(recibido)
+            parte4 = "Enviados: {0}".format(enviado)
+            mensaje = "{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4)
+            xchat.command("say {0}".format(mensaje))
     return xchat.EAT_ALL
 
 def graficos_cb(word, word_eol, userdata):
@@ -254,15 +262,17 @@ def graficos_cb(word, word_eol, userdata):
         grafica = "No se pudo determinar el modelo"
     else:
         grafica = datos.stdout.readlines()[0].split(": ")[1][:-1]
-    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE, stderr=PIPE)
+    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE, \
+                  stderr=PIPE)
     error = datos.stderr.readlines()
     if len(error) > 0:
         auxiliar.gprint(error)
         resolucion = "No se pudo determinar el modelo"
     else:
         resolucion = datos.stdout.readlines()[0].split(":    ")[1][:-1]
-    xchat.command("say [ Graficos ] Dispositivo: %s  - Resolucion: %s" \
-                  %(grafica, resolucion))
+    parte1 = "say [ Graficos ] Dispositivo: {0}  - ".format(grafica)
+    parte2 = "Resolucion: {0}  - ".format(resolucion)
+    xchat.command("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
 #############################################################################
@@ -275,7 +285,8 @@ def ayuda():
         "Informacion del sistema:",
         "    /gup:    Muestra el uptime del sistema",
         "    /gos:    Muestra la distribucion y su version",
-        "    /gsoft:  Muestra en el canal la version de los programas mas importantes",
+        "    /gsoft:  Muestra en el canal la version de los programas mas",
+        "             importantes",
         "    /gpc:    Muestra en el canal informacion sobre el hardware del pc",
         "    /gnet:   Muestra en el canal informacion sobre la red",
         "    /ggraf:  Muestra en el canal la tarjeta grafica y la resolucion",
