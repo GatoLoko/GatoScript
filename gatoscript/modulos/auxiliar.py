@@ -42,9 +42,9 @@ import sqlite3
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = _SCRIPTDIR + "/gatoscript/"
-_CONFIGFILE = _GATODIR + "gatoscript.conf"
-_GATODB_PATH = _GATODIR + "gatoscript.db"
+_GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
+_CONFIGFILE = "{0}gatoscript.conf".format(_GATODIR)
+_GATODB_PATH = "{0}gatoscript.db".format(_GATODIR)
 #home = xchat.get_info("xchatdir")[:-7]
 #_HOME = path.expanduser("~")
 _CP = SafeConfigParser()
@@ -102,8 +102,8 @@ def gatodb_cursor_execute(sql):
     try:
         resultado = _CURSOR.execute(sql)
         return resultado
-    except sqlite3.Error, e:
-        mensaje = "Se ha producido un error SQL: %s" % e.args[0]
+    except sqlite3.Error, err:
+        mensaje = "Se ha producido un error SQL: {0}".format(err.args[0])
         gprint(mensaje)
         return None
 
@@ -117,7 +117,7 @@ def gprint(mensaje):
     Argumentos:
     mensaje -- cadena con el mensaje a mostrar
     """
-    g_mensaje = "GatoScript >> " + mensaje
+    g_mensaje = "GatoScript >> {0}".format(mensaje)
     print(g_mensaje)
     return ""
 
@@ -163,10 +163,10 @@ def expulsa(mensaje, ban, word):
             ban = lee_conf("protecciones", "ban")
         if ban == "1":
             partes = word[0][1:].split("@")
-            comando = "ban *!*@" + partes[len(partes)-1]
+            comando = "ban *!*@{0}".format(partes[len(partes)-1])
             xchat.command(comando)
         partes = word[0][1:].split("!")
-        comando = "kick " + partes[0] + mensaje
+        comando = "kick {0}{1}".format(partes[0], mensaje)
         xchat.command(comando)
 
 #Conversion de unidades
@@ -175,11 +175,11 @@ def unidades(valor, base):
     Argumentos:
     valor    -- entero con la cantidad en bytes que queremos convertir
     """
-    SUFIJOS = {1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'], \
+    sufijos = {1024: ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'],
         1000: ['KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']}
     if valor < 0:
         raise ValueError('los valores negativos no son validos')
-    for sufijo in SUFIJOS[base]:
+    for sufijo in sufijos[base]:
         # Agregamos ".0" a la base para forzar el uso de decimales
         valor /= base/1.0
         if valor < 1024:
@@ -204,7 +204,7 @@ def opciones_cb(word, word_eol, userdata):
         for seccion in _CP.sections():
             priv_linea(seccion)
             for opcion in _CP.options(seccion):
-                mensaje =  " " + opcion + "=" + _CP.get(seccion, opcion)
+                mensaje = " {0}={1}".format(opcion, _CP.get(seccion, opcion))
                 priv_linea(mensaje)
         priv_linea("")
     elif info_param == 2:
@@ -226,24 +226,29 @@ def gato_info_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     version = xchat.get_info("version")
-    xchat.command("say (X-Chat) %s - ( Script ) GatoScript %s, script en python para X-Chat (http://gatoloko.homelinux.org)" %(version, __module_version__))
+    parte1 = "say (X-Chat) {0} - ".format(version)
+    parte2 = "( Script ) GatoScript {1}, ".format(__module_version__)
+    parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org"
+    xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
 
 def kbtemporal_cb(word, word_eol, userdata):
-    """Expulsa de forma temporal a un usuario del canal activo (si somos Operadores).
+    """Expulsa de forma temporal a un usuario del canal activo (si somos OPs).
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if (len(word_eol) > 2):
-        xchat.command("ban %s!*@*" %word[1])
-        xchat.command("kick %s Expulsado 5 minutos (%s)" %(word[1], word_eol[2]))
-        xchat.command("timer -repeat 1 300 unban %s!*@*" %word[1])
+        xchat.command("ban {0}!*@*".format(word[1]))
+        parte1 = "kick {0} ".format(word[1])
+        parte2 = "Expulsado 5 minutos ({0})".format(word_eol[2])
+        xchat.command("{0}{1}".format(parte1, parte2))
+        xchat.command("timer -repeat 1 300 unban {0}!*@*".format(word[1]))
     elif (len(word_eol) > 1):
-        xchat.command("ban %s!*@*" %word[1])
-        xchat.command("kick %s Expulsado 5 minutos" %word[1])
-        xchat.command("timer -repeat 1 300 unban %s!*@*" %word[1])
+        xchat.command("ban {0}!*@*".format(word[1]))
+        xchat.command("kick {0} Expulsado 5 minutos".format(word[1]))
+        xchat.command("timer -repeat 1 300 unban {0}!*@*".format(word[1]))
     else:
         gprint("Hay que especificar un nick a patear")
     return xchat.EAT_ALL
@@ -256,7 +261,8 @@ def ayuda():
     mensajes = [
         "",
         "Auxiliar:",
-        "Estas funciones son de uso interno y no deberian necesitar ayuda publica.",
+        "Estas funciones son de uso interno y no deberian necesitar ayuda",
+        "publica.",
         ""
         "Informacion:",
         "    /gato:               Muestra esta informacion",
