@@ -80,7 +80,7 @@ def uptime_cb(word, word_eol, userdata):
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
         parte1 = "say Uptime: {0} horas ".format(horas)
-        parte2 = "y {1} minutos".format(minutos)
+        parte2 = "y {0} minutos".format(minutos)
         xchat.command("{0}{1}".format(parte1, parte2))
     else:
         if dias > 1:

@@ -227,7 +227,7 @@ def gato_info_cb(word, word_eol, userdata):
     """
     version = xchat.get_info("version")
     parte1 = "say (X-Chat) {0} - ".format(version)
-    parte2 = "( Script ) GatoScript {1}, ".format(__module_version__)
+    parte2 = "( Script ) GatoScript {0}, ".format(__module_version__)
     parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org"
     xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
