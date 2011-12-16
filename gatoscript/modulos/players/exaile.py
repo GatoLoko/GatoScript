@@ -42,7 +42,7 @@ class Player:
         time = int(getoutput("exaile --get-length").split(".")[0])
         minutes = int(time/60)
         seconds = time-(minutes*60)
-        length = str(minutes) + "m" + str(seconds) + "s"
+        length = "{0}m{1}s".format(str(minutes), str(seconds))
         return title, artist, length
     
     def previous(self):
