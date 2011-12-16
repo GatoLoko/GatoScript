@@ -41,15 +41,16 @@ import sqlite3
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = _SCRIPTDIR + "/gatoscript/"
-_GATODB_PATH = _GATODIR + "gatoscript.db"
+_GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
+_GATODB_PATH = "{0}gatoscript.db".format(_GATODIR)
 
 #############################################################################
 # Inicializamos el modulo
 #############################################################################
 if auxiliar.lee_conf("autosend", "activo") == "1":
     ACTIVO = True
-    ALMACEN = _GATODIR + auxiliar.lee_conf("autosend", "directorio")
+    ALMACEN = "{0}{1}".format(_GATODIR,
+                              auxiliar.lee_conf("autosend", "directorio"))
 
 # Conectamos a la base de datos
 if path.exists(_GATODB_PATH):
@@ -87,7 +88,7 @@ def torrent_cb(word, word_eol, userdata):
     if ACTIVO == True:
         #Definimos la expresion regular que actuara como disparador
         texto = auxiliar.lee_conf("autosend", "disparador")
-        disparador = re.compile("^" + texto, re.IGNORECASE)
+        disparador = re.compile("^{0}".format(texto), re.IGNORECASE)
         if word[2] in protegidos:
             if disparador.search(word[3][1:]):
                 partes = word_eol[3].split()
@@ -98,16 +99,20 @@ def torrent_cb(word, word_eol, userdata):
                     elif len(lista) > 0:
                         archivos = ""
                         for archivo in lista:
-                            archivos += archivo + " "
-                        xchat.command("say Tengo los siguientes archivos: %s" \
-                                      % archivos)
-                        xchat.command("say Para pedir uno pon: %s archivo" \
-                                      % texto)
+                            archivos += "{0} ".format(archivo)
+                        parte1 = "say Tengo los siguietnes "
+                        parte2 = "archivos: {0}".format(archivos)
+                        mensaje = "{0}{1}".format(parte1, parte2)
+                        xchat.command(mensaje)
+                        parte1 = "say Para pedir uno "
+                        parte2 = "pon: {0} archivo".format(texto)
                 elif len(partes) == 2:
                     lista = listdir(ALMACEN)
                     if partes[1] in lista:
-                        envio = "dcc send %s %s/%s" \
-                                %(word[0][1:].split("!")[0], ALMACEN, partes[1])
+                        parte1 = "dcc send "
+                        parte2 = "{0} {1}/{2}".format(word[0][1:].split("!")[0],
+                                                      ALMACEN, partes[1])
+                        envio = "{0}{1}".format(parte1, parte2)
                         xchat.command(envio)
                     else:
                         xchat.command("say No tengo archivos con ese nombre")
