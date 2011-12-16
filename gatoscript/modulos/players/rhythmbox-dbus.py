@@ -62,12 +62,12 @@ class Player:
             time = date['duration']
             if time <= 0:
                 bitrate = data['bitrate']
-                length = "%sKb/s - Radio" % str(bitrate)
+                length = "{0}Kb/s - Radio".format(str(bitrate))
                 artist = data['rb:stram-song-title']
             else:
                 minutes = int(time/60)
                 seconds = time-(minutes*60)
-                length = "%sm%ss" %(munites, seconds)
+                length = "{0}m{1}s".format(munites, seconds)
             return title, artist, length
     
     def previous(self):
