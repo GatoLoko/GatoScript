@@ -37,7 +37,7 @@ import auxiliar
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = _SCRIPTDIR + "/gatoscript/"
+_GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
 
 #############################################################################
 # Inicializamos el modulo
