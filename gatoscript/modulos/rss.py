@@ -73,12 +73,11 @@ def rss_cb(word, word_eol, userdata):
             for i in range(limite):
                 objeto = archivo.getElementsByTagName('item')[i]
                 titulo = objeto.getElementsByTagName('title')[0].firstChild.data
+                titulo = titulo.encode('latin-1', 'replace')
                 enlace = objeto.getElementsByTagName('link')[0].firstChild.data
-                auxiliar.priv_linea("Enlace: " + \
-                                    enlace.encode('latin-1', 'replace') + \
-                                    " <--> Titulo: " + \
-                                    titulo.encode('latin-1', 'replace'))
-                #i = i + 1
+                enlace = enlace.encode('latin-1', 'replace')
+                mensaje = "Enlace: {0} <--> Titulo: {1}".format(enlace, titulo)
+                auxiliar.priv_linea(mensaje)
             auxiliar.priv_linea("")
         del feeds, servidor, limitador
     return xchat.EAT_ALL
@@ -113,10 +112,11 @@ def rssadd_cb(word, word_eol, userdata):
         auxiliar.gprint("De momento solo se admite un rss cada vez")
     else:
         sql = 'INSERT INTO feeds ("id", "feeds", "limite") \
-              VALUES (null, "%s", "10")' % word[1]
+              VALUES (null, "{0}", "10")'.format(word[1])
         auxiliar.gatodb_cursor_execute(sql)
         auxiliar.gatodb_commit()
-        auxiliar.gprint("Se ha agregado '%s' a la lista de filtros" % word[1])
+        mensaje = "Se ha agregado '{0}' a la lista de filtros".format(word[1])
+        auxiliar.gprint(mensaje)
     return xchat.EAT_ALL
 
 def rssdel_cb(word, word_eol, userdata):
@@ -133,12 +133,13 @@ def rssdel_cb(word, word_eol, userdata):
         auxiliar.gprint("De momento solo se admite un feed cada vez")
     else:
         try:
-            sql = "DELETE FROM feeds WHERE feeds='%s'" % word_eol[1]
+            sql = "DELETE FROM feeds WHERE feeds='{0}'".format(word_eol[1])
             auxiliar.gatodb_cursor_execute(sql)
             auxiliar.gatodb_commit()
-            auxiliar.gprint("Se ha eliminado '%s'" % word_eol[1])
+            auxiliar.gprint("Se ha eliminado '{0}'".format(word_eol[1]))
         except ValueError:
-            auxiliar.gprint("No existe ningun feed que coincida con el indicado")
+            mensaje = "No existe ningun feed que coincida con el indicado"
+            auxiliar.gprint(mensaje)
     return xchat.EAT_ALL
 
 
