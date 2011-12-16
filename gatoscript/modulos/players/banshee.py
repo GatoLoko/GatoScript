@@ -45,7 +45,7 @@ class Player:
                 time = int(information[2].split(": ")[1].split('.')[0])
             minutes = int(time/60)
             seconds = time-(minutes*60)
-            length = str(minutes) + "m" + str(seconds) + "s"
+            length = "{0}m{1}s".format(str(minutes), str(seconds))
         title = information[1].split(": ")[1]
         artist = information[0].split(": ")[1]
         return title, artist, length
