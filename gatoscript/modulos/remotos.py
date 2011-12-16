@@ -42,7 +42,8 @@ import auxiliar
 # Inicializamos el modulo
 #############################################################################
 if auxiliar.CONECTADO:
-    remotos_db = auxiliar.gatodb_cursor_execute("SELECT disparador,respuesta,es_comando FROM remotos")
+    sql = "SELECT disparador,respuesta,es_comando FROM remotos"
+    remotos_db = auxiliar.gatodb_cursor_execute(sql)
     remotos = []
     for elemento in remotos_db:
         expresion = elemento[0]
@@ -98,9 +99,11 @@ def remoto_cb(word, word_eol, userdata):
                 #Si se ha encontrado actuamos
                 if consejo_rem.search(word[3][1:]):
                     #consejo_aleatorio_cb("0", "0", "0")
-                    xchat.command("say No hay consejos disponibles en este momento")
+                    comando = "say No hay consejos disponibles en este momento"
+                    xchat.command(comando)
                 elif hola_rem.search(word[3][1:]):
-                    xchat.command("say Hola %s!!" % word[0].split("!")[0][1:])
+                    comando = "say Hola {0}!!".format(word[0].split("!")[0][1:])
+                    xchat.command(comando)
                 elif version_rem.search(word[3][1:]):
                     xchat.command("gsoft")
                     xchat.command("ginfo")
@@ -110,7 +113,7 @@ def remoto_cb(word, word_eol, userdata):
                             #respuestas = remoto[1].split(",")
                             xchat.command("say Esto no esta implementado aun")
                         else:
-                            xchat.command("say %s" % remoto[1])
+                            xchat.command("say {0}".format(remoto[1]))
 
 
 ##############################################################################
