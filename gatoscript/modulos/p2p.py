@@ -41,10 +41,10 @@ import xml.dom.minidom
 # opcionales.
 #############################################################################
 _HOME = path.expanduser("~")
-_AMULESIG = _HOME + "/.aMule/amulesig.dat"
-_AZUREUSSTATS = _HOME + "/.azureus/Azureus_Stats.xml"
-_TRANSMISSIONSTATSOLD = _HOME + "/.transmission/stats.benc"
-_TRANSMISSIONSTATSNEW = _HOME + "/.config/transmission/stats.json"
+_AMULESIG = "{0}/.aMule/amulesig.dat".format(_HOME)
+_AZUREUSSTATS = "{0}/.azureus/Azureus_Stats.xml".format(_HOME)
+_TRANSMISSIONSTATSOLD = "{0}/.transmission/stats.benc".format(_HOME)
+_TRANSMISSIONSTATSNEW = "{0}/.config/transmission/stats.json".format(_HOME)
 
 ##############################################################################
 # Inicializamos el modulo
@@ -113,14 +113,15 @@ def amule_cb(word, word_eol, userdata):
             vsubida = (lineas_amule[7])[0:-1]
             total_descargado = auxiliar.unidades(int(lineas_amule[11]), 1024)
             version = lineas_amule[13][0:-1]
-            parte1 = "say ( aMule %s ) Descarga: %sKB/s - Subida: %sKB/s " \
-                     % (version, vdescarga, vsubida)
-            parte2 = "- Total descargado: %s" % total_descargado
-            xchat.command("%s%s" % (parte1, parte2))
+            parte1 = "say ( aMule {0} ) ".format(version)
+            parte2 = "Descarga: {0}KB/s - ".format(vdescarga)
+            parte3 = "Subida: {0}KB/s - ".format(vsubida)
+            parte4 = "Total descargado: {0}".format(total_descargado)
+            xchat.command("{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4))
     else:
-        parte1 = "No existe el archivo %s, compruebe que activada" % _AMULESIG
-        parte2 = " la firma online en la configuracion de aMule."
-        auxiliar.gprint("%s%s" % (parte1, parte2))
+        parte1 = "No existe el archivo {0}, compruebe que ".format(_AMULESIG)
+        parte2 = "esté activada la firma online en la configuracion de aMule."
+        auxiliar.gprint("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
 def azureus_cb(word, word_eol, userdata):
@@ -139,14 +140,15 @@ def azureus_cb(word, word_eol, userdata):
         vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
         subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
         vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        xchat.command("say ( Azureus ) Descarga: %s - Subida: %s" \
-                      % (vdescarga, vsubida))
+        parte1 = "say ( Azureus ) Descarga: {0} - ".format(vdescarga)
+        parte2 = "Subida: {1}".format(vsubida)
+        mensaje = "{0}{1}".format(parte1, parte2)
+        xchat.command(mensaje)
         del descarga, vdescarga, subida, vsubida, glob, stats, dom1
     else:
-        parte1 = "No existe el archivo %s, compruebe su configuracion de" \
-                 % _AZUREUSSTATS
-        parte2 =  " Azureus."
-        auxiliar.gprint("%s%s" % (parte1, parte2))
+        parte1 = "No existe el archivo {0}, ".format(_AZUREUSSTATS)
+        parte2 = "compruebe su configuracion de Azureus."
+        auxiliar.gprint("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
 def transmission_cb(word, word_eol, userdata):
@@ -166,27 +168,24 @@ def transmission_cb(word, word_eol, userdata):
         archivo.close()
         for i in range(1, len(partes)):
             parte.append(partes[i][textos[i][0]:-textos[i][1]])
-        #print parte
-        #print "Descargados " + parte[0] + "Bytes"
-        #print "Subidos     " + parte[4] + "Bytes"
-        #print "Trabajados  " + parte[2] + "Segundos"
         descargado = auxiliar.unidades(int(parte[0]), 1024)
         subido = auxiliar.unidades(int(parte[4]), 1024)
-        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
-                      % (descargado, subido))
+        parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
+        parte2 = "Subido: {0}".format(subido)
     elif path.exists(_TRANSMISSIONSTATSNEW):
         archivo = file(_TRANSMISSIONSTATSNEW, "r")
         lineas = archivo.readlines()
         archivo.close()
         descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]), 1024)
         subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]), 1024)
-        xchat.command("say ( Transmission ) Descargado: %s - Subido: %s" \
-                      % (descargado, subido))
+        parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
+        parte2 = "Subido: {0}".format(subido)
+        mensaje = "{0}{1}".format(parte1, parte2)
     else:
         parte1 = "No existe el archivo de estadisticas en sus ubicaciones "
         parte2 = "habituales. Por favor, compruebe su configuracion de "
         parte3 = "Transmission."
-        auxiliar.gprint("%s%s%s" % (parte1, parte2, parte3))
+        auxiliar.gprint("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
     
 
