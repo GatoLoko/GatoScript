@@ -100,7 +100,8 @@ if (repro_activo == "1"):
 ## Definimos las funciones para el control de multimedia
 ##############################################################################
 def media_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre la cancion que estamos escuchando.
+    """Muestra en el canal activo informacion sobre la cancion que estamos
+    escuchando.
     Toma del archivo de configuracion el reproductor a usar.
 
     Argumentos:
@@ -110,9 +111,11 @@ def media_cb(word, word_eol, userdata):
     """
     if (userdata == "escuchando"):
         titulo, artista, longitud = player.listening()
-        xchat.command("me esta escuchando: %s - %s (%s)" %(titulo, artista, longitud))
+        comando = "me esta escuchando: {0} - {1} ({2})".format(titulo, artista,
+                                                               longitud)
+        xchat.command(comando)
     elif (userdata == "reproductor"):
-        print("The selected media player is %s" % player.name())
+        print("The selected media player is {0}".format(player.name()))
     elif (userdata == "siguiente"):
         player.next()
     elif (userdata == "anterior"):
@@ -124,7 +127,7 @@ def media_cb(word, word_eol, userdata):
     elif (userdata == "stop"):
         player.stop()
     else:
-        mensaje = "La funcion " + userdata + " no esta implementada"
+        mensaje = "La funcion {0} no esta implementada".format(userdata)
         auxiliar.gprint(mensaje)
     return xchat.EAT_ALL
 
@@ -133,7 +136,9 @@ def media_cb(word, word_eol, userdata):
 # Definimos la funcion para la descarga del programa
 #############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al descargarse el script
+    """Esta funcion debe desenlazar todas las funciones del GatoScript al
+    descargarse el script.
+    
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
@@ -154,8 +159,10 @@ def unload_cb(userdata):
 # para ellos
 #############################################################################
 # Media
-hookescuchando = xchat.hook_command('escuchando', media_cb, userdata="escuchando")
-hookreproductor = xchat.hook_command('reproductor', media_cb, userdata="reproductor")
+hookescuchando = xchat.hook_command('escuchando', media_cb,
+                                    userdata="escuchando")
+hookreproductor = xchat.hook_command('reproductor', media_cb,
+                                     userdata="reproductor")
 hooksiguiente = xchat.hook_command('siguiente', media_cb, userdata="siguiente")
 hookanterior = xchat.hook_command('anterior', media_cb, userdata="anterior")
 hookplay = xchat.hook_command('play', media_cb, userdata="play")
