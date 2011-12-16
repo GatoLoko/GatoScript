@@ -65,19 +65,21 @@ def notas_cb(word, word_eol, userdata):
             if nota == None:
                 print("No hay notas almacenadas")
             else:
-                print("Nota: " + nota[0])
+                print("Nota: {0}".format(nota[0]))
     elif parametros > 1:
         if word[1] == "añade":
             # Agrega una nota
             sql = 'INSERT INTO notas ("id", "nota") \
-                  VALUES (null, "%s")' % word_eol[2]
+                  VALUES (null, "{0}")'.format(word_eol[2])
             auxiliar.gatodb_cursor_execute(sql)
-            auxiliar.gprint("Se ha agregado '%s' a las notas" % word_eol[2])
+            mensaje = "Se ha agregado '{0}' a las notas".format(word_eol[2])
+            auxiliar.gprint(mensaje)
         elif word[1] == "quita":
             # Quitar una nota
-            sql = "DELETE FROM notas WHERE nota='%s'" % word_eol[2]
+            sql = "DELETE FROM notas WHERE nota='{0}'".format(word_eol[2])
             auxiliar.gatodb_cursor_execute(sql)
-            auxiliar.gprint("Se ha quitado '%s' de las notas" % word_eol[2])
+            mensaje = "Se ha quitado '{0}' de las notas".format(word_eol[2])
+            auxiliar.gprint(mensaje)
         # Aplicar los cambios a la base de datos
         auxiliar.gatodb_commit()
     return xchat.EAT_ALL
