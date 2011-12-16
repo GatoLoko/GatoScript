@@ -57,8 +57,10 @@ def resaltados_cb(word, word_eol, userdata):
                 palabra = re.compile(resaltado, re.IGNORECASE)
                 if palabra.search(word_eol[3][1:]):
                     nick = word[0].split("!")[0][1:]
-                    mensaje = "%s ha mencionado '%s' en %s: <%s> %s" \
-                              % (nick, resaltado, canal, nick, word_eol[3][1:])
+                    parte1 = "{0} ha mencionado '{1}' ".format(nick, resaltado)
+                    parte2 = "en {0}: <{1}> ".format(canal, nick)
+                    mensaje = "{0}{1}{2}".format(parte1, parte2,
+                                                 word_eol[3][1:])
                     auxiliar.priv_linea(mensaje)
     return xchat.EAT_NONE
 
@@ -88,29 +90,33 @@ def realza_url_cb(word, word_eol, userdata):
         for palabra in palabras:
             if palabra in direccion:
                 if nuevo_mensaje == "":
-                    nuevo_mensaje = " \003%s%s\003" % (color, palabra)
+                    nuevo_mensaje = " \003{0}{1}\003".format(color, palabra)
                 else:
-                    nuevo_mensaje = "%s \003%s%s\003" \
-                                    % (nuevo_mensaje, color, palabra)
+                    nuevo_mensaje = "{0} \003{1}{2}\003".format(nuevo_mensaje,
+                                                                color, palabra)
             else:
                 if nuevo_mensaje == "":
                     nuevo_mensaje = palabra
                 else:
-                    nuevo_mensaje = nuevo_mensaje + " " + palabra
+                    nuevo_mensaje = "{0} {1}".format(nuevo_mensaje, palabra)
         if word[2][0] == "#":
             contexto = xchat.find_context(channel=word[2])
         else:
-            xchat.command("query -nofocus %s" %word[0].split("!")[0][1:])
+            comando = "query -nofocus {0}".format(word[0].split("!")[0][1:])
+            xchat.command(comando)
             contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
         #   >> :nick!ident@host PRIVMSG #canal :ACTION hola
         if word[3] == ":ACTION":
             #print "action"
-            #contexto.emit_print("Action", word[0].split("!")[0][1:], nuevo_mensaje)
+            #contexto.emit_print("Action", word[0].split("!")[0][1:],
+            #                    nuevo_mensaje)
             #action_mensaje = nuevo_mensaje[8:-2]
-            #contexto.prnt("\00313* %s\003 %s" %(word[0].split("!")[0][1:], nuevo_mensaje[8:-2]))
+            #contexto.prnt("\00313* {0}\003 {1}".format(
+            #    word[0].split("!")[0][1:], nuevo_mensaje[8:-2]))
             return xchat.EAT_NONE
         else:
-            contexto.emit_print("Channel Message", word[0].split("!")[0][1:], nuevo_mensaje)
+            contexto.emit_print("Channel Message", word[0].split("!")[0][1:],
+                                nuevo_mensaje)
             return xchat.EAT_ALL
 
 
@@ -170,6 +176,7 @@ def unload_cb(userdata):
 #############################################################################
 # Resaltados
 HOOKRESALTADOS = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
-HOOKREALZAURL = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None, priority=-10)
+HOOKREALZAURL = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None,
+                                  priority=-10)
 # Descarga del script
 HOOKUNLOAD = xchat.hook_unload(unload_cb)
