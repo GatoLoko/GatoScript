@@ -105,8 +105,13 @@ def realza_url_cb(word, word_eol, userdata):
             comando = "query -nofocus {0}".format(word[0].split("!")[0][1:])
             xchat.command(comando)
             contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
+        # Action messages change from one network to the next.
+        # IRC-Hispano:
         #   >> :nick!ident@host PRIVMSG #canal :ACTION hola
-        if word[3] == ":ACTION":
+        # Freenode:
+        #   >> :nickt!~ident@host PRIVMSG #canal :-ACTION hola
+        #   >> :nickt!~ident@host PRIVMSG #canal :+ACTION hola
+        if word[3] in [":ACTION", ":-ACTION", ":+ACTION"]:
             #print "action"
             #contexto.emit_print("Action", word[0].split("!")[0][1:],
             #                    nuevo_mensaje)
