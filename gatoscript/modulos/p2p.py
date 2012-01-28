@@ -172,6 +172,8 @@ def transmission_cb(word, word_eol, userdata):
         subido = auxiliar.unidades(int(parte[4]), 1024)
         parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
         parte2 = "Subido: {0}".format(subido)
+        comando = "{0}{1}".format(parte1, parte2)
+        xchat.command(comando)
     elif path.exists(_TRANSMISSIONSTATSNEW):
         archivo = file(_TRANSMISSIONSTATSNEW, "r")
         lineas = archivo.readlines()
@@ -180,7 +182,8 @@ def transmission_cb(word, word_eol, userdata):
         subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]), 1024)
         parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
         parte2 = "Subido: {0}".format(subido)
-        mensaje = "{0}{1}".format(parte1, parte2)
+        comando = "{0}{1}".format(parte1, parte2)
+        xchat.command(comando)
     else:
         parte1 = "No existe el archivo de estadisticas en sus ubicaciones "
         parte2 = "habituales. Por favor, compruebe su configuracion de "
