@@ -162,8 +162,8 @@ def expulsa(mensaje, ban, word):
         if ban == "":
             ban = lee_conf("protecciones", "ban")
         if ban == "1":
-            partes = word[0][1:].split("@")
-            comando = "ban *!*@{0}".format(partes[len(partes)-1])
+            host = word[0][1:].split("@")[-1]
+            comando = "ban *!*@{0}".format(host)
             xchat.command(comando)
         partes = word[0][1:].split("!")
         comando = "kick {0}{1}".format(partes[0], mensaje)
@@ -228,7 +228,7 @@ def gato_info_cb(word, word_eol, userdata):
     version = xchat.get_info("version")
     parte1 = "say (X-Chat) {0} - ".format(version)
     parte2 = "( Script ) GatoScript {0}, ".format(__module_version__)
-    parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org"
+    parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org)"
     xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
 
