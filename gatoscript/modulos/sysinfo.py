@@ -134,7 +134,7 @@ def software_cb(word, word_eol, userdata):
             auxiliar.gprint(error[i])
         x11 = "Indeterminable"
     else:
-        servidor = xdpyinfo.stdout.readlines()[0].split()
+        servidor = xdpyinfo.stdout.readlines()[0].split()[-1]
     xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True, \
                      stdout=PIPE, stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
@@ -145,7 +145,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = "{0} {1}".format(xversion, servidor[len(servidor)-1])
+        x11 = "{0} {1}".format(xversion, servidor)
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
     if len(error) > 0:
@@ -158,7 +158,7 @@ def software_cb(word, word_eol, userdata):
             gcc = "No instalado"
         else:
             partes = salida[0].split()
-            gcc = partes[2]
+            gcc = partes[-1]
     parte1 = "say [ Software ] Kernel: {0}  - ".format(sistema)
     parte2 = "LIBC: {0}  - X11: {1}  - GCC: {2}".format(libc, x11, gcc)
     xchat.command("{0}{1}".format(parte1, parte2))
@@ -202,17 +202,17 @@ def pc_cb(word, word_eol, userdata):
     meminfo = archivo.readlines()
     archivo.close()
     partes = meminfo[0].split(":")[1][:-1].split(" ")
-    memoria = partes[len(partes)-2]
-    unidad = partes[len(partes)-1]
+    memoria = partes[-2]
+    unidad = partes[-1]
     # Free
     partes = meminfo[1].split(":")[1][:-1].split(" ")
-    freemem = partes[len(partes)-2]
+    freemem = partes[-2]
     # Buffer
     partes = meminfo[2].split(":")[1][:-1].split(" ")
-    bufmem = partes[len(partes)-2]
+    bufmem = partes[-2]
     # Cache
     partes = meminfo[3].split(":")[1][:-1].split(" ")
-    cachemem = partes[len(partes)-2]
+    cachemem = partes[-2]
     # Usada y libre
     usada = int(freemem) + int(bufmem) + int(cachemem)
     libre = int(memoria) - usada
