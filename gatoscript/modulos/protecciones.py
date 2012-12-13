@@ -226,30 +226,6 @@ def anti_colores_cb(word, word_eol, userdata):
 #    """
 #    return xchat.EAT_NONE
 
-# Anti ClonerX  (on JOIN)
-def anti_clonerx_cb(word, word_eol, userdata):
-    """Detecta nicks que entran al canal con un indent que concuerde con los de
-    ClonerX y los banea para evitar el flood.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    if auxiliar.lee_conf("protecciones", "clonerx") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                bots = re.compile("^[a-z]{1}(\d){2,4}$")
-                ident = word[0][1:].split("!")[1].split("@")[0]
-                if bots.search(ident):
-                    canal = word[2][1:]
-                    contexto = xchat.find_context(channel=canal)
-                    host = word[0].split("@")[1]
-                    comando = "ban *!*@{0}".format(host)
-                    contexto.command(comando)
-                    mensaje = "Ident de ClonerX en {0}".format(canal)
-                    auxiliar.gprint(mensaje)
-    return xchat.EAT_NONE
-
 def anti_drone_cb(word, word_eol, userdata):
     """Detecta nicks que entran al canal con nick/indent que concuerde con los
     de un Drone y los banea para evitar el expulsa para evitar el SPAM.
@@ -321,7 +297,6 @@ def unload_cb(userdata):
     # Desconectamos las funciones de proteccion
     #xchat.unhook(HOOKPROTECCION)
     xchat.unhook(HOOKANTINOTICE)
-    xchat.unhook(HOOKANTICLONERX)
     xchat.unhook(HOOKANTIDRONE)
     xchat.unhook(HOOKANTICTCP)
     xchat.unhook(HOOKANTIHOYGAN)
@@ -340,7 +315,6 @@ def unload_cb(userdata):
 # Protecciones
 #HOOKPROTECCION = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None, priority=10)
 HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
-HOOKANTICLONERX = xchat.hook_server('JOIN', anti_clonerx_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 HOOKANTIHOYGAN = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
