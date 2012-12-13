@@ -69,7 +69,7 @@ def anti_ctcp_cb(word, word_eol, userdata):
                             parte1 = "Se ha recibido un CTCP al "
                             parte2 = "canal {0}".format(word[2])
                             auxiliar.gprint("{0}{1}".format(parte1, parte2))
-                            host = word[0][1:].split("@")[len(partes)-1]
+                            host = word[0][1:].split("@")[-1]
                             comando = "ban *!*@{0}".format(host)
                             xchat.command(comando)
                             nick = word[0][1:].split("!")[0]
@@ -105,12 +105,13 @@ def anti_hoygan_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
+    #>> :nick!ident@host PRIVMSG #channel :message
     if auxiliar.lee_conf("protecciones", "hoygan") == "1":
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
             if canal.lower() == word[2].lower():
                 hoyga = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
                 if hoyga.search(word_eol[3]):
-                    host = word[0][1:].split("@")[len(partes)-1]
+                    host = word[0][1:].split("@")[-1]
                     xchat.command("ban *!*@{0}".format(host))
                     nick = word[0][1:].split("!")[0]
                     parte1 = "kick {0} Los hoygan son la versión ".format(nick)
@@ -132,7 +133,7 @@ def anti_mayusculas_cb(word, word_eol, userdata):
             if canal.lower() == word[2].lower():
                 mensaje = ""
                 cadena = word_eol[3][1:]
-                accion = re.compile('^\ACTION')
+                accion = re.compile('^[\+,-]?\ACTION')
                 if accion.match(cadena):
                     cadena = cadena[7:]
                 letrasre = re.compile('[a-zA-Z]')
@@ -167,7 +168,7 @@ def anti_colores_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    accion = re.compile('^\ACTION')
+    accion = re.compile('^[\+,-]?\ACTION')
     colores = re.compile('\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?(,[0-9]{1,2})?)?')
     ignorar = False
     if auxiliar.lee_conf("protecciones", "banea_colores") == "1":
