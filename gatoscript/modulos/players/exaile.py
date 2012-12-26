@@ -35,27 +35,27 @@ from commands import getoutput
 class Player:
     def name(self):
         return "Exaile"
-    
+
     def listening(self):
         title = getoutput("exaile --get-title")
         artist = getoutput("exaile --get-artist")
         time = int(getoutput("exaile --get-length").split(".")[0])
-        minutes = int(time/60)
-        seconds = time-(minutes*60)
+        minutes = int(time / 60)
+        seconds = time - (minutes * 60)
         length = "{0}m{1}s".format(str(minutes), str(seconds))
         return title, artist, length
-    
+
     def previous(self):
         system("exaile --prev")
-    
+
     def next(self):
         system("exaile --next")
-    
+
     def pause(self):
         system("exaile --play-pause")
-    
+
     def play(self):
         system("exaile --play-pause")
-    
+
     def stop(self):
         system("exaile --stop")

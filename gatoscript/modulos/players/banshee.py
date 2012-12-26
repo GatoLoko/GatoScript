@@ -30,10 +30,11 @@ __module_autor__ = "GatoLoko"
 from os import system
 from commands import getoutput
 
+
 class Player:
     def name(self):
         return "Banshee"
-    
+
     def listening(self):
         comando = 'banshee --query-artist --query-title --query-duration'
         information = (getoutput(comando)).split("\n")
@@ -44,24 +45,24 @@ class Player:
                 time = int(information[2].split(": ")[1].split(',')[0])
             except:
                 time = int(information[2].split(": ")[1].split('.')[0])
-            minutes = int(time/60)
-            seconds = time-(minutes*60)
+            minutes = int(time / 60)
+            seconds = time - (minutes * 60)
             length = "{0}m{1}s".format(str(minutes), str(seconds))
         title = information[1].split(": ")[1]
         artist = information[0].split(": ")[1]
         return title, artist, length
-    
+
     def previous(self):
         system("banshee --previous")
-        
+
     def next(self):
         system("banshee --next")
-        
+
     def pause(self):
         system("banshee --pause")
-        
+
     def play(self):
         system("banshee --play")
-        
+
     def stop(self):
         system("banshee --pause")

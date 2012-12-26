@@ -39,13 +39,13 @@ from commands import getoutput
 class Player:
     def name(self):
         return "Rhythmbox"
-    
+
     def listening(self):
         # %st means "stream title" in files, in most radios means artist + title
         # %tt means "track title" in files, in most radios means radio name
         # %ta means "track artist", nonexistent on most radios
         # %td means "track duration", "Unknown" on radios
-        
+
         length = getoutput('rhythmbox-client --no-present --print-playing-format %td')
         if length == "Desconocido" or length == "Unknown":
             title = getoutput('rhythmbox-client --no-present --print-playing-format "%st"')
@@ -59,18 +59,18 @@ class Player:
             title = getoutput('rhythmbox-client --no-present --print-playing-format "%tt"')
             artist = getoutput('rhythmbox-client --no-present --print-playing-format "%ta"')
         return title, artist, length
-    
+
     def previous(self):
         system("rhythmbox-client --previous")
 
     def next(self):
         system("rhythmbox-client --next")
-    
+
     def pause(self):
         system("rhythmbox-client --pause")
-    
+
     def play(self):
         system("rhythmbox-client --play")
-    
+
     def stop(self):
         system("rhythmbox-client --stop")

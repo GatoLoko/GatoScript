@@ -36,30 +36,30 @@ class Player:
     def name(self):
         """Returns the player name"""
         return "Amarok"
-    
+
     def listening(self):
         """Returns information from the currently playing song"""
         title = getoutput("dcop amarok player title")
         artist = getoutput("dcop amarok player artist")
         length = getoutput("dcop amarok player totalTime")
         return title, artist, length
-    
+
     def previous(self):
         """Jumps to the previous song in the playlist"""
         system("dcop amarok player prev")
-        
+
     def next(self):
         """Jumps to the next song in the playlist"""
         system("dcop amarok player next")
-        
+
     def pause(self):
         """Pauses the media player"""
         system("dcop amarok player pause")
-        
+
     def play(self):
         """Plays the current song in the playlist"""
         system("dcop amarok player play")
-        
+
     def stop(self):
         """Stops the media player"""
         system("dcop amarok player stop")

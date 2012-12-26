@@ -30,6 +30,7 @@ __module_autor__ = "GatoLoko"
 from os import system
 from commands import getoutput
 
+
 class Player:
     def name(self):
         return "Audacious"
@@ -39,19 +40,18 @@ class Player:
         artist = getoutput("audtool2 current-song-tuple-data artist")
         length = getoutput("audtool2 current-song-length")
         return title, artist, length
-        
+
     def previous(self):
         system("audtool2 playlist-reverse")
-        
+
     def next(self):
         system("audtool2 playlist-advance")
-        
+
     def pause(self):
         system("audtool2 playback-pause")
-        
+
     def play(self):
         system("audtool2 playback-play")
-        
+
     def stop(self):
         system("audtool2 playback-stop")
-
