@@ -47,6 +47,7 @@ _NUM_ABUSOS_COLORES = []
 # Definimos las funciones de uso interno del modulo
 ##############################################################################
 
+
 ##############################################################################
 # Definimos las funciones de proteccion
 ##############################################################################
@@ -61,22 +62,23 @@ def anti_ctcp_cb(word, word_eol, userdata):
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
             if canal.lower() == word[2].lower():
                 ctcp = re.compile("\.*\", re.IGNORECASE)
-                canales = auxiliar.lee_conf("protecciones", "canales").split(',')
+                canales = auxiliar.lee_conf("protecciones",
+                                            "canales").split(',')
                 if ctcp.search(word[3]):
                     for canal in canales:
                         canal_re = re.compile(canal[1:], re.IGNORECASE)
                         if canal_re.search(word[2]):
-                            parte1 = "Se ha recibido un CTCP al "
-                            parte2 = "canal {0}".format(word[2])
-                            auxiliar.gprint("{0}{1}".format(parte1, parte2))
+                            mensaje = "".join(["Se ha recibido un CTCP al ",
+                                               "canal ", word[2]])
+                            auxiliar.gprint(mensaje)
                             host = word[0][1:].split("@")[-1]
-                            comando = "ban *!*@{0}".format(host)
-                            xchat.command(comando)
+                            xchat.command("".join(["ban *!*@", host]))
                             nick = word[0][1:].split("!")[0]
-                            comando = "kick {0} CTCPs al canal....".format(nick)
-                            xchat.command(comando)
+                            xchat.command("".join(["kick ", nick, "CTCPs al ",
+                                                   "canal..."]))
     return xchat.EAT_NONE
-    
+
+
 def anti_notice_cb(word, word_eol, userdata):
     """Detecta el envio de NOTICEs a canales protegidos y expulsa al autor.
     Argumentos:
@@ -89,14 +91,13 @@ def anti_notice_cb(word, word_eol, userdata):
         canales = auxiliar.lee_conf("protecciones", "canales").split(',')
         for canal in canales:
             if (word[2].lower() == canal.lower()) and \
-            (word[0].lower() != ":chan!-@-"): #Excepcion para IRC-Hispano
+            (word[0].lower() != ":chan!-@-"):  # Excepcion para IRC-Hispano
                 print word[0]
                 print "este ban lo pone por notice"
-                parte1 = "kickban {0} ".format(word[0][1:].split("!")[0])
-                parte2 = "Putos scriptkidies...."
-                comando = "{0}{1}".format(parte1, parte2)
-                xchat.command(comando)
+                xchat.command("".join(["kickban ", word[0][1:].split("!")[0],
+                                       " Putos scriptkidies..."]))
     return xchat.EAT_NONE
+
 
 def anti_hoygan_cb(word, word_eol, userdata):
     """Detecta la palabra "hoygan" en los canales y banea al autor
@@ -112,14 +113,15 @@ def anti_hoygan_cb(word, word_eol, userdata):
                 hoyga = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
                 if hoyga.search(word_eol[3]):
                     host = word[0][1:].split("@")[-1]
-                    xchat.command("ban *!*@{0}".format(host))
+                    xchat.command("".join(["ban *!*@", host]))
                     nick = word[0][1:].split("!")[0]
-                    parte1 = "kick {0} Los hoygan son la versión ".format(nick)
-                    parte2 = "electrónica del payaso de la clase y no son "
-                    parte3 = "graciosos."
-                    xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
-                    del host, nick, parte1, parte2, parte3
+                    xchat.command("".join(["kick ", nick, " Los hoygan son la",
+                                           " versión electronica del payaso",
+                                           " de la clase y no son",
+                                           "graciosos."]))
+                    del host, nick
     return xchat.EAT_NONE
+
 
 def anti_mayusculas_cb(word, word_eol, userdata):
     """Detecta el abuso de mayusculas en los canales y banea al autor
@@ -140,25 +142,27 @@ def anti_mayusculas_cb(word, word_eol, userdata):
                 letras = letrasre.findall(cadena)
                 abuso = True
                 for letra in letras:
-                    if letra.islower() == True:
+                    if letra.islower() is True:
                         abuso = False
-                if (len(letras)) > 10 and abuso == True:
+                if (len(letras)) > 10 and abuso is True:
                     host = word[0][1:].split("@")[1]
                     nick = word[0][1:].split("!")[0]
                     if host in _NUM_ABUSOS_MAYUS:
                         _NUM_ABUSOS_MAYUS.remove(host)
-                        parte1 = " Escribir todo en mayusculas va contra las "
-                        parte2 = "normas y estabas avisado."
-                        mensaje = "{0}{1}".format(parte1, parte2)
+                        mensaje = "".join([" Escribir todo en mayusculas va",
+                                           "contra las normas y estabas",
+                                           " avisado"])
                         auxiliar.expulsa(mensaje, "1", word)
                     else:
                         _NUM_ABUSOS_MAYUS.append(host)
-                        parte1 = "msg {0} {1}".format(word[2], nick)
-                        parte2 = ": no escribas todo en mayusculas, va contra "
-                        parte3 = "las normas. La proxima vez seras expulsado."
-                        mensaje = "{0}{1}{2}".format(parte1, parte2, parte3)
+                        mensaje = "".join(["msg ", word[2], " ", nick, ": no",
+                                           " escribas todo en mayusculas, va",
+                                           " contra las normas. La próxima",
+                                           " vez seras expulsado."])
+                        xchat.command("")
                         xchat.command(mensaje)
     return xchat.EAT_NONE
+
 
 def anti_colores_cb(word, word_eol, userdata):
     """Detecta el envio de mensajes con colores o realzados en los canales
@@ -169,7 +173,8 @@ def anti_colores_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     accion = re.compile('^[\+,-]?\ACTION')
-    colores = re.compile('\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?(,[0-9]{1,2})?)?')
+    colores = re.compile("".join(['\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?',
+                                  '(,[0-9]{1,2})?)?']))
     ignorar = False
     if auxiliar.lee_conf("protecciones", "banea_colores") == "1":
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
@@ -182,21 +187,18 @@ def anti_colores_cb(word, word_eol, userdata):
                     host = word[0][1:].split("@")[1]
                     if host in _NUM_ABUSOS_COLORES:
                         _NUM_ABUSOS_COLORES.remove(host)
-                        parte1 = " El uso de colores va contra las normas y "
-                        parte2 = "estabas avisado."
-                        mensaje = "{0}{1}".format(parte1, parte2)
+                        mensaje = "".join([" El uso de colores va contra las",
+                                           "normas y estabas avisado."])
                         auxiliar.expulsa(mensaje, "1", word)
                     else:
                         _NUM_ABUSOS_COLORES.append(host)
-                        parte1 = "msg {0} ".format(word[2])
-                        parte2 = "{0}: no uses ".format(word[0][1:].split("!"))
-                        parte3 = "colores/negrillas/subrayado en este canal, "
-                        parte4 = "va contra las normas. La próxima vez serás "
-                        parte5 = "expulsado. Para desactivarlos escribe:  "
-                        parte6 = "/remote off"
-                        mensaje = "{0}{1}{2}{3}{4}{5}{6}".format(parte1, parte2,
-                                                                 parte3, parte4,
-                                                                 parte5, parte6)
+                        mensaje = "".join(["msg ", word[2], " ",
+                                           word[0][1:].split("!"), ": no uses",
+                                           " colores/negrillas/subrayado en",
+                                            " este canal, va contra las",
+                                            " normas. La próxima vez serás",
+                                            " expulsado. Para desactivarlos",
+                                            " escribe:  /remote off"])
                         xchat.command(mensaje)
     if auxiliar.lee_conf("protecciones", "ignora_colores") == "1":
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
@@ -206,13 +208,10 @@ def anti_colores_cb(word, word_eol, userdata):
                     cadena = cadena[7:]
                 if colores.search(cadena):
                     ignorar = True
-    if ignorar == True:
-        parte1 = "Mensaje de {0} ignorado ".format(word[0][1:].split("!")[0])
-        parte2 = "por uso de colores."
-        mensaje = "{0}{1}".format(parte1, parte2)
-        auxiliar.gprint(mensaje)
+    if ignorar is True:
+        auxiliar.gprint("".join(["Mensaje de ", word[0][1:].split("!")[0],
+                                 "ignorado por uso de colores."]))
         return xchat.EAT_ALL
-        
     else:
         return xchat.EAT_NONE
 
@@ -225,6 +224,7 @@ def anti_colores_cb(word, word_eol, userdata):
 #    userdata -- variable opcional que se puede enviar a un hook (ignorado)
 #    """
 #    return xchat.EAT_NONE
+
 
 def anti_drone_cb(word, word_eol, userdata):
     """Detecta nicks que entran al canal con nick/indent que concuerde con los
@@ -244,12 +244,11 @@ def anti_drone_cb(word, word_eol, userdata):
             canal = word[2][1:]
             contexto = xchat.find_context(channel=canal)
             host = word[0].split("@")[1]
-            comando = "ban *!*@{0}".format(host)
-            contexto.command(comando)
-            comando = "kick {0} Bot".format(nick)
-            contexto.command(comando)
+            contexto.command("".join(["ban *!*@", host]))
+            contexto.command("".join(["kick ", nick, " Bot"]))
     return xchat.EAT_NONE
-    
+
+
 def anti_away_cb(word, word_eol, userdata):
     """Detecta mensajes de ausencia en el canal y expulsa al usuario
     Argumentos:
@@ -260,13 +259,13 @@ def anti_away_cb(word, word_eol, userdata):
     if auxiliar.lee_conf("protecciones", "away") == "1":
         for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
             if canal.lower() == word[2].lower():
-                awaystr = auxiliar.lee_conf("protecciones", "awaystr").split(",")
+                awaystr = auxiliar.lee_conf("protecciones",
+                                            "awaystr").split(",")
                 for i in range(len(awaystr)):
                     if word_eol[3].find(awaystr[i]) > 0:
                         ban = "1"
-                        parte1 = " Quita los mensajes de away automaticos, "
-                        parte2 = "si no estas callate"
-                        mensaje = "{0}{1}".format(parte1, parte2) 
+                        mensaje = "".join([" Quita los mensajes de away ",
+                                           "automáticos, si no estás callate"])
                         auxiliar.expulsa(mensaje, ban, word)
     return xchat.EAT_NONE
 
@@ -318,7 +317,8 @@ HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 HOOKANTIHOYGAN = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
-HOOKANTIMAYUSCULAS = xchat.hook_server('PRIVMSG', anti_mayusculas_cb, userdata=None)
+HOOKANTIMAYUSCULAS = xchat.hook_server('PRIVMSG', anti_mayusculas_cb,
+                                       userdata=None)
 HOOKANTICOLORES = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
 HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 # Descargamos el modulo
@@ -329,10 +329,27 @@ HOOKUNLOAD = xchat.hook_unload(unload_cb)
 # Añadimos las opciones del menu
 #############################################################################
 xchat.command('menu ADD "GatoScript/Opciones/Protecciones"')
-xchat.command('menu -t0 ADD "GatoScript/Opciones/Protecciones/Away" "opciones protecciones away 1" "opciones protecciones media 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Ban" "opciones protecciones ban 1" "opciones protecciones ban 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Colores" "opciones protecciones colores 1" "opciones protecciones colores 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/CTCPs" "opciones protecciones ctcps 1" "opciones protecciones ctcps 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Mayusculas" "opciones protecciones mayusculas 1" "opciones protecciones mayusculas 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/HOYGAN" "opciones protecciones hoygan 1" "opciones protecciones hoygan 0"')
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam" "opciones protecciones spam 1" "opciones protecciones spam 0"')
+xchat.command("".join(['menu -t0 ADD "GatoScript/Opciones/Protecciones/Away"',
+                       '"opciones protecciones away 1"',
+                       ' "opciones protecciones away 0"']))
+xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/Ban"',
+                       ' "opciones protecciones ban 1"',
+                       ' "opciones protecciones ban 0"']))
+xchat.command("".join(['menu -t1 ADD',
+                       ' "GatoScript/Opciones/Protecciones/Colores"',
+                       ' "opciones protecciones colores 1"',
+                       ' "opciones protecciones colores 0"']))
+xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/CTCPs"',
+                       ' "opciones protecciones ctcps 1"',
+                       ' "opciones protecciones ctcps 0"']))
+xchat.command("".join(['menu -t1 ADD',
+                       ' "GatoScript/Opciones/Protecciones/Mayusculas"',
+                       ' "opciones protecciones mayusculas 1"',
+                       ' "opciones protecciones mayusculas 0"']))
+xchat.command("".join(['menu -t1 ADD',
+                       ' "GatoScript/Opciones/Protecciones/HOYGAN"',
+                       ' "opciones protecciones hoygan 1"',
+                       ' "opciones protecciones hoygan 0"']))
+xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam"',
+                       ' "opciones protecciones spam 1"',
+                       ' "opciones protecciones spam 0"']))
