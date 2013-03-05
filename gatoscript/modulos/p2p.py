@@ -98,6 +98,7 @@ def amule_cb(word, word_eol, userdata):
         auxiliar.gprint("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
 
+
 def azureus_cb(word, word_eol, userdata):
     """Lee el archivo Azureus_Stats.xml (estadisticas) de azureus y muestra
     parte de la informacion en el canal activo.
@@ -124,6 +125,7 @@ def azureus_cb(word, word_eol, userdata):
         parte2 = "compruebe su configuracion de Azureus."
         auxiliar.gprint("{0}{1}".format(parte1, parte2))
     return xchat.EAT_ALL
+
 
 def transmission_cb(word, word_eol, userdata):
     """Lee el archivo stats.benc (estadisticas) de Transmission y muestra parte
@@ -164,7 +166,7 @@ def transmission_cb(word, word_eol, userdata):
         parte3 = "Transmission."
         auxiliar.gprint("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
-    
+
 
 #############################################################################
 # Definimos la funcion para la descarga del programa
