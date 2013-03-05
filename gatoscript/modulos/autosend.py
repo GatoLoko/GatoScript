@@ -66,64 +66,54 @@ if auxiliar.lee_conf("autosend", "activo") == "1":
 #############################################################################
 #def ejemplo_interno():
 #    """Ejemplo de funcion"""
-#    # Comentario 
+#    # Comentario
 #    auxiliar.gprint("Esta funcion solo se utiliza dentro de este modulo")
 
 
 #############################################################################
 # Definimos las funciones de uso publico en el modulo
 #############################################################################
-def torrent_cb(word, word_eol, userdata):
-#    """Docstring incompleta
-#    Argumentos:
-#    Recibimos los 3 argumentos que utiliza xchat, aunque no los queramos
-#    word     -- array de palabras que envia xchat a cada hook
-#    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-#    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-#    """
-#>> :Anti_Bots!GatoBot@CUhvdB.DnL1wf.virtual PRIVMSG #gatoscript :!torrent
-    protegidos = []
-    for i in CURSOR.execute("SELECT canales FROM canales"):
-        protegidos.append(i[0])
-    if ACTIVO == True:
-        #Definimos la expresion regular que actuara como disparador
-        texto = auxiliar.lee_conf("autosend", "disparador")
-        disparador = re.compile("^{0}".format(texto), re.IGNORECASE)
-        if word[2] in protegidos:
-            if disparador.search(word[3][1:]):
-                partes = word_eol[3].split()
-                if len(partes) == 1:
-                    lista = listdir(ALMACEN)
-                    if len(lista) == 0:
-                        xchat.command("say No hay archivos disponibles")
-                    elif len(lista) > 0:
-                        archivos = ""
-                        for archivo in lista:
-                            archivos += "{0} ".format(archivo)
-                        parte1 = "say Tengo los siguietnes "
-                        parte2 = "archivos: {0}".format(archivos)
-                        mensaje = "{0}{1}".format(parte1, parte2)
-                        xchat.command(mensaje)
-                        parte1 = "say Para pedir uno "
-                        parte2 = "pon: {0} archivo".format(texto)
-                elif len(partes) == 2:
-                    lista = listdir(ALMACEN)
-                    if partes[1] in lista:
-                        parte1 = "dcc send "
-                        parte2 = "{0} {1}/{2}".format(word[0][1:].split("!")[0],
-                                                      ALMACEN, partes[1])
-                        envio = "{0}{1}".format(parte1, parte2)
-                        xchat.command(envio)
-                    else:
-                        xchat.command("say No tengo archivos con ese nombre")
-                elif len(partes) > 2:
-                    xchat.command("say ¡No seas abuson!¡Un archivo cada vez!")
+def autosend_cb(word, word_eol, userdata):
+    """This function manages the automatic response to users asking for files
+    Arguments:
+    We get the 3 arguments the client feeds us, but ignore the third one
+    word     -- array of words
+    word_eol -- array of strings
+    userdata -- optional variable that we don't have an use for (ignorado)
+    """
+#>> :Anti_Bots!GatoBot@CUhvdB.DnL1wf.virtual PRIVMSG #gatoscript :!archivos
+    if ACTIVO is True and word[2].lower() in CANALES and \
+    DISPARADOR.search(word[3][1:]):
+        partes = word_eol[3].split()
+        if len(partes) == 1:
+            lista = listdir(ALMACEN)
+            if len(lista) == 0:
+                xchat.command("say No hay archivos disponibles")
+            elif len(lista) > 0:
+                archivos = ""
+                for archivo in lista:
+                    archivos += "".join([archivo, " "])
+                mensaje = ''.join(["say Tengo los siguientes archivos: ",
+                                   archivos])
+                xchat.command(mensaje)
+                mensaje = ''.join(["say Para pedir uno pon: ", TEXTO,
+                                   " archivo"])
+                xchat.command(mensaje)
+        elif len(partes) == 2:
+            lista = listdir(ALMACEN)
+            if partes[1] in lista:
+                envio = "".join(["dcc send ", word[0][1:].split("!")[0],
+                                 ALMACEN, "/", partes])
+                xchat.command(envio)
+            else:
+                xchat.command("say No tengo archivos con ese nombre")
+        elif len(partes) > 2:
+            xchat.command("say ¡No seas abuson!¡Un archivo cada vez!")
     return xchat.EAT_NONE
-    
 
 
 #############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo 
+# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
 #############################################################################
 #def ayuda():
 #    """Muestra la ayuda de las funciones de AutoSend para GatoScript"""
@@ -146,8 +136,6 @@ def unload_cb(userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     # Desconectamos las funciones del modulo
-    xchat.unhook(HOOKTORRENT)
-    # Descargamos el 
     xchat.unhook(HOOKAUTOSEND)
 
 
@@ -155,6 +143,4 @@ def unload_cb(userdata):
 # Conectamos los "lanzadores" de xchat con las funciones que hemos definido
 # para ellos
 #############################################################################
-HOOKTORRENT = xchat.hook_server('PRIVMSG', torrent_cb, userdata=None)
-# Descarga del modulo
-HOOKAUTOSEND = xchat.hook_unload(unload_cb)
+HOOKAUTOSEND = xchat.hook_server('PRIVMSG', autosend_cb, userdata=None)
