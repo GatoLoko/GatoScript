@@ -39,6 +39,8 @@ from subprocess import Popen, PIPE
 import re
 # Importamos el modulo platform para sacar informacion del sistema
 import platform
+# Importamos el modulo datetime para obtener la fecha y hora
+import datetime
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 
@@ -174,16 +176,11 @@ def fecha_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    fecha = Popen("date", shell=True, stdout=PIPE, stderr=PIPE)
-    error = fecha.stderr.readlines()
-    if len(error) > 0:
-        for i in range(len(error)):
-            auxiliar.gprint(error[i])
-    else:
-        fecha2 = fecha.stdout.readlines()
-        xchat.command("say {0}".format(fecha2[0][:-1]))
-    del fecha, fecha2, error
+    fecha = datetime.datetime.now()
+    xchat.command(fecha.strftime("say Son las %H:%M del %A %d de %B de %Y"))
+    del fecha
     return xchat.EAT_ALL
+
 
 def pc_cb(word, word_eol, userdata):
     """Muestra en el canal activo, informacion sobre el pc.
