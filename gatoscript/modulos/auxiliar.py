@@ -242,11 +242,16 @@ def gato_info_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
+    if "hexchat" in xchat.get_info("xchatdir"):
+        cliente = "HexChat"
+    else:
+        cliente = "X-Chat"
     version = xchat.get_info("version")
-    parte1 = "say (X-Chat) {0} - ".format(version)
-    parte2 = "( Script ) GatoScript {0}, ".format(__module_version__)
-    parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org)"
-    xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
+    comando = ''.join(["say ( {0} ) {1}".format(cliente, version),
+        " ( Script ) GatoScript {0},".format(__module_version__),
+        " script en python para X-Chat/HexChat",
+        " (http://gatoloko.homelinux.org)"])
+    xchat.command(comando)
     return xchat.EAT_ALL
 
 
