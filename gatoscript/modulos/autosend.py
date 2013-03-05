@@ -32,8 +32,7 @@ __module_autor__ = "GatoLoko"
 import xchat
 import auxiliar
 import re
-from os import listdir, path
-import sqlite3
+from os import listdir
 
 #############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
@@ -123,7 +122,6 @@ def autosend_cb(word, word_eol, userdata):
 #    "    /ejemplo_publico: Muestra un mensaje de ejemplo",
 #    ""]
 #    return mensajes
-    
 
 
 #############################################################################
