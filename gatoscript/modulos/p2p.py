@@ -53,42 +53,16 @@ _TRANSMISSIONSTATSNEW = "{0}/.config/transmission/stats.json".format(_HOME)
 ##############################################################################
 ## Definimos las funciones de informacion y ayuda sobre el manejo del script
 ##############################################################################
-#def gato_cb(word, word_eol, userdata):
-    #"""Muestra la ayuda del GatoScript
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook
-    #word_eol -- array de cadenas que envia xchat a cada hook
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #info_param = len(word_eol)
-    #if info_param > 2:
-        #mensajes = [
-        #"",
-        #"Solo se puede usar un parametro cada vez",
-        #""]
-    #elif info_param < 2:
-        #mensajes = [
-        #"",
-        #"Añada uno de los siguientes parametros en funcion del tipo de ayuda que quiera",
-        #"    -d         Comandos para informacion de Descargas",
-        #"",
-        #"Por ejemplo: /gato -s",
-        #""]
-    #else:
-        #if word[1] == "-d":
-            #mensajes = [
-            #"",
-            #"Descargas",
-            #"    /amule:             Muestra la informacion de aMule",
-            #"    /azureus:           Muestra la informacion de Azureus",
-            #""]
-        #else:
-            #mensajes = [
-            #"",
-            #"Parametro no soportado",
-            #""]
-    #auxiliar.priv_imprime(mensajes)
-    #return xchat.EAT_ALL
+def ayuda_cb(word, word_eol, userdata):
+    """Muestra la ayuda de las funciones P2P"""
+    mensajes = [
+    "",
+    "P2P:",
+    "    /amule:             Muestra la informacion de aMule",
+    "    /azureus:           Muestra la informacion de Azureus",
+    "    /transmission:      Muestra la informacion de Azureus",
+    ""]
+    return mensajes
 
 
 ##############################################################################
