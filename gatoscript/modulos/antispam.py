@@ -52,11 +52,11 @@ if auxiliar.CONECTADO == 1:
     filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
     compilados = []
     for filtro in filtros:
-        compilados.append(re.compile(".*{0}.*".format(filtro[0]), re.IGNORECASE))
+        compilados.append(re.compile("".join([".*", filtro[0], ".*"]),
+                                     re.IGNORECASE))
 else:
-    parte1 = "AntiSpam esta desactivado o no se puede cargar la lista de "
-    parte2 = "filtros"
-    mensaje = "{0}{1}".format(parte1, parte2)
+    mensaje = ''.join(["AntiSpam esta desactivado o no se puede cargar la",
+        " lista de filtros"])
     auxiliar.gprint(mensaje)
     ANTISPAM = 0
     SPAMBOTS = 0
@@ -90,7 +90,7 @@ def antispam_reload():
         filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
         compilados = []
         for filtro in filtros:
-            compilados.append(re.compile(".*{0}.*".format(filtro[0]),
+            compilados.append(re.compile("".join([".*", filtro[0], ".*"]),
                                          re.IGNORECASE))
     else:
         mensaje = "No se pueden recargar los filtros, AntiSpam desactivado"
@@ -164,13 +164,13 @@ def antispam_add_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if auxiliar.CONECTADO == 1:
-        parte1 = 'INSERT INTO filtros ("id", "filtro", "creado", "usado"'
-        parte2 = ', "veces") VALUES (null, "{0}", date("now"), '.format(word[1])
-        parte3 = ' "1")'
-        sql = '{0}{1}{2}'.format(parte1, parte2, parte3)
+        sql = "".join(['INSERT INTO filtros ("id", "filtro", "creado",',
+                       '"usado", "veces") VALUES (null, "', word[1],
+                       '", date("now"), date("now"), "1")'])
+        print(sql)
         auxiliar.gatodb_cursor_execute(sql)
         auxiliar.gatodb_commit()
-        mensaje = "Se ha añadido '{0}' a la lista de filtros".format(word[1])
+        mensaje = "".join(["Se ha añadido ", word[1], "a la lista de filtros"])
         auxiliar.priv_linea(mensaje)
         del mensaje
         antispam_reload()
@@ -189,13 +189,12 @@ def antispam_del_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if auxiliar.CONECTADO == 1:
-        sql = "DELETE FROM filtros WHERE filtro='{0}'".format(word_eol[1])
+        sql = "".join(["DELETE FROM filtros WHERE filtro='", word_eol[1], "'"])
         auxiliar.gatodb_cursor_execute(sql)
-        auxiliar.gatodb_commit()        
-        parte1 = "Se ha eliminado '{0}' ".format(word_eol[1])
-        parte2 = "de la lista de filtros"
-        auxiliar.priv_linea("{0}{1}".format(parte1, parte2))
-        del mensaje
+        auxiliar.gatodb_commit()
+        mensaje = "".join(["Se ha eliminado ", word_eol[1], "de la lista de",
+                           " filtros"])
+        auxiliar.priv_linea(mensaje)
         antispam_reload()
     else:
         auxiliar.gprint("Active el sistema AntiSpam antes de añadir filtros")
@@ -212,7 +211,7 @@ def antispam_list_cb(word, word_eol, userdata):
     """
     sql = "SELECT id, filtro FROM filtros"
     for filtro in auxiliar.gatodb_cursor_execute(sql):
-        mensaje = u"Filtro {0}: {1}".format(filtro[0], filtro[1])
+        mensaje = u"".join(["Filtro ", str(filtro[0]), ": ", filtro[1]])
         auxiliar.priv_linea(mensaje)
     del mensaje
     return xchat.EAT_ALL
@@ -231,15 +230,14 @@ def testspam_cb(word, word_eol, userdata):
         if usuario.nick not in goodboys:
             #print usuario.nick
             contexto = xchat.find_context(channel=usuario.nick)
-            if contexto == None:
-                xchat.command("query -nofocus {0}".format(usuario.nick))
+            if contexto is None:
+                xchat.command("".join(["query -nofocus ", usuario.nick]))
                 contexto = xchat.find_context(channel=usuario.nick)
-            botmensaje = auxiliar.lee_conf("protecciones", botmensaje)
-            contexto.command("say {0}".format(botmensaje))
+            botmensaje = auxiliar.lee_conf("protecciones", "botmensaje")
+            contexto.command("".join(["say ", botmensaje]))
             contexto.command("close")
-            parte1 = "INSERT INTO goodboys VALUES (NULL, "
-            parte2 = "'{0}')".format(usuario.nick)
-            sql = "{0}{1}".format(parte1, parte2)
+            sql = "".join(["INSET INTO goodboys VALUES (NULL, '", usuario.nick,
+                           "')"])
             auxiliar.gatodb_cursor_execute(sql)
     auxiliar.gatodb_commit()
     contexto_orig.set()
@@ -247,7 +245,7 @@ def testspam_cb(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo 
+# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
 #############################################################################
 def ayuda():
     """Muestra la ayuda de las funciones antispam para GatoScript"""
@@ -278,8 +276,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKANTILIST)
     xchat.unhook(HOOKANTIDEL)
     xchat.unhook(HOOKTEST)
-    # Descargamos el 
-    xchat.unhook(HOOKUNLOAD)
 
 
 #############################################################################
@@ -288,14 +284,12 @@ def unload_cb(userdata):
 #############################################################################
 
 # Antispam
-HOOKANTISPAM = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None, \
+HOOKANTISPAM = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None,
                                  priority=5)
 HOOKANTIADD = xchat.hook_command('antiadd', antispam_add_cb)
 HOOKANTILIST = xchat.hook_command('antilist', antispam_list_cb)
 HOOKANTIDEL = xchat.hook_command('antidel', antispam_del_cb)
 HOOKTEST = xchat.hook_command('test2', testspam_cb)
-# Descarga del modulo
-HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
