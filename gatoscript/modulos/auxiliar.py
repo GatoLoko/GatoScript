@@ -128,7 +128,7 @@ def gprint(mensaje):
     Argumentos:
     mensaje -- cadena con el mensaje a mostrar
     """
-    g_mensaje = "GatoScript >> {0}".format(mensaje)
+    g_mensaje = "".join(["GatoScript >> ", mensaje])
     print(g_mensaje)
     return ""
 
@@ -159,7 +159,6 @@ def priv_linea(mensaje):
     if contexto is None:
         xchat.command("query -nofocus GatoScript")
         contexto = xchat.find_context(channel="GatoScript")
-    #contexto.prnt(mensaje)
     contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
 
@@ -177,10 +176,10 @@ def expulsa(mensaje, ban, word):
             ban = lee_conf("protecciones", "ban")
         if ban == "1":
             host = word[0][1:].split("@")[-1]
-            comando = "ban *!*@{0}".format(host)
+            comando = "".join(["ban *!*@", host])
             xchat.command(comando)
         partes = word[0][1:].split("!")
-        comando = "kick {0}{1}".format(partes[0], mensaje)
+        comando = "".join(["kick ", partes[0], mensaje])
         xchat.command(comando)
 
 
@@ -220,7 +219,7 @@ def opciones_cb(word, word_eol, userdata):
         for seccion in _CP.sections():
             priv_linea(seccion)
             for opcion in _CP.options(seccion):
-                mensaje = " {0}={1}".format(opcion, _CP.get(seccion, opcion))
+                mensaje = "".join([" ", opcion, "=", _CP.get(seccion, opcion)])
                 priv_linea(mensaje)
         priv_linea("")
     elif info_param == 2:
@@ -264,10 +263,11 @@ def kbtemporal_cb(word, word_eol, userdata):
     """
     if (len(word_eol) > 2):
         xchat.command("ban {0}!*@*".format(word[1]))
-        parte1 = "kick {0} ".format(word[1])
-        parte2 = "Expulsado 5 minutos ({0})".format(word_eol[2])
-        xchat.command("{0}{1}".format(parte1, parte2))
-        xchat.command("timer -repeat 1 300 unban {0}!*@*".format(word[1]))
+        comando = "".join(["kick ", word[1], " Expulsado 5 minutos (",
+            word_eol[2], ")"])
+        xchat.command(comando)
+        comando = "".join(["timer -repeat 1 300 unban ", word[1], "!*@*"])
+        xchat.command(comando)
     elif (len(word_eol) > 1):
         xchat.command("ban {0}!*@*".format(word[1]))
         xchat.command("kick {0} Expulsado 5 minutos".format(word[1]))
