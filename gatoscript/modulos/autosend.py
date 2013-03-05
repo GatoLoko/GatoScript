@@ -41,24 +41,24 @@ import sqlite3
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
-_GATODB_PATH = "{0}gatoscript.db".format(_GATODIR)
+_GATODIR = "".join([_SCRIPTDIR, "/gatoscript/"])
+_GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
+_SQL = "SELECT canales FROM canales"
 
 #############################################################################
 # Inicializamos el modulo
 #############################################################################
 if auxiliar.lee_conf("autosend", "activo") == "1":
     ACTIVO = True
-    ALMACEN = "{0}{1}".format(_GATODIR,
-                              auxiliar.lee_conf("autosend", "directorio"))
-
-# Conectamos a la base de datos
-if path.exists(_GATODB_PATH):
-    CONEXIONDB = sqlite3.connect(_GATODB_PATH)
-    CURSOR = CONEXIONDB.cursor()
-    _CONECTADO = 1
-else:
-    _CONECTADO = 0
+    ALMACEN = "".join([_GATODIR, auxiliar.lee_conf("autosend", "directorio")])
+    TEXTO = auxiliar.lee_conf("autosend", "disparador")
+    DISPARADOR = re.compile("".join(["^", TEXTO]), re.IGNORECASE)
+    if auxiliar.CONECTADO == 1:
+        CANALES = []
+        for canal in auxiliar.gatodb_cursor_execute(_SQL):
+            CANALES.append(canal[0].lower())
+    else:
+        ACTIVO = False
 
 
 #############################################################################
