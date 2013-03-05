@@ -103,6 +103,10 @@ def escribe_conf(seccion, opcion, valor):
 
 
 def gatodb_cursor_execute(sql):
+    """Executes an sql statement over the database.
+    Arguments:
+    sql -- sql statement to be executed
+    """
     try:
         resultado = _CURSOR.execute(sql)
         return resultado
@@ -113,6 +117,7 @@ def gatodb_cursor_execute(sql):
 
 
 def gatodb_commit():
+    """ Commits any pending changes to the database."""
     _CONEXIONDB.commit()
 
 
