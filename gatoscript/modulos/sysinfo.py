@@ -267,7 +267,7 @@ def graficos_cb(word, word_eol, userdata):
     else:
         resolucion = datos.stdout.readlines()[0].split(":    ")[1][:-1]
     xchat.command("".join(["say [ Graficos ] Dispositivo: ", grafica, "  - ",
-                           "Resolucion: ", resolucion,]))
+                           "Resolucion: ", resolucion]))
     return xchat.EAT_ALL
 
 
