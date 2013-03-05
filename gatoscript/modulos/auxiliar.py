@@ -309,8 +309,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKGINFO)
     # KickBan Temporal
     xchat.unhook(HOOKKBTEMP)
-    # Descarga
-    xchat.unhook(HOOKAUXILIAR)
 
 
 #############################################################################
@@ -329,8 +327,7 @@ uso = "".join(["Uso: KB_TEMP <nick> <mensaje_opcional>, banea y expulsa al",
     " mensaje, se usa como razon de la expulsion. (Necesita ser operador del",
     " canal)"])
 HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help=uso)
-# Descarga del script
-HOOKAUXILIAR = xchat.hook_unload(unload_cb)
+
 
 #############################################################################
 # Añadimos las opciones del menu
