@@ -216,16 +216,6 @@ def anti_colores_cb(word, word_eol, userdata):
         return xchat.EAT_NONE
 
 
-#def proteccion_cb(word, word_eol, userdata):
-#    """Detecta el envio de SPAM a canales y expulsa al autor
-#    Argumentos:
-#    word     -- array de palabras que envia xchat a cada hook
-#    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-#    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-#    """
-#    return xchat.EAT_NONE
-
-
 def anti_drone_cb(word, word_eol, userdata):
     """Detecta nicks que entran al canal con nick/indent que concuerde con los
     de un Drone y los banea para evitar el expulsa para evitar el SPAM.
@@ -294,7 +284,6 @@ def unload_cb(userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     # Desconectamos las funciones de proteccion
-    #xchat.unhook(HOOKPROTECCION)
     xchat.unhook(HOOKANTINOTICE)
     xchat.unhook(HOOKANTIDRONE)
     xchat.unhook(HOOKANTICTCP)
@@ -302,8 +291,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKANTIMAYUSCULAS)
     xchat.unhook(HOOKANTICOLORES)
     xchat.unhook(HOOKANTIAWAY)
-    # Descargamos el
-    xchat.unhook(HOOKUNLOAD)
 
 
 ##############################################################################
@@ -312,7 +299,6 @@ def unload_cb(userdata):
 ##############################################################################
 
 # Protecciones
-#HOOKPROTECCION = xchat.hook_server('PRIVMSG', proteccion_cb, userdata=None, priority=10)
 HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
@@ -321,8 +307,6 @@ HOOKANTIMAYUSCULAS = xchat.hook_server('PRIVMSG', anti_mayusculas_cb,
                                        userdata=None)
 HOOKANTICOLORES = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
 HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
-# Descargamos el modulo
-HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
