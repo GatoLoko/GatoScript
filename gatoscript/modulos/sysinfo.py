@@ -79,9 +79,9 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(uptime / 3600)
         resto_horas = int(uptime % 3600)
         minutos = int(resto_horas / 60)
-        parte1 = "say Uptime: {0} horas ".format(horas)
-        parte2 = "y {0} minutos".format(minutos)
-        xchat.command("{0}{1}".format(parte1, parte2))
+        comando = "".join(["say Uptime: ", str(horas), " horas y ",
+            str(minutos), "minutos"])
+        xchat.command(comando)
     else:
         if dias > 1:
             cadena_dias = "dias"
@@ -90,10 +90,11 @@ def uptime_cb(word, word_eol, userdata):
         horas = int(resto_dias / 3600)
         resto_horas = int(resto_dias % 3600)
         minutos = int(resto_horas / 60)
-        parte1 = "say Uptime: {0} {1}, ".format(dias, cadena_dias)
-        parte2 = "{0} horas y {1} minutos".format(horas, minutos)
-        xchat.command("{0}{1}".format(parte1, parte2))
+        comando = "".join(["say Uptime: ", str(dias), " ", cadena_dias, ", ",
+            str(horas), " horas y ", str(minutos), " minutos"])
+        xchat.command(comando)
     return xchat.EAT_ALL
+
 
 def sistema_cb(word, word_eol, userdata):
     """Muestra en el canal activo informacion sobre el sistema operativo que
@@ -105,29 +106,28 @@ def sistema_cb(word, word_eol, userdata):
     """
     datos = platform.linux_distribution()
     distro = datos[0]
-    version = datos[1]
-    codigo = datos[2]
-    kernel = platform.uname()[2]
-    parte1 = "say [ Sistema ] Distribucion: {0}  - ".format(distro)
-    parte2 = "Version: {0} {1}  - Kernel: {2}".format(version, codigo, kernel)
-    xchat.command("{0}{1}".format(parte1, parte2))
+    version = " ".join(datos[1:3])
+    kernel = " ".join([platform.system(), platform.release()])
+    comando = "".join(["say [ Systema ] Distribucion: ", distro,
+        "  - Version: ", version, "  - Kernel: ", kernel])
+    xchat.command(comando)
     return xchat.EAT_ALL
+
 
 def software_cb(word, word_eol, userdata):
     """Muestra en el canal activo informacion sobre las versiones de KERNEL,
     LIBC, X11 y GCC.
-    
+
     Argumentos:
     word     -- array de palabras que envia xchat a cada hook (ignorado)
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     partes = platform.uname()
-    sistema = "{0} {1}".format(partes[0], partes[2])
-    partes = platform.libc_ver()
-    libc = "{0} {1}".format(partes[0], partes[1])
-    xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE, \
-                     stderr=PIPE)
+    sistema = " ".join([partes[0], partes[2]])
+    libc = " ".join(platform.libc_ver()[0:2])
+    xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE,
+         stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
@@ -135,8 +135,8 @@ def software_cb(word, word_eol, userdata):
         x11 = "Indeterminable"
     else:
         servidor = xdpyinfo.stdout.readlines()[0].split()[-1]
-    xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True, \
-                     stdout=PIPE, stderr=PIPE)
+    xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True,
+         stdout=PIPE, stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
@@ -145,7 +145,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = "{0} {1}".format(xversion, servidor)
+        x11 = "".join([xversion, " ", servidor])
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
     if len(error) > 0:
@@ -159,12 +159,13 @@ def software_cb(word, word_eol, userdata):
         else:
             partes = salida[0].split()
             gcc = partes[-1]
-    parte1 = "say [ Software ] Kernel: {0}  - ".format(sistema)
-    parte2 = "LIBC: {0}  - X11: {1}  - GCC: {2}".format(libc, x11, gcc)
-    xchat.command("{0}{1}".format(parte1, parte2))
+    comando = "".join(["say [ Software ] Kernel: ", sistema, "  - LIBC: ",
+        libc, "  - X11: ", x11, "  - GCC: ", gcc])
+    xchat.command(comando)
     del partes, sistema, libc, xdpyinfo, gcc, salida, error, x_version
     del xversion, x11
     return xchat.EAT_ALL
+
 
 def fecha_cb(word, word_eol, userdata):
     """Muestra en el canal activo la fecha actual.
@@ -217,13 +218,12 @@ def pc_cb(word, word_eol, userdata):
     usada = int(freemem) + int(bufmem) + int(cachemem)
     libre = int(memoria) - usada
     # Mensaje
-    parte1 = "[Informacion del PC] CPU: {0}  - ".format(cpu)
-    parte2 = "Velocidad: {0}MHz  - ".format(velocidad)
-    parte3 = "Memoria instalada: {0}{1}  - ".format(memoria, unidad)
-    parte4 = "Memoria usada: {0}{1}".format(str(libre), unidad)
-    mensaje = "{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4)
-    xchat.command("say {0}".format(mensaje))
+    comando = "".join(["say [ Informacion del PC ] CPU: ", cpu,
+        "  - Velocidad: ", velocidad, "MHz  - Memoria instalada: ",
+        str(memoria), unidad, "  - Memoria usada: ", str(libre), unidad])
+    xchat.command(comando)
     return xchat.EAT_ALL
+
 
 def red_cb(word, word_eol, userdata):
     """Muestra en el canal activo, informacion sobre la red.
@@ -233,20 +233,19 @@ def red_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     red = re.compile('eth|ath|wlan|ra([0-9]):')
-    hostname = file("/etc/hostname").readline().split("\n")[0]
+    hostname = platform.node()
     for linea in file("/proc/net/dev"):
         if red.search(linea):
             dispositivo = linea.split(":")[0].split()[-1]
             partes = linea[:-1].split(":")[1].split()
             recibido = auxiliar.unidades(int(partes[0]), 1024)
             enviado = auxiliar.unidades(int(partes[8]), 1024)
-            parte1 = "[ Red ] Hostname: {0}  - ".format(hostname)
-            parte2 = "Dispositivo: {0}  - ".format(dispositivo)
-            parte3 = "Recibidos: {0}  - ".format(recibido)
-            parte4 = "Enviados: {0}".format(enviado)
-            mensaje = "{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4)
-            xchat.command("say {0}".format(mensaje))
+            comando = "".join(["say [ Red ] Hostname: ", hostname,
+                "  - Dispositivo: ", dispositivo, "  - Recibidos: ", recibido,
+                "  - Enviado: ", enviado])
+            xchat.command(comando)
     return xchat.EAT_ALL
+
 
 def graficos_cb(word, word_eol, userdata):
     """Muestra en el canal activo, informacion sobre la interfaz grafica.
@@ -262,18 +261,18 @@ def graficos_cb(word, word_eol, userdata):
         grafica = "No se pudo determinar el modelo"
     else:
         grafica = datos.stdout.readlines()[0].split(": ")[1][:-1]
-    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE, \
-                  stderr=PIPE)
+    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE,
+        stderr=PIPE)
     error = datos.stderr.readlines()
     if len(error) > 0:
         auxiliar.gprint(error)
         resolucion = "No se pudo determinar el modelo"
     else:
         resolucion = datos.stdout.readlines()[0].split(":    ")[1][:-1]
-    parte1 = "say [ Graficos ] Dispositivo: {0}  - ".format(grafica)
-    parte2 = "Resolucion: {0}  - ".format(resolucion)
-    xchat.command("{0}{1}".format(parte1, parte2))
+    xchat.command("".join(["say [ Graficos ] Dispositivo: ", grafica, "  - ",
+                           "Resolucion: ", resolucion,]))
     return xchat.EAT_ALL
+
 
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script
