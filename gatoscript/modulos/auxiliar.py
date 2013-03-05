@@ -59,6 +59,7 @@ if path.exists(_GATODB_PATH):
 else:
     CONECTADO = 0
 
+
 #############################################################################
 # Definimos las funciones de uso interno en el GatoScript
 #############################################################################
@@ -70,6 +71,7 @@ def scriptdirs():
     modules = path.join(script, "modulos")
     media = path.join(modules, "players")
     return base, script, modules, media
+
 
 # Configuracion
 def lee_conf(seccion, opcion):
@@ -83,6 +85,7 @@ def lee_conf(seccion, opcion):
         seccion = "comun"
     _CP.read(_CONFIGFILE)
     return _CP.get(seccion, opcion)
+
 
 def escribe_conf(seccion, opcion, valor):
     """Guarda una opcion en el archivo de configuracion.
@@ -98,6 +101,7 @@ def escribe_conf(seccion, opcion, valor):
     _CP.set(seccion, opcion, valor)
     _CP.write(file(_CONFIGFILE, "w"))
 
+
 def gatodb_cursor_execute(sql):
     try:
         resultado = _CURSOR.execute(sql)
@@ -107,8 +111,10 @@ def gatodb_cursor_execute(sql):
         gprint(mensaje)
         return None
 
+
 def gatodb_commit():
     _CONEXIONDB.commit()
+
 
 # Mostrar mensajes
 def gprint(mensaje):
@@ -121,6 +127,7 @@ def gprint(mensaje):
     print(g_mensaje)
     return ""
 
+
 def priv_imprime(mensajes):
     """Escribe una o mas lineas en la pestaña "GatoScript". Util para mostrar
     mensajes largos sin que se pierdan entre los recibidos en los canales,
@@ -129,12 +136,13 @@ def priv_imprime(mensajes):
     mensajes -- array de cadenas
     """
     contexto = xchat.find_context(channel="GatoScript")
-    if contexto == None:
+    if contexto is None:
         xchat.command("query -nofocus GatoScript")
         contexto = xchat.find_context(channel="GatoScript")
     for mensaje in mensajes:
         contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
+
 
 def priv_linea(mensaje):
     """Escribe una linea en la pestaña "GatoScript". Util para mostrar mensajes
@@ -143,12 +151,13 @@ def priv_linea(mensaje):
     mensaje -- cadena con el mensaje
     """
     contexto = xchat.find_context(channel="GatoScript")
-    if contexto == None:
+    if contexto is None:
         xchat.command("query -nofocus GatoScript")
         contexto = xchat.find_context(channel="GatoScript")
     #contexto.prnt(mensaje)
     contexto.emit_print("Private Message", "GatoScript", mensaje)
     return ""
+
 
 #Expulsion
 def expulsa(mensaje, ban, word):
@@ -169,6 +178,7 @@ def expulsa(mensaje, ban, word):
         comando = "kick {0}{1}".format(partes[0], mensaje)
         xchat.command(comando)
 
+
 #Conversion de unidades
 def unidades(valor, base):
     """Convierte cantidades de bytes a alguno de sus multiplos
@@ -181,11 +191,12 @@ def unidades(valor, base):
         raise ValueError('los valores negativos no son validos')
     for sufijo in sufijos[base]:
         # Agregamos ".0" a la base para forzar el uso de decimales
-        valor /= base/1.0
+        valor /= base / 1.0
         if valor < 1024:
             # ".2f" limita los decimales mostrados a 2
             return '{0:.2f}{1}'.format(valor, sufijo)
     raise ValueError('numero demasiado grande')
+
 
 # Comandos
 def opciones_cb(word, word_eol, userdata):
@@ -218,6 +229,7 @@ def opciones_cb(word, word_eol, userdata):
         gprint("No mostramos nada")
     return xchat.EAT_ALL
 
+
 def gato_info_cb(word, word_eol, userdata):
     """Muestra la publicidad del GatoScript
     Argumentos:
@@ -231,6 +243,7 @@ def gato_info_cb(word, word_eol, userdata):
     parte3 = "script en python para X-Chat (http://gatoloko.homelinux.org)"
     xchat.command("{0}{1}{2}".format(parte1, parte2, parte3))
     return xchat.EAT_ALL
+
 
 def kbtemporal_cb(word, word_eol, userdata):
     """Expulsa de forma temporal a un usuario del canal activo (si somos OPs).
@@ -252,6 +265,7 @@ def kbtemporal_cb(word, word_eol, userdata):
     else:
         gprint("Hay que especificar un nick a patear")
     return xchat.EAT_ALL
+
 
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del modulo
@@ -299,7 +313,12 @@ HOOKOPCIONES = xchat.hook_command('opciones', opciones_cb)
 # Informacion del script
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 # KickBan Temporal
-HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help="Uso: KB_TEMP <nick> <mensaje_opcional> Establece un baneo temporal de 5 minutos sobre el nick indicado y lo expulsa. Si se introduce un mensaje se usa como razon de la expulsion. (Necesita ser operador del canal)")
+uso = "".join(["Uso: KB_TEMP <nick> <mensaje_opcional>, banea y expulsa al",
+    " nick indicado del canal actual. Luego establece una cuenta atras de 5",
+    " minutos, pasados los cuales se retira el baneo. Si se introduce un",
+    " mensaje, se usa como razon de la expulsion. (Necesita ser operador del",
+    " canal)"])
+HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help=uso)
 # Descarga del script
 HOOKAUXILIAR = xchat.hook_unload(unload_cb)
 
@@ -310,4 +329,3 @@ xchat.command('menu ADD "GatoScript/Informacion" "ginfo"')
 xchat.command('menu ADD "GatoScript/-"')
 xchat.command('menu ADD "GatoScript/Opciones"')
 xchat.command('menu ADD "GatoScript/Opciones/Python" "py console"')
-
