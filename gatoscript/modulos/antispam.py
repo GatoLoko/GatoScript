@@ -116,44 +116,42 @@ def antispam_cb(word, word_eol, userdata):
     global SPAMBOTS
     global ANTISPAM
     global CANALES
-    # Comprobamos si el antispam esta activado.
-    if ANTISPAM == 1:
-        #canales = auxiliar.gatodb_cursor_execute("SELECT canales FROM canales")
-        # Comprobamos si el mensaje se ha recibido en un canal protegido
-        if word[2] in CANALES:
-            for spam_exp in compilados:
-                if spam_exp.search(word_eol[3][1:]):
-                    ban = "1"
-                    mensaje = " Spam/Troll"
-                    auxiliar.expulsa(mensaje, ban, word)
-                    # Una vez expulsado el spammer, devolvemos el control a
-                    # X-Chat para que no se ejecute la comprobacion de privados
-                    # cuando el mensaje se ha recibido en un canal publico.
-                    return xchat.EAT_NONE
-    # Comprobamos si el antibots esta activado.
-    if SPAMBOTS == 1:
-        # Comprobamos si el mensaje se ha recibido en un privado
-        if word[2] == xchat.get_info("nick"):
-            # Si es asi, comprobamos si el mensaje contiene spam
-            for spam_exp in compilados:
-                if spam_exp.search(word_eol[3][1:]):
-                    # Si contiene spam, expulsamos al bot responsable
-                    ban = "1"
-                    mensaje = " Bot spammer"
-                    auxiliar.expulsa(mensaje, ban, word)
-                    # Quitamos el nick del spammer de la lista de niños buenos
-                    nick = word[0].split("!")[0].split(":")[1]
-                    sql = "SELECT goodboy FROM goodboys"
-                    if nick in auxiliar.gatodb_cursor_execute(sql):
-                        sql = "DELETE FROM goodboys WHERE goodboy IN (?)"
-                        auxiliar.gatodb_cursor_execute(sql, (nick,))
-                        auxiliar.gatodb_commit()
-                    # Y devolvemos el control a X-Chat tragandonos el mensaje
-                    return xchat.EAT_ALL
+    # Comprobamos si el mensaje se ha recibido en un canal protegido Y si lo
+    # esta comprobamos tambien que el antispam esta activado
+    if word[2] in CANALES and ANTISPAM == 1:
+        for spam_exp in compilados:
+            if spam_exp.search(word_eol[3][1:]):
+                ban = "1"
+                mensaje = " Spam/Troll"
+                auxiliar.expulsa(mensaje, ban, word)
+                # Una vez expulsado el spammer, devolvemos el control al
+                # cliente para que no se ejecute la comprobacion de privados
+                # cuando el mensaje se ha recibido en un canal publico.
+                return xchat.EAT_NONE
+    # Comprobamos si el mensaje se ha recibido en un privado Y si lo esta
+    # comprobamos tambien que el antibots esta activado
+    elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
+        # Si es asi, comprobamos si el mensaje contiene spam
+        for spam_exp in compilados:
+            if spam_exp.search(word_eol[3][1:]):
+                # Si contiene spam, expulsamos al bot responsable
+                ban = "1"
+                mensaje = " Bot spammer"
+                auxiliar.expulsa(mensaje, ban, word)
+                # Quitamos el nick del spammer de la lista de niños buenos
+                nick = word[0].split("!")[0].split(":")[1]
+                sql = "SELECT goodboy FROM goodboys"
+                if nick in auxiliar.gatodb_cursor_execute(sql):
+                    sql = "DELETE FROM goodboys WHERE goodboy IN (?)"
+                    auxiliar.gatodb_cursor_execute(sql, (nick,))
+                    auxiliar.gatodb_commit()
+                # Y devolvemos el control a X-Chat tragandonos el mensaje
+                return xchat.EAT_ALL
     # Si se ha llegado hasta aqui, es que estan desactivadas estas protecciones
     # o no hay spam o no esta en un canal protegido asi que volvemos a X-Chat
     # sin hacer nada.
-    return xchat.EAT_NONE
+    else:
+        return xchat.EAT_NONE
 
 
 def antispam_add_cb(word, word_eol, userdata):
