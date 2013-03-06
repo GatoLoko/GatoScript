@@ -182,8 +182,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKAMULE)
     xchat.unhook(HOOKAZUREUS)
     xchat.unhook(HOOKTRANSMISSION)
-    # Descarga
-    xchat.unhook(HOOKP2P)
 
 
 #############################################################################
@@ -194,8 +192,6 @@ def unload_cb(userdata):
 HOOKAMULE = xchat.hook_command('amule', amule_cb)
 HOOKAZUREUS = xchat.hook_command('azureus', azureus_cb)
 HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
-# Descarga del script
-HOOKP2P = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
