@@ -41,10 +41,11 @@ import xml.dom.minidom
 # opcionales.
 #############################################################################
 _HOME = path.expanduser("~")
-_AMULESIG = "{0}/.aMule/amulesig.dat".format(_HOME)
-_AZUREUSSTATS = "{0}/.azureus/Azureus_Stats.xml".format(_HOME)
-_TRANSMISSIONSTATSOLD = "{0}/.transmission/stats.benc".format(_HOME)
-_TRANSMISSIONSTATSNEW = "{0}/.config/transmission/stats.json".format(_HOME)
+_AMULESIG = "".join([_HOME, "/.aMule/amulesig.dat"])
+_AZUREUSSTATS = "".join([_HOME, "/.azureus/Azureus_Stats.xml"])
+_TRANSMISSIONSTATSOLD = "".join([_HOME, "/.transmission/stats.benc"])
+_TRANSMISSIONSTATSNEW = "".join([_HOME, "/.config/transmission/stats.json"])
+
 
 ##############################################################################
 # Inicializamos el modulo
@@ -85,13 +86,12 @@ def amule_cb(word, word_eol, userdata):
         else:
             vdescarga = (lineas_amule[6])[0:-1]
             vsubida = (lineas_amule[7])[0:-1]
-            total_descargado = auxiliar.unidades(int(lineas_amule[11]), 1024)
+            total_descarga = auxiliar.unidades(int(lineas_amule[11]), 1024)
             version = lineas_amule[13][0:-1]
-            parte1 = "say ( aMule {0} ) ".format(version)
-            parte2 = "Descarga: {0}KB/s - ".format(vdescarga)
-            parte3 = "Subida: {0}KB/s - ".format(vsubida)
-            parte4 = "Total descargado: {0}".format(total_descargado)
-            xchat.command("{0}{1}{2}{3}".format(parte1, parte2, parte3, parte4))
+            xchat.command("".join(["say ( aMule ", version, " )",
+                                   " Descarga: ", vdescarga, "KB/s -",
+                                   " Subida: ", vsubida, "KB/s -"
+                                   " Total descargado: ", total_descarga]))
     else:
         parte1 = "No existe el archivo {0}, compruebe que ".format(_AMULESIG)
         parte2 = "esté activada la firma online en la configuracion de aMule."
@@ -115,15 +115,12 @@ def azureus_cb(word, word_eol, userdata):
         vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
         subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
         vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        parte1 = "say ( Azureus ) Descarga: {0} - ".format(vdescarga)
-        parte2 = "Subida: {1}".format(vsubida)
-        mensaje = "{0}{1}".format(parte1, parte2)
-        xchat.command(mensaje)
+        xchat.command("".join(["say ( Azureus ) Descarga: ", vdescarga, " - ",
+                               "Subida: ", vsubida]))
         del descarga, vdescarga, subida, vsubida, glob, stats, dom1
     else:
-        parte1 = "No existe el archivo {0}, ".format(_AZUREUSSTATS)
-        parte2 = "compruebe su configuracion de Azureus."
-        auxiliar.gprint("{0}{1}".format(parte1, parte2))
+        auxiliar.gprint("".join(["No existe el archivo ", _AZUREUSSTATS, ",",
+                                 " compruebe su configuración de Azureus"]))
     return xchat.EAT_ALL
 
 
@@ -146,25 +143,20 @@ def transmission_cb(word, word_eol, userdata):
             parte.append(partes[i][textos[i][0]:-textos[i][1]])
         descargado = auxiliar.unidades(int(parte[0]), 1024)
         subido = auxiliar.unidades(int(parte[4]), 1024)
-        parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
-        parte2 = "Subido: {0}".format(subido)
-        comando = "{0}{1}".format(parte1, parte2)
-        xchat.command(comando)
+        xchat.command("".join(["say ( Transmission ) Descargado: ", descargado,
+                               " - Subido: ", subido]))
     elif path.exists(_TRANSMISSIONSTATSNEW):
         archivo = file(_TRANSMISSIONSTATSNEW, "r")
         lineas = archivo.readlines()
         archivo.close()
         descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]), 1024)
         subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]), 1024)
-        parte1 = "say ( Transmission ) Descargado: {0} - ".format(descargado)
-        parte2 = "Subido: {0}".format(subido)
-        comando = "{0}{1}".format(parte1, parte2)
-        xchat.command(comando)
+        xchat.command("".join(["say ( Transmission ) Descargado: ", descargado,
+                               " - Subido: ", subido]))
     else:
-        parte1 = "No existe el archivo de estadisticas en sus ubicaciones "
-        parte2 = "habituales. Por favor, compruebe su configuracion de "
-        parte3 = "Transmission."
-        auxiliar.gprint("{0}{1}{2}".format(parte1, parte2, parte3))
+        auxiliar.gprint("".join(["No existe el archivo de estadísticas en sus",
+                        " ubicaciones habituales. Por favor, compruebe su",
+                        " configuración de Transmission."]))
     return xchat.EAT_ALL
 
 
