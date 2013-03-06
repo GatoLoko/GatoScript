@@ -60,7 +60,7 @@ def ayuda_cb(word, word_eol, userdata):
     "P2P:",
     "    /amule:             Muestra la informacion de aMule",
     "    /azureus:           Muestra la informacion de Azureus",
-    "    /transmission:      Muestra la informacion de Azureus",
+    "    /transmission:      Muestra la informacion de Transmission",
     ""]
     return mensajes
 
