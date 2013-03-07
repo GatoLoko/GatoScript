@@ -80,57 +80,60 @@ def realza_url_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     if auxiliar.lee_conf("comun", "realze") == "1":
-        urls = [ "(ftp://.*|http://.*|https://.*)", "(www|ftp)\..*\..*" ]
-        nuevo_mensaje = ""
-        color = auxiliar.lee_conf("comun", "colorrealze")
-        # Algunas redes agregan un caracter extra a los mensajes
-        if "freenode" in xchat.get_info("server"):
-            palabras = word_eol[3][2:].split(" ")
-        else:
-            palabras = word_eol[3][1:].split(" ")
-        direccion = []
-        for i in urls:
-            #print i
-            expresion = re.compile(i, re.IGNORECASE)
-            for j in palabras:
-                if expresion.match(j):
-                    direccion.append(j)
-        for palabra in palabras:
-            if palabra in direccion:
-                if nuevo_mensaje == "":
-                    nuevo_mensaje = " \003{0}{1}\003".format(color, palabra)
-                else:
-                    nuevo_mensaje = "{0} \003{1}{2}\003".format(nuevo_mensaje,
-                                                                color, palabra)
-            else:
-                if nuevo_mensaje == "":
-                    nuevo_mensaje = palabra
-                else:
-                    nuevo_mensaje = "{0} {1}".format(nuevo_mensaje, palabra)
-        if word[2][0] == "#":
-            contexto = xchat.find_context(channel=word[2])
-        else:
-            comando = "query -nofocus {0}".format(word[0].split("!")[0][1:])
-            xchat.command(comando)
-            contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
-        # Action messages change from one network to the next.
+        urls = ["(ftp://.*|http://.*|https://.*)", "(www|ftp)\..*\..*"]
+        new_msg = ""
+        action = False
+        # Action messages change from one network to the next, so we need to be
+        # carefull and take it into account.
         # IRC-Hispano:
         #   >> :nick!ident@host PRIVMSG #canal :ACTION hola
         # Freenode:
         #   >> :nickt!~ident@host PRIVMSG #canal :-ACTION hola
         #   >> :nickt!~ident@host PRIVMSG #canal :+ACTION hola
         if word[3] in [":ACTION", ":-ACTION", ":+ACTION"]:
-            #print "action"
-            #contexto.emit_print("Action", word[0].split("!")[0][1:],
-            #                    nuevo_mensaje)
-            #action_mensaje = nuevo_mensaje[8:-2]
-            #contexto.prnt("\00313* {0}\003 {1}".format(
-            #    word[0].split("!")[0][1:], nuevo_mensaje[8:-2]))
-            return xchat.EAT_NONE
+            palabras = word_eol[4][:-1].split(" ")
+            action = True
+        elif "freenode" in xchat.get_info("server").lower():
+            palabras = word_eol[3][2:].split(" ")
         else:
+            palabras = word_eol[3][1:].split(" ")
+        direccion = []
+        for i in urls:
+            expresion = re.compile(i, re.IGNORECASE)
+            for j in palabras:
+                if expresion.match(j):
+                    direccion.append(j)
+        for palabra in palabras:
+            if palabra in direccion:
+                if new_msg == "":
+                    new_msg = "".join(["\003", color, palabra, "\003"])
+                else:
+                    new_msg = "".join([new_msg, " \003", color, palabra,
+                        "\003"])
+            else:
+                if new_msg == "":
+                    new_msg = palabra
+                else:
+                    new_msg = "".join([new_msg, " ", palabra])
+        # Find the context:
+        if word[2][0] == "#":
+            contexto = xchat.find_context(channel=word[2])
+        else:
+            xchat.command("".join(["query -nofocus ",
+                word[0].split("!")[0][1:]]))
+            contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
+        # Emit the apropiate message
+        if action is False:
             contexto.emit_print("Channel Message", word[0].split("!")[0][1:],
-                                nuevo_mensaje)
-            return xchat.EAT_ALL
+                 new_msg)
+        else:
+            if word[2][0] == "#":
+                contexto.emit_print("Channel Action",
+                    word[0].split("!")[0][1:], new_msg)
+            else:
+                contexto.emit_print("Private Action",
+                    word[0].split("!")[0][1:], new_msg)
+        return xchat.EAT_ALL
 
 
 #############################################################################
