@@ -59,7 +59,7 @@ def rss_cb(word, word_eol, userdata):
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
     feeds = auxiliar.gatodb_cursor_execute("SELECT feeds,limite FROM feeds")
-    if feeds != None:
+    if feeds is not None:
         for entrada in feeds:
             servidor = entrada[0]
             limitador = entrada[1]
@@ -82,6 +82,7 @@ def rss_cb(word, word_eol, userdata):
         del feeds, servidor, limitador
     return xchat.EAT_ALL
 
+
 def rsslista_cb(word, word_eol, userdata):
     """ Muestra la lista de feeds RSS/RDF que tenemos configurados.
     Argumentos:
@@ -97,6 +98,7 @@ def rsslista_cb(word, word_eol, userdata):
     auxiliar.priv_linea("")
     del servidores
     return xchat.EAT_ALL
+
 
 def rssadd_cb(word, word_eol, userdata):
     """ Agrega un nuevo feed RSS/RDF a la configuracion.
@@ -118,6 +120,7 @@ def rssadd_cb(word, word_eol, userdata):
         mensaje = "Se ha agregado '{0}' a la lista de filtros".format(word[1])
         auxiliar.gprint(mensaje)
     return xchat.EAT_ALL
+
 
 def rssdel_cb(word, word_eol, userdata):
     """ Elimina un feed RSS/RDF de la lista.
