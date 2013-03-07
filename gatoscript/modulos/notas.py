@@ -62,7 +62,7 @@ def notas_cb(word, word_eol, userdata):
         # Muestra una nota existente
         notas = auxiliar.gatodb_cursor_execute("SELECT nota FROM notas")
         for nota in notas:
-            if nota == None:
+            if nota is None:
                 print("No hay notas almacenadas")
             else:
                 print("Nota: {0}".format(nota[0]))
@@ -86,7 +86,7 @@ def notas_cb(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo 
+# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
 #############################################################################
 def ayuda():
     """Muestra la ayuda de las funciones de ejemplo para GatoScript"""
@@ -96,7 +96,6 @@ def ayuda():
     "    /ejemplo_publico: Muestra un mensaje de ejemplo",
     ""]
     return mensajes
-    
 
 
 #############################################################################
@@ -110,8 +109,6 @@ def unload_cb(userdata):
     """
     # Desconectamos las funciones
     xchat.unhook(HOOKNOTA)
-    # Descargamos el 
-    xchat.unhook(HOOKNOTAS)
 
 
 #############################################################################
@@ -119,5 +116,3 @@ def unload_cb(userdata):
 # para ellos
 #############################################################################
 HOOKNOTA = xchat.hook_command('notas', notas_cb, userdata=None)
-# Descarga del modulo
-HOOKNOTAS = xchat.hook_unload(unload_cb)
