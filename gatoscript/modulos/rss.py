@@ -177,8 +177,6 @@ def unload_cb(userdata):
     xchat.unhook(HOOKLISTARSS)
     xchat.unhook(HOOKRSSADD)
     xchat.unhook(HOOKRSSDEL)
-    # Descarga
-    xchat.unhook(HOOKUNLOAD)
 
 
 #############################################################################
@@ -189,8 +187,6 @@ HOOKRSS = xchat.hook_command('rss', rss_cb)
 HOOKLISTARSS = xchat.hook_command('listarss', rsslista_cb)
 HOOKRSSADD = xchat.hook_command('rssadd', rssadd_cb)
 HOOKRSSDEL = xchat.hook_command('rssdel', rssdel_cb)
-# Descarga del script
-HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
