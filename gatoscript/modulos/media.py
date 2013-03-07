@@ -53,47 +53,26 @@ if (repro_activo == "1"):
 ##############################################################################
 ## Definimos las funciones de informacion y ayuda sobre el manejo del script
 ##############################################################################
-#def gato_cb(word, word_eol, userdata):
-    #"""Muestra la ayuda del GatoScript
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook
-    #word_eol -- array de cadenas que envia xchat a cada hook
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #info_param = len(word_eol)
-    #if info_param > 2:
-        #mensajes = [
-        #"",
-        #"Solo se puede usar un parametro cada vez",
-        #""]
-    #elif info_param < 2:
-        #mensajes = [
-        #"",
-        #"Añada uno de los siguientes parametros en funcion del tipo de ayuda que quiera",
-        #"    -m         Comandos para informacion de reproductores Multimedia",
-        #"",
-        #"Por ejemplo: /gato -s",
-        #""]
-    #else:
-        #if word[1] == "-m":
-            #mensajes = [
-            #"",
-            #"Multimedia:",
-            #"    /escuchando:         Muestra en el canal activo la cancion que se esta reproduciendo",
-            #"    /reproductor:        Nos informa del reproductor seleccionado",
-            #"    /siguiente:          Cambia a la cancion siguiente",
-            #"    /anterior:           Cambia a la cancion anterior",
-            #"    /pausa:              Pausa la reproduccion",
-            #"    /play:               Reanuda la reproduccion",
-            #"    /stop:               Detiene la reproduccion",
-            #""]
-        #else:
-            #mensajes = [
-            #"",
-            #"Parametro no soportado",
-            #""]
-    #auxiliar.priv_imprime(mensajes)
-    #return xchat.EAT_ALL
+def ayuda_cb():
+    """Muestra la ayuda del GatoScript
+    Argumentos:
+    word     -- array de palabras que envia xchat a cada hook
+    word_eol -- array de cadenas que envia xchat a cada hook
+    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """
+    mensajes = [
+    "",
+    "Multimedia:",
+    "".join(["    /escuchando:         Muestra en el canal activo la cancion",
+             "que se esta reproduciendo"]),
+    "    /reproductor:        Nos informa del reproductor seleccionado",
+    "    /siguiente:          Cambia a la cancion siguiente",
+    "    /anterior:           Cambia a la cancion anterior",
+    "    /pausa:              Pausa la reproduccion",
+    "    /play:               Reanuda la reproduccion",
+    "    /stop:               Detiene la reproduccion",
+    ""]
+    auxiliar.priv_imprime(mensajes)
 
 
 ##############################################################################
@@ -150,6 +129,9 @@ def unload_cb(userdata):
     xchat.unhook(hookplay)
     xchat.unhook(hookpausa)
     xchat.unhook(hookstop)
+    xchat.command('menu del "GatoScript/Opciones/Multimedia"')
+    xchat.command('menu del "GatoScript/Opciones/Reproductor"')
+    xchat.command('menu del "GatoScript/Multimedia"')
 
 
 #############################################################################
@@ -171,13 +153,20 @@ hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
 #############################################################################
 # Añadimos las opciones del menu
 #############################################################################
-xchat.command('menu -t1 ADD "GatoScript/Opciones/Multimedia" "opciones media activo 1" "opciones media activo 0"')
+xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Multimedia"',
+                       ' "opciones media activo 1"',
+                       ' "opciones media activo 0"']))
 xchat.command('menu ADD "GatoScript/Opciones/Reproductor"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox" "opciones media reproductor rhythmbox"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Banshee" "opciones media reproductor banshee"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Amarok" "opciones media reproductor amarok"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Exaile" "opciones media reproductor exaile"')
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor/Audacious" "opciones media reproductor audacious"')
+xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox"',
+                       ' "opciones media reproductor rhythmbox"']))
+xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Banshee"',
+                       ' "opciones media reproductor banshee"']))
+xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Amarok"',
+                       ' "opciones media reproductor amarok"']))
+xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Exaile"',
+                       ' "opciones media reproductor exaile"']))
+xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Audacious"',
+                       ' "opciones media reproductor audacious"']))
 xchat.command('menu ADD "GatoScript/Multimedia"')
 xchat.command('menu ADD "GatoScript/Multimedia/Cancion actual" "escuchando"')
 xchat.command('menu ADD "GatoScript/Multimedia/Reproductor" "reproductor"')
