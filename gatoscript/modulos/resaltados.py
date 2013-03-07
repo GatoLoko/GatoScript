@@ -182,8 +182,6 @@ def unload_cb(userdata):
     # Resaltados
     xchat.unhook(HOOKRESALTADOS)
     xchat.unhook(HOOKREALZAURL)
-    # Descarga
-    xchat.unhook(HOOKUNLOAD)
 
 
 #############################################################################
@@ -194,5 +192,3 @@ def unload_cb(userdata):
 HOOKRESALTADOS = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
 HOOKREALZAURL = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None,
                                   priority=-10)
-# Descarga del script
-HOOKUNLOAD = xchat.hook_unload(unload_cb)
