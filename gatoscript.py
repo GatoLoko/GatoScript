@@ -100,18 +100,3 @@ HOOKUNLOAD = xchat.hook_unload(unload_cb)
 # mostramos el mensaje de carga
 mensaje = "Cargado GatoScript {0}".format(__module_version__)
 auxiliar.gprint(mensaje)
-
-##############################################################################
-##
-## Codigos especiales en las cadenas:
-##
-##   X-Chat      Python      Resultado
-##   "%C"    =   "\003"  =   Color
-##   "%B"    =   "\002"  =   Negrilla
-##   "%U"    =   "\037"  =   Subrallado
-##   "%R"    =   "\026"  =   Color invertido
-##   "%O"    =   "\017"  =   Desactiva los demas
-##           =   "\007"  =   Pitido
-##   "$t"    =   "\t"    =   $t
-##
-##############################################################################

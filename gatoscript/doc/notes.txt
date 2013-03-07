@@ -1,0 +1,12 @@
+Special codes in string:
+
+Meaning        |   X-Chat      Python
+---------------|----------------------
+Color          |   "%C"    =   "\003"
+Bold           |   "%B"    =   "\002"
+Underlined     |   "%U"    =   "\037"
+Inverted color |   "%R"    =   "\026"
+Disable all    |   "%O"    =   "\017"
+Acoustic bell  |           =   "\007"
+$t             |   "$t"    =   "\t"    <--- uh?
+
