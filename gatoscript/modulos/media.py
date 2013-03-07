@@ -150,8 +150,6 @@ def unload_cb(userdata):
     xchat.unhook(hookplay)
     xchat.unhook(hookpausa)
     xchat.unhook(hookstop)
-    # Descarga
-    xchat.unhook(hookunload)
 
 
 #############################################################################
@@ -168,8 +166,6 @@ hookanterior = xchat.hook_command('anterior', media_cb, userdata="anterior")
 hookplay = xchat.hook_command('play', media_cb, userdata="play")
 hookpausa = xchat.hook_command('pausa', media_cb, userdata="pausa")
 hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
-# Descarga del script
-hookunload = xchat.hook_unload(unload_cb)
 
 
 #############################################################################
