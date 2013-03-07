@@ -138,7 +138,7 @@ def media_cb(word, word_eol, userdata):
 def unload_cb(userdata):
     """Esta funcion debe desenlazar todas las funciones del GatoScript al
     descargarse el script.
-    
+
     Argumentos:
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
