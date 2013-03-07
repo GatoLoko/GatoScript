@@ -37,6 +37,10 @@ import re
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 
+color = auxiliar.lee_conf("comun", "colorrealze")
+action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
+
+
 #############################################################################
 # Redireccion de resaltados
 #############################################################################
@@ -52,17 +56,21 @@ def resaltados_cb(word, word_eol, userdata):
     if resaltados != '':
         resaltados = xchat.get_prefs("irc_extra_hilight").split(",")
         canal = word[2]
-        if canal[0] == "#":
-            for resaltado in resaltados:
-                palabra = re.compile(resaltado, re.IGNORECASE)
-                if palabra.search(word_eol[3][1:]):
-                    nick = word[0].split("!")[0][1:]
-                    parte1 = "{0} ha mencionado '{1}' ".format(nick, resaltado)
-                    parte2 = "en {0}: <{1}> ".format(canal, nick)
-                    mensaje = "{0}{1}{2}".format(parte1, parte2,
-                                                 word_eol[3][1:])
-                    auxiliar.priv_linea(mensaje)
+        nick = word[0].split("!")[0][1:]
+        for resaltado in resaltados:
+            palabra = re.compile(resaltado, re.IGNORECASE)
+            if palabra.search(word_eol[3][1:]):
+                if word[3] in action_txt:
+                    auxiliar.priv_linea("".join([nick, "ha mencionado",
+                        " \003", color, resaltado, "\003 en un privado; ",
+                        nick, " ", word_eol[4][:-1]]))
+                else:
+                    auxiliar.priv_linea("".join([nick,
+                        " ha mencionado ", "\003", color, resaltado,
+                        "\003 en ", canal, ": <", nick, "> ",
+                         word_eol[3][1:]]))
     return xchat.EAT_NONE
+
 
 def realza_url_cb(word, word_eol, userdata):
     """Detecta URLs y les aplica un color distinto al texto normal
