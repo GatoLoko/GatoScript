@@ -226,8 +226,6 @@ def unload_cb(userdata):
     xchat.unhook(_RAW379)
     xchat.unhook(_RAW401)
     xchat.unhook(_RAW671)
-    # Descarga
-    xchat.unhook(_HOOKUNLOAD)
 
 
 #############################################################################
@@ -273,7 +271,3 @@ _RAW379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10)
 _RAW401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10)
 # SSL
 _RAW671 = xchat.hook_server('671', whois_cb, userdata=None, priority=10)
-
-
-# Descarga del script
-_HOOKUNLOAD = xchat.hook_unload(unload_cb)
