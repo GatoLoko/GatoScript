@@ -49,7 +49,7 @@ _GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
 #############################################################################
 def ejemplo_interno():
     """Ejemplo de funcion"""
-    # Comentario 
+    # Comentario
     auxiliar.gprint("Esta funcion solo se utiliza dentro de este modulo")
 
 
@@ -70,7 +70,7 @@ def ejemplo_publico(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo 
+# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
 #############################################################################
 def ayuda():
     """Muestra la ayuda de las funciones de ejemplo para GatoScript"""
@@ -80,7 +80,6 @@ def ayuda():
     "    /ejemplo_publico: Muestra un mensaje de ejemplo",
     ""]
     return mensajes
-    
 
 
 #############################################################################
@@ -94,8 +93,6 @@ def unload_cb(userdata):
     """
     # Desconectamos las funciones
     xchat.unhook(HOOKEJEMPLO1)
-    # Descargamos el 
-    xchat.unhook(HOOKEJEMPLO)
 
 
 #############################################################################
@@ -103,5 +100,3 @@ def unload_cb(userdata):
 # para ellos
 #############################################################################
 HOOKEJEMPLO1 = xchat.hook_command('ejemplo', ejemplo_publico, userdata=None)
-# Descarga del modulo
-HOOKEJEMPLO = xchat.hook_unload(unload_cb)
