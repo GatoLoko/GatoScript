@@ -130,9 +130,9 @@ def whois_cb(word, word_eol, userdata):
             print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4]))
         elif (word[1] == "317"):
             # Respuesta al whois: IDLE
-            horas = int(word[4])/3600
-            minutos = (int(word[4])-horas*3600)/60
-            segundos = int(word[4])-((horas*3600)+(minutos*60))
+            horas = int(word[4]) / 3600
+            minutos = (int(word[4]) - horas * 3600) / 60
+            segundos = int(word[4]) - ((horas * 3600) + (minutos * 60))
             parte1 = "{0} horas, ".format(str(horas))
             parte2 = "{0} minutos y ".format(str(minutos))
             parte3 = "{0} segundos".format(str(segundos))
