@@ -19,10 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo SysInfo del GatoScript.
+SysInfo module for GatoScript.
 
-Este modulo se contiene funciones para mostrar informacion del sistema
-facilmente en GatoScript.
+This module contains functions to show system information.
 """
 
 __module_name__ = "GatoScript SysInfo"
