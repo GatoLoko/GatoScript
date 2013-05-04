@@ -329,9 +329,9 @@ HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help=uso)
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add Information and Options menus
 #############################################################################
-xchat.command('menu ADD "GatoScript/Informacion" "ginfo"')
+xchat.command('menu ADD "GatoScript/Information" "ginfo"')
 xchat.command('menu ADD "GatoScript/-"')
-xchat.command('menu ADD "GatoScript/Opciones"')
-xchat.command('menu ADD "GatoScript/Opciones/Python" "py console"')
+xchat.command('menu ADD "GatoScript/Options"')
+xchat.command('menu ADD "GatoScript/Options/Python" "py console"')
