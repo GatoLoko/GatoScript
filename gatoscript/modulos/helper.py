@@ -270,18 +270,16 @@ def kbtemp_cb(word, word_eol, userdata):
 #############################################################################
 # Define the help function
 #############################################################################
-def ayuda():
-    """Muestra la ayuda de las funciones auxiliares para GatoScript."""
-    mensajes = [
-        "",
-        "Auxiliar:",
-        "Estas funciones son de uso interno y no deberian necesitar ayuda",
-        "publica.",
-        ""
-        "Informacion:",
-        "    /gato:               Muestra esta informacion",
-        ""]
-    return mensajes
+def ghelp():
+    """Returns the help information."""
+    messages = [
+        "Helper:",
+        "  /KBTEMP <nick> <optional_message>: bans and kick the selected nick",
+        "      from the actual channel, then activates a 5 minutes countdown,",
+        "      after wich the ban is removed. If a message is added, it's",
+        "      used as the kick reason. (You must be channel operator)",
+        "  /GINFO: shows GatoScript's spam"]
+    return messages
 
 
 #############################################################################
