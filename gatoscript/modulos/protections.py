@@ -96,25 +96,25 @@ def anti_notice_cb(word, word_eol, userdata):
 
 
 def anti_hoygan_cb(word, word_eol, userdata):
-    """Detecta la palabra "hoygan" en los canales y banea al autor
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Detects messages containing the word "hoygan" on protected channels and
+    bans the author.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     #>> :nick!ident@host PRIVMSG #channel :message
-    if auxiliar.lee_conf("protecciones", "hoygan") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                hoyga = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
-                if hoyga.search(word_eol[3]):
+    if helper.conf_read("hoygan", "protections") == "1":
+        for channel in helper.conf_read("channels", "protections").split(','):
+            if channel.lower() == word[2].lower():
+                hoygan_re = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
+                if hoygan_re.search(word_eol[3]):
                     host = word[0][1:].split("@")[-1]
                     xchat.command("".join(["ban *!*@", host]))
                     nick = word[0][1:].split("!")[0]
-                    xchat.command("".join(["kick ", nick, " Los hoygan son la",
-                                           " versión electronica del payaso",
-                                           " de la clase y no son",
-                                           "graciosos."]))
+                    xchat.command("".join(["kick ", nick, " Hoygan are the",
+                                           " electronic version if the class",
+                                           " clown, and they are NOT funny."]))
                     del host, nick
     return xchat.EAT_NONE
 
