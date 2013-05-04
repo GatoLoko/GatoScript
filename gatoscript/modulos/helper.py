@@ -117,16 +117,15 @@ def gatodb_commit():
     _DBCONECTION.commit()
 
 
-# Mostrar mensajes
-def gprint(mensaje):
-    """Escribe "Gatoscript >> " seguido de la cadena que recibe como
-    parametro. Util para mostrar mensajes del script al usuario.
-    Argumentos:
+# Show script messages
+def gprint(message):
+    """Writes a line with format "Gatoscript >> blah", where blah is the string
+    received as an argument. Usefull to send the user messages from the script.
+    Arguments:
     mensaje -- cadena con el mensaje a mostrar
     """
-    g_mensaje = "".join(["GatoScript >> ", mensaje])
-    print(g_mensaje)
-    return ""
+    g_message = "".join(["GatoScript >> ", message])
+    print(g_message)
 
 
 def priv_imprime(mensajes):
