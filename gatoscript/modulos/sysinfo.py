@@ -25,7 +25,7 @@ This module contains functions to show system information.
 """
 
 __module_name__ = "GatoScript SysInfo"
-__module_description__ = "Modulo SysInfo para el GatoScript"
+__module_description__ = "SysInfo module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
