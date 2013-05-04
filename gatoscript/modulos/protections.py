@@ -39,8 +39,8 @@ import auxiliar
 # Definimos algunas variables que describen el entorno de trabajo y librerias
 # opcionales
 ##############################################################################
-_NUM_ABUSOS_MAYUS = []
 _NUM_ABUSOS_COLORES = []
+_HOSTS_ABUSING_CAPS = []
 
 ##############################################################################
 # Definimos las funciones de uso interno del modulo
@@ -122,44 +122,36 @@ def anti_hoygan_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 
-def anti_mayusculas_cb(word, word_eol, userdata):
-    """Detecta el abuso de mayusculas en los canales y banea al autor
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def anti_caps_cb(word, word_eol, userdata):
+    """Detects caps abuse in protected channels, warns the user the first time
+    and expels repeat offenders
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if auxiliar.lee_conf("protecciones", "mayusculas") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                mensaje = ""
-                cadena = word_eol[3][1:]
-                accion = re.compile('^[\+,-]?\ACTION')
-                if accion.match(cadena):
-                    cadena = cadena[7:]
-                letrasre = re.compile('[a-zA-Z]')
-                letras = letrasre.findall(cadena)
-                abuso = True
-                for letra in letras:
-                    if letra.islower() is True:
-                        abuso = False
-                if (len(letras)) > 10 and abuso is True:
+    if helper.conf_read("caps", "protections") == "1":
+        for channel in helper.conf_read("channels", "protections").split(','):
+            if channel.lower() == word[2].lower():
+                message = ""
+                string = word_eol[3][1:]
+                if _ACTION_RE.match(string):
+                    string = string[7:]
+                if string.isupper() and len(string) > 10:
                     host = word[0][1:].split("@")[1]
                     nick = word[0][1:].split("!")[0]
-                    if host in _NUM_ABUSOS_MAYUS:
-                        _NUM_ABUSOS_MAYUS.remove(host)
-                        mensaje = "".join([" Escribir todo en mayusculas va",
-                                           "contra las normas y estabas",
-                                           " avisado"])
-                        auxiliar.expulsa(mensaje, "1", word)
+                    if host in _HOSTS_ABUSING_CAPS:
+                        _HOSTS_ABUSING_CAPS.remove(host)
+                        message = "".join([" Writing in all caps is against",
+                                           " the rules and you were warned."])
+                        helper.expel(message, "1", word)
                     else:
-                        _NUM_ABUSOS_MAYUS.append(host)
-                        mensaje = "".join(["msg ", word[2], " ", nick, ": no",
-                                           " escribas todo en mayusculas, va",
-                                           " contra las normas. La próxima",
-                                           " vez seras expulsado."])
-                        xchat.command("")
-                        xchat.command(mensaje)
+                        _HOSTS_ABUSING_CAPS.append(host)
+                        message = "".join(["msg ", word[2], " ", nick, ":",
+                                           " do not write in all caps, it is",
+                                           " against the rules. Next time you",
+                                           " will be expelled."])
+                    xchat.command(message)
     return xchat.EAT_NONE
 
 
@@ -287,8 +279,8 @@ def unload_cb(userdata):
     xchat.unhook(HOOKANTIDRONE)
     xchat.unhook(HOOKANTICTCP)
     xchat.unhook(HOOKANTIHOYGAN)
-    xchat.unhook(HOOKANTIMAYUSCULAS)
     xchat.unhook(HOOKANTICOLORES)
+    xchat.unhook(HOOKANTICAPS)
     xchat.unhook(HOOKANTIAWAY)
 
 
@@ -302,9 +294,8 @@ HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 HOOKANTIHOYGAN = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
-HOOKANTIMAYUSCULAS = xchat.hook_server('PRIVMSG', anti_mayusculas_cb,
-                                       userdata=None)
 HOOKANTICOLORES = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
+HOOKANTICAPS = xchat.hook_server('PRIVMSG', anti_caps_cb, userdata=None)
 HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 
 
