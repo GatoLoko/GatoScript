@@ -19,9 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo Protecciones del GatoScript.
+Protections module for GatoScript.
 
-Este modulo contiene las funciones de proteccion para el GatoScript.
+This module contains protections functions for GatoScript
 """
 
 __module_name__ = "GatoScript Protections"
