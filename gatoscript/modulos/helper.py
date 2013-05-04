@@ -82,18 +82,15 @@ def conf_read(option, section="common"):
     return _CP.get(section, option)
 
 
-def escribe_conf(seccion, opcion, valor):
-    """Guarda una opcion en el archivo de configuracion.
-    Argumentos:
-    seccion -- cadena con el nombre de la seccion del archivo de
-    configuracion, en caso de no suministrarse se utilizara "comun"
-    opcion  -- cadena con el nombre de la opcion que queremos guardar
-    valor   -- cadena con el valor que queremos asignar a esa opcion
+def conf_write(option, value, section="common"):
+    """Store ONE option in the config file.
+    Arguments:
+    option  -- string with the option's name.
+    value   -- string with the value to store.
+    section -- optional string with the config section. Default is "common".
     """
-    if (seccion == ""):
-        seccion = "comun"
     _CP.read(_CONFIGFILE)
-    _CP.set(seccion, opcion, valor)
+    _CP.set(section, option, value)
     _CP.write(file(_CONFIGFILE, "w"))
 
 
