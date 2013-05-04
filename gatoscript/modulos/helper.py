@@ -128,20 +128,21 @@ def gprint(message):
     print(g_message)
 
 
-def priv_imprime(mensajes):
-    """Escribe una o mas lineas en la pestaña "GatoScript". Util para mostrar
-    mensajes largos sin que se pierdan entre los recibidos en los canales,
-    asi como menus de opciones.
-    Argumentos:
-    mensajes -- array de cadenas
+def query_print(messages):
+    """Writes multiple lines to the private script channel tagged as
+    "GatoScript". Usefull to send long messages without mixing/lossing them
+    in the conversation.
+    Arguments:
+    messages -- list of string
     """
-    contexto = xchat.find_context(channel="GatoScript")
-    if contexto is None:
+    orig_context = xchat.get_context()
+    context = xchat.find_context(channel="GatoScript")
+    if context is None:
         xchat.command("query -nofocus GatoScript")
-        contexto = xchat.find_context(channel="GatoScript")
-    for mensaje in mensajes:
-        contexto.emit_print("Private Message", "GatoScript", mensaje)
-    return ""
+        context = xchat.find_context(channel="GatoScript")
+    for message in messages:
+        context.emit_print("Private Message", "GatoScript", message)
+    orig_context.set()
 
 
 def priv_linea(mensaje):
