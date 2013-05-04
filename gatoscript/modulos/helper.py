@@ -226,23 +226,23 @@ def opciones_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
+# FIXME: This function interacts with the user and doesn't belong here
 def gato_info_cb(word, word_eol, userdata):
-    """Muestra la publicidad del GatoScript
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Shows GatoScript publicity
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if "hexchat" in xchat.get_info("xchatdir"):
-        cliente = "HexChat"
+    if "hexchat" in _SCRIPTDIR:
+        client = "HexChat"
     else:
-        cliente = "X-Chat"
+        client = "X-Chat"
     version = xchat.get_info("version")
-    comando = ''.join(["say ( {0} ) {1}".format(cliente, version),
-        " ( Script ) GatoScript {0},".format(__module_version__),
-        " script en python para X-Chat/HexChat",
-        " (http://gatoloko.homelinux.org)"])
-    xchat.command(comando)
+    xchat.command("".join(["say ( ", client, " ) ", version,
+                           " ( Script ) GatoScript ", __module_version__,
+                           " python script for HexChat/X-Chat ",
+                           "(http://gatoloko.homelinux.org)"]))
     return xchat.EAT_ALL
 
 
