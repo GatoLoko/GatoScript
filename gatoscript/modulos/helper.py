@@ -51,11 +51,11 @@ _CP = SafeConfigParser()
 # Inicializamos el modulo
 #############################################################################
 if path.exists(_GATODB_PATH):
-    _CONEXIONDB = sqlite3.connect(_GATODB_PATH)
-    _CURSOR = _CONEXIONDB.cursor()
-    CONECTADO = 1
+    _DBCONECTION = sqlite3.connect(_GATODB_PATH)
+    _CURSOR = _DBCONECTION.cursor()
+    CONNECTED = 1
 else:
-    CONECTADO = 0
+    CONNECTED = 0
 
 
 #############################################################################
@@ -114,7 +114,7 @@ def gatodb_cursor_execute(sql):
 
 def gatodb_commit():
     """ Commits any pending changes to the database."""
-    _CONEXIONDB.commit()
+    _DBCONECTION.commit()
 
 
 # Mostrar mensajes
