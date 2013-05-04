@@ -41,10 +41,9 @@ import sqlite3
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
-_GATODIR = "{0}/gatoscript/".format(_SCRIPTDIR)
-_CONFIGFILE = "{0}gatoscript.conf".format(_GATODIR)
-_GATODB_PATH = "{0}gatoscript.db".format(_GATODIR)
-#home = xchat.get_info("xchatdir")[:-7]
+_GATODIR = "".join([_SCRIPTDIR, "/gatoscript/"])
+_CONFIGFILE = "".join([_GATODIR, "gatoscript.conf"])
+_GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
 #_HOME = path.expanduser("~")
 _CP = SafeConfigParser()
 
