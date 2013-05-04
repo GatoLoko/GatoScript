@@ -64,12 +64,10 @@ else:
 #############################################################################
 # Informacion
 def scriptdirs():
-    """Obtiene el directorio base de xchat."""
-    base = xchat.get_info("xchatdir")
-    script = path.join(base, "gatoscript")
-    modules = path.join(script, "modulos")
+    """Get the base path for HexChat/X-Chat and GatoScript."""
+    modules = path.join(_SCRIPTDIR, "modules")
     media = path.join(modules, "players")
-    return base, script, modules, media
+    return _SCRIPTDIR, _GATODIR, modules, media
 
 
 # Configuracion
