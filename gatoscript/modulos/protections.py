@@ -28,12 +28,10 @@ __module_name__ = "GatoScript Protections"
 __module_description__ = "Protections module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# Load all needed libraries
 import xchat
-# Importamos las librerias externas
 import re
-# Importamos la libreria de funciones auxiliares
-import auxiliar
+import helper
 
 ##############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
