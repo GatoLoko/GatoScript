@@ -141,18 +141,20 @@ def query_print(messages):
     orig_context.set()
 
 
-def priv_linea(mensaje):
-    """Escribe una linea en la pestaña "GatoScript". Util para mostrar mensajes
-    cortos sin que se pierdan entre los recibidos en los canales.
-    Argumentos:
-    mensaje -- cadena con el mensaje
+def query_line(message):
+    """Writes a single line to the private script channel tagged as
+    "GatoScript". Usefull to send short messages without mixing/lossing them
+    in the conversation.
+    Arguments:
+    message -- message string
     """
-    contexto = xchat.find_context(channel="GatoScript")
-    if contexto is None:
+    orig_context = xchat.get_context()
+    context = xchat.find_context(channel="GatoScript")
+    if context is None:
         xchat.command("query -nofocus GatoScript")
-        contexto = xchat.find_context(channel="GatoScript")
-    contexto.emit_print("Private Message", "GatoScript", mensaje)
-    return ""
+        context = xchat.find_context(channel="GatoScript")
+    context.emit_print("Private Message", "GatoScript", message)
+    orig_context.set()
 
 
 #Expulsion
