@@ -309,30 +309,40 @@ HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/Opciones/Protecciones"')
-xchat.command("".join(['menu -t0 ADD "GatoScript/Opciones/Protecciones/Away"',
-                       '"opciones protecciones away 1"',
-                       ' "opciones protecciones away 0"']))
-xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/Ban"',
-                       ' "opciones protecciones ban 1"',
-                       ' "opciones protecciones ban 0"']))
-xchat.command("".join(['menu -t1 ADD',
-                       ' "GatoScript/Opciones/Protecciones/Colores"',
-                       ' "opciones protecciones colores 1"',
-                       ' "opciones protecciones colores 0"']))
-xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/CTCPs"',
-                       ' "opciones protecciones ctcps 1"',
-                       ' "opciones protecciones ctcps 0"']))
-xchat.command("".join(['menu -t1 ADD',
-                       ' "GatoScript/Opciones/Protecciones/Mayusculas"',
-                       ' "opciones protecciones mayusculas 1"',
-                       ' "opciones protecciones mayusculas 0"']))
-xchat.command("".join(['menu -t1 ADD',
-                       ' "GatoScript/Opciones/Protecciones/HOYGAN"',
-                       ' "opciones protecciones hoygan 1"',
-                       ' "opciones protecciones hoygan 0"']))
-xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Protecciones/Spam"',
-                       ' "opciones protecciones spam 1"',
-                       ' "opciones protecciones spam 0"']))
+xchat.command('menu ADD "GatoScript/Options/Protections"')
+xchat.command("".join(['menu -t', helper.conf_read("away", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Away"',
+                       ' "options protections away 1"',
+                       ' "options protections away 0"']))
+xchat.command("".join(['menu -t', helper.conf_read("ban", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Ban"',
+                       ' "options protections ban 1"',
+                       ' "options protections ban 0"']))
+xchat.command("".join(['menu -t',
+                       helper.conf_read("ignore_colors", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Ignore colors"',
+                       ' "options protections colors 1"',
+                       ' "options protections colors 0"']))
+xchat.command("".join(['menu -t',
+                       helper.conf_read("ban_colors", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Ban colors"',
+                       ' "options protections colors 1"',
+                       ' "options protections colors 0"']))
+xchat.command("".join(['menu -t', helper.conf_read("ctcps", "protections"),
+                       ' ADD "GatoScript/Options/Protections/CTCPs"',
+                       ' "options protections ctcps 1"',
+                       ' "options protections ctcps 0"']))
+xchat.command("".join(['menu -t', helper.conf_read("caps", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Caps"',
+                       ' "options protections caps 1"',
+                       ' "options protections caps 0"']))
+xchat.command("".join(['menu -t', helper.conf_read("hoygan", "protections"),
+                       ' ADD "GatoScript/Options/Protections/HOYGAN"',
+                       ' "options protections hoygan 1"',
+                       ' "options protections hoygan 0"']))
+xchat.command("".join(['menu -t', helper.conf_read("spam", "protections"),
+                       ' ADD "GatoScript/Options/Protections/Spam"',
+                       ' "options protections spam 1"',
+                       ' "options protections spam 0"']))
