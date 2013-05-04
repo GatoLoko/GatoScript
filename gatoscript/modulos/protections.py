@@ -39,8 +39,8 @@ import auxiliar
 # Definimos algunas variables que describen el entorno de trabajo y librerias
 # opcionales
 ##############################################################################
-_NUM_ABUSOS_COLORES = []
 _HOSTS_ABUSING_CAPS = []
+_HOSTS_ABUSING_COLORS = []
 
 ##############################################################################
 # Definimos las funciones de uso interno del modulo
@@ -155,56 +155,48 @@ def anti_caps_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 
-def anti_colores_cb(word, word_eol, userdata):
-    """Detecta el envio de mensajes con colores o realzados en los canales
-    protegidos, avisa al autor en la primera ocasion y lo expulsa si reincide
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def anti_colors_cb(word, word_eol, userdata):
+    """Detects messages containing colors/bold/underline on protected channels,
+    warns the author the first time and expels repeat ofenders.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    accion = re.compile('^[\+,-]?\ACTION')
-    colores = re.compile("".join(['\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?',
-                                  '(,[0-9]{1,2})?)?']))
-    ignorar = False
-    if auxiliar.lee_conf("protecciones", "banea_colores") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                mensaje = ""
-                cadena = word_eol[3][1:]
-                if accion.match(cadena):
-                    cadena = cadena[7:]
-                if colores.search(cadena):
-                    host = word[0][1:].split("@")[1]
-                    if host in _NUM_ABUSOS_COLORES:
-                        _NUM_ABUSOS_COLORES.remove(host)
-                        mensaje = "".join([" El uso de colores va contra las",
-                                           "normas y estabas avisado."])
-                        auxiliar.expulsa(mensaje, "1", word)
-                    else:
-                        _NUM_ABUSOS_COLORES.append(host)
-                        mensaje = "".join(["msg ", word[2], " ",
-                                           word[0][1:].split("!"), ": no uses",
-                                           " colores/negrillas/subrayado en",
-                                            " este canal, va contra las",
-                                            " normas. La próxima vez serás",
-                                            " expulsado. Para desactivarlos",
-                                            " escribe:  /remote off"])
-                        xchat.command(mensaje)
-    if auxiliar.lee_conf("protecciones", "ignora_colores") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                cadena = word_eol[3][1:]
-                if accion.match(cadena):
-                    cadena = cadena[7:]
-                if colores.search(cadena):
-                    ignorar = True
-    if ignorar is True:
-        auxiliar.gprint("".join(["Mensaje de ", word[0][1:].split("!")[0],
-                                 "ignorado por uso de colores."]))
-        return xchat.EAT_ALL
-    else:
-        return xchat.EAT_NONE
+    # Only act on protected channels
+    if word[2].lower() in helper.conf_read("channels",
+                                           "protections").split(","):
+    #for channel in helper.conf_read("channels", "protections").split(","):
+    #    if channel.lower() == word[2].lower():
+        string = word_eol[3][1:]
+        if _ACTION_RE.match(string):
+            string = string[7:]
+        if _COLORS_RE.search(string):
+            # If we are banning colors, expel the author
+            if helper.conf_read("ban_colors", "protections") == "1":
+                host = word[0][1:].split("@")[1]
+                if host in _HOSTS_ABUSING_COLORS:
+                    _HOSTS_ABUSING_COLORS.remove(host)
+                    message = "".join([" Using colors is against the",
+                                       " rules and you were warned."])
+                    helper.expel(message, "1", word)
+                else:
+                    _HOSTS_ABUSING_COLORS.append(host)
+                    message = "".join(["msg ", word[2], " ",
+                                       word[0][1:].split("!")[0], ": do NOT",
+                                       " use colors/bold/underline in",
+                                       " this channel, it is against the",
+                                       " rules. Next time you will be",
+                                       " expelled."])
+                    xchat.command(message)
+            # If we are ignoring messages containing colors
+            if helper.conf_read("ignore_colors", "protections") == "1":
+                helper.gprint("".join(["Message from ",
+                                       word[0][1:].split("!")[0],
+                                       " ignored because it contains",
+                                       " colors."]))
+                return xchat.EAT_ALL
+    return xchat.EAT_NONE
 
 
 def anti_drone_cb(word, word_eol, userdata):
@@ -279,8 +271,8 @@ def unload_cb(userdata):
     xchat.unhook(HOOKANTIDRONE)
     xchat.unhook(HOOKANTICTCP)
     xchat.unhook(HOOKANTIHOYGAN)
-    xchat.unhook(HOOKANTICOLORES)
     xchat.unhook(HOOKANTICAPS)
+    xchat.unhook(HOOKANTICOLORS)
     xchat.unhook(HOOKANTIAWAY)
 
 
@@ -294,8 +286,8 @@ HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
 HOOKANTIHOYGAN = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
-HOOKANTICOLORES = xchat.hook_server('PRIVMSG', anti_colores_cb, userdata=None)
 HOOKANTICAPS = xchat.hook_server('PRIVMSG', anti_caps_cb, userdata=None)
+HOOKANTICOLORS = xchat.hook_server('PRIVMSG', anti_colors_cb, userdata=None)
 HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 
 
