@@ -240,15 +240,14 @@ def anti_away_cb(word, word_eol, userdata):
 ##############################################################################
 # Define the help function
 ##############################################################################
-def ayuda():
-    """Muestra la ayuda de las funciones  de proteccion para GatoScript"""
-    mensajes = [
-    "",
-    "Protecciones:",
-    "    Este modulo no ofrece comandos interactivos",
-    ""]
-    auxiliar.priv_imprime(mensajes)
-    return xchat.EAT_ALL
+def ghelp():
+    """Returns the help information."""
+    messages = [
+        "",
+        "Protections:",
+        "    This module doesn't provide any interactive command",
+        ""]
+    return messages
 
 
 ##############################################################################
