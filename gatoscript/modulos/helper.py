@@ -24,9 +24,9 @@ Modulo Auxiliar del GatoScript.
 Este modulo contiene las funciones auxiliares para el GatoScript.
 """
 
-__module_name__ = "GatoScript Auxiliar"
-__module_version__ = "1.5-alpha"
-__module_description__ = "Modulo Auxiliar para el GatoScript"
+__module_name__ = "GatoScript Helper"
+__module_version__ = "2.0-alpha"
+__module_description__ = "Helper module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos las librerias y funciones que necesitamos
