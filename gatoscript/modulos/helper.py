@@ -282,6 +282,8 @@ def ghelp():
     return messages
 
 
+# FIXME: This module shouldn't have any interactive function, so the next two
+# section shouldn't exist at all
 #############################################################################
 # Define the function to unload this module. This should be called from the
 # main module unload function
