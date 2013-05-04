@@ -253,26 +253,24 @@ def gato_info_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def kbtemporal_cb(word, word_eol, userdata):
-    """Expulsa de forma temporal a un usuario del canal activo (si somos OPs).
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+# FIXME: This function interacts with the user and doesn't belong here
+def kbtemp_cb(word, word_eol, userdata):
+    """Temporarily expels an user on the active channel (must be OP).
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if (len(word_eol) > 2):
-        xchat.command("ban {0}!*@*".format(word[1]))
-        comando = "".join(["kick ", word[1], " Expulsado 5 minutos (",
-            word_eol[2], ")"])
-        xchat.command(comando)
-        comando = "".join(["timer -repeat 1 300 unban ", word[1], "!*@*"])
-        xchat.command(comando)
-    elif (len(word_eol) > 1):
-        xchat.command("ban {0}!*@*".format(word[1]))
-        xchat.command("kick {0} Expulsado 5 minutos".format(word[1]))
-        xchat.command("timer -repeat 1 300 unban {0}!*@*".format(word[1]))
+    if (len(word_eol) > 1):
+        xchat.command("".join(["ban ", word[1], "!*@*"]))
+        if (len(word_eol) > 2):
+            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes (",
+                                   word_eol[2], ")"]))
+        else:
+            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes"]))
+        xchat.command("".join(["timer -repeat 1 300 unban ", word[1], "!*@*"]))
     else:
-        gprint("Hay que especificar un nick a patear")
+        gprint("You must specify a nick to kick/ban")
     return xchat.EAT_ALL
 
 
@@ -306,7 +304,7 @@ def unload_cb(userdata):
     xchat.unhook(HOOKOPCIONES)
     # Informacion del script
     xchat.unhook(HOOKGINFO)
-    # KickBan Temporal
+    # Temporary KickBan
     xchat.unhook(HOOKKBTEMP)
 
 
@@ -319,13 +317,13 @@ def unload_cb(userdata):
 HOOKOPCIONES = xchat.hook_command('opciones', opciones_cb)
 # Informacion del script
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
-# KickBan Temporal
-uso = "".join(["Uso: KB_TEMP <nick> <mensaje_opcional>, banea y expulsa al",
-    " nick indicado del canal actual. Luego establece una cuenta atras de 5",
-    " minutos, pasados los cuales se retira el baneo. Si se introduce un",
-    " mensaje, se usa como razon de la expulsion. (Necesita ser operador del",
-    " canal)"])
-HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemporal_cb, help=uso)
+# Temporary KickBan
+kbtemp_usage = "".join([
+    "Usage: KBTEMP <nick> <optional_message>, bans and kicks the selected",
+    " nick from the actual channel, then activates a 5 minutes countdown,",
+    " after wich the ban is removed. If a message is added, it's used as",
+    " the kick reason. (You must be channel operator)"])
+HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemp_cb, help=kbtemp_usage)
 
 
 #############################################################################
