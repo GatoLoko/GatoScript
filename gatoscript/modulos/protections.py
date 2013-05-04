@@ -24,8 +24,8 @@ Modulo Protecciones del GatoScript.
 Este modulo contiene las funciones de proteccion para el GatoScript.
 """
 
-__module_name__ = "GatoScript Protecciones"
-__module_description__ = "Modulo Protecciones para el GatoScript"
+__module_name__ = "GatoScript Protections"
+__module_description__ = "Protections module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
