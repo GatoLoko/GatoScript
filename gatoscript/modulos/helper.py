@@ -100,11 +100,11 @@ def gatodb_cursor_execute(sql):
     sql -- sql statement to be executed
     """
     try:
-        resultado = _CURSOR.execute(sql)
-        return resultado
+        results = _CURSOR.execute(sql)
+        return results
     except sqlite3.Error, err:
-        mensaje = "Se ha producido un error SQL: {0}".format(err.args[0])
-        gprint(mensaje)
+        message = "SQL error: {0}".format(err.args[0])
+        gprint(message)
         return None
 
 
