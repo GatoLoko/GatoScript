@@ -38,6 +38,7 @@ import helper
 #############################################################################
 _HOSTS_ABUSING_CAPS = []
 _HOSTS_ABUSING_COLORS = []
+_DRONE_RE = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
 _CTCP_RE = re.compile("\.*\", re.IGNORECASE)
 
 ##############################################################################
@@ -192,25 +193,22 @@ def anti_colors_cb(word, word_eol, userdata):
 
 
 def anti_drone_cb(word, word_eol, userdata):
-    """Detecta nicks que entran al canal con nick/indent que concuerde con los
-    de un Drone y los banea para evitar el expulsa para evitar el SPAM.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Detects users joining the channel with nick/indent matching those used
+    by Drone and expels them before they can spam us.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     #print word_eol[0]
-    if auxiliar.lee_conf("protecciones", "drones") == "1":
-        nickre = re.compile("^[a-z]{4,}_[a-z]{2}$", re.IGNORECASE)
-        identre = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
+    if helper.conf_read("drones", "protections") == "1":
         nick = word[0][1:].split("!")[0]
         ident = word[0][1:].split("!")[1].split("@")[0]
-        if nickre.search(nick) and identre.search(ident):
-            canal = word[2][1:]
-            contexto = xchat.find_context(channel=canal)
+        if _DRONE_RE.search(nick) and _DRONE_RE.search(ident):
+            context = xchat.get_context()
             host = word[0].split("@")[1]
-            contexto.command("".join(["ban *!*@", host]))
-            contexto.command("".join(["kick ", nick, " Bot"]))
+            context.command("".join(["ban *!*@", host]))
+            context.command("".join(["kick ", nick, " Bot"]))
     return xchat.EAT_NONE
 
 
