@@ -33,20 +33,19 @@ import xchat
 import re
 import helper
 
-##############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales
-##############################################################################
+#############################################################################
+# Define some environment variables
+#############################################################################
 _HOSTS_ABUSING_CAPS = []
 _HOSTS_ABUSING_COLORS = []
 
 ##############################################################################
-# Definimos las funciones de uso interno del modulo
+# Define internal use functions
 ##############################################################################
 
 
 ##############################################################################
-# Definimos las funciones de proteccion
+# Define protection functions
 ##############################################################################
 def anti_ctcp_cb(word, word_eol, userdata):
     """Detecta el envio de CTCPs a canales protegidos y expulsa al autor.
@@ -242,7 +241,7 @@ def anti_away_cb(word, word_eol, userdata):
 
 
 ##############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
+# Define the help function
 ##############################################################################
 def ayuda():
     """Muestra la ayuda de las funciones  de proteccion para GatoScript"""
@@ -256,7 +255,8 @@ def ayuda():
 
 
 ##############################################################################
-## Definimos la funcion para la descarga del programa
+# Define the function to to unload this module. This should be called from the
+# main module unload function
 ##############################################################################
 def unload_cb(userdata):
     """Esta funcion debe desconectar todas las funciones del modulo al
@@ -275,11 +275,10 @@ def unload_cb(userdata):
 
 
 ##############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 ##############################################################################
 
-# Protecciones
+# protections
 HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
