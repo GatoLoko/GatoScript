@@ -158,23 +158,20 @@ def query_line(message):
 
 
 #Expulsion
-def expulsa(mensaje, ban, word):
-    """Expulsa un usuario del canal dependiendo de las opciones configuradas
-    Argumentos:
-    mensaje -- cadena con el mensaje de expulsion
-    ban     -- booleano para añadir o no un veto
-    word    -- cadena de la que extraemos el host a vetar/expulsar
+def expel(message, ban, word):
+    """Expels an user from the channel according to the configured options.
+    Arguments:
+    message -- string with the kick message
+    ban     -- boolean to add a ban or not
+    word    -- string from where to extract the host to ban/kick
     """
-    if mensaje != "":
+    if message != "":
         if ban == "":
-            ban = lee_conf("protecciones", "ban")
-        if ban == "1":
+            ban = int(conf_read("protections", "ban"))
+        if ban:
             host = word[0][1:].split("@")[-1]
-            comando = "".join(["ban *!*@", host])
-            xchat.command(comando)
-        partes = word[0][1:].split("!")
-        comando = "".join(["kick ", partes[0], mensaje])
-        xchat.command(comando)
+            xchat.command("".join(["ban *!*@", host]))
+        xchat.command("".join(["kick ", word[0][1:].split("!")[0], message]))
 
 
 #Unit conversion
