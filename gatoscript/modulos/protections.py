@@ -38,6 +38,7 @@ import helper
 #############################################################################
 _HOSTS_ABUSING_CAPS = []
 _HOSTS_ABUSING_COLORS = []
+_CTCP_RE = re.compile("\.*\", re.IGNORECASE)
 
 ##############################################################################
 # Define internal use functions
@@ -48,30 +49,23 @@ _HOSTS_ABUSING_COLORS = []
 # Define protection functions
 ##############################################################################
 def anti_ctcp_cb(word, word_eol, userdata):
-    """Detecta el envio de CTCPs a canales protegidos y expulsa al autor.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Detect CTCPs sent to protected channels and kick/ban the author.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if auxiliar.lee_conf("protecciones", "ctcps") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                ctcp = re.compile("\.*\", re.IGNORECASE)
-                canales = auxiliar.lee_conf("protecciones",
-                                            "canales").split(',')
-                if ctcp.search(word[3]):
-                    for canal in canales:
-                        canal_re = re.compile(canal[1:], re.IGNORECASE)
-                        if canal_re.search(word[2]):
-                            mensaje = "".join(["Se ha recibido un CTCP al ",
-                                               "canal ", word[2]])
-                            auxiliar.gprint(mensaje)
-                            host = word[0][1:].split("@")[-1]
-                            xchat.command("".join(["ban *!*@", host]))
-                            nick = word[0][1:].split("!")[0]
-                            xchat.command("".join(["kick ", nick, "CTCPs al ",
-                                                   "canal..."]))
+    if helper.conf_read("ctcps", "protections") == "1":
+        channels = helper.conf_read("channels", "protections").split(',')
+        for channel in channels:
+            if channel.lower() == word[2].lower():
+                if _CTCP_RE.search(word[3]):
+                    message = "".join(["Received a CTCP to channel ", word[2]])
+                    helper.gprint(message)
+                    host = word[0][1:].split("@")[-1]
+                    xchat.command("".join(["ban *!*@", host]))
+                    nick = word[0][1:].split("!")[0]
+                    xchat.command("".join(["kick ", nick, "CTCPs to channel"]))
     return xchat.EAT_NONE
 
 
