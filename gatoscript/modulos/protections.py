@@ -217,23 +217,22 @@ def anti_drone_cb(word, word_eol, userdata):
 
 
 def anti_away_cb(word, word_eol, userdata):
-    """Detecta mensajes de ausencia en el canal y expulsa al usuario
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se envia a un hook (ignorado)
+    """Detects away messages in protected channels and expels the author
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if auxiliar.lee_conf("protecciones", "away") == "1":
-        for canal in auxiliar.lee_conf("protecciones", "canales").split(','):
-            if canal.lower() == word[2].lower():
-                awaystr = auxiliar.lee_conf("protecciones",
-                                            "awaystr").split(",")
-                for i in range(len(awaystr)):
-                    if word_eol[3].find(awaystr[i]) > 0:
-                        ban = "1"
-                        mensaje = "".join([" Quita los mensajes de away ",
-                                           "automáticos, si no estás callate"])
-                        auxiliar.expulsa(mensaje, ban, word)
+    if helper.conf_read("away", "protections") == "1":
+        if word[2].lower() in helper.conf_read("channels",
+                                               "protections").split(','):
+            awaystr = helper.conf_read("awaystr", "protections").split(",")
+            for i in range(len(awaystr)):
+                if word_eol[3].find(awaystr[i]) > 0:
+                    ban = "1"
+                    message = "".join([" Disable automatic away messages,",
+                                       " if you are out, just shut up"])
+                    helper.expel(message, ban, word)
     return xchat.EAT_NONE
 
 
