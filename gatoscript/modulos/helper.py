@@ -19,9 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo Auxiliar del GatoScript.
+Helper module for GatoScript.
 
-Este modulo contiene las funciones auxiliares para el GatoScript.
+This module contains auxiliary functions used all around the script.
 """
 
 __module_name__ = "GatoScript Helper"
