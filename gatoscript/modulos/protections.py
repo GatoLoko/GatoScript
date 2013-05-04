@@ -70,22 +70,23 @@ def anti_ctcp_cb(word, word_eol, userdata):
 
 
 def anti_notice_cb(word, word_eol, userdata):
-    """Detecta el envio de NOTICEs a canales protegidos y expulsa al autor.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
+    """Detects NOTICEs sent to protected channels and kick/ban the author.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hola
+    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hello
     #>> :CHaN!-@- NOTICE #canal :nick añade en #canal a nick2 con nivel 499
-    if auxiliar.lee_conf("protecciones", "notices") == "1":
-        canales = auxiliar.lee_conf("protecciones", "canales").split(',')
-        for canal in canales:
-            if (word[2].lower() == canal.lower()) and \
-            (word[0].lower() != ":chan!-@-"):  # Excepcion para IRC-Hispano
+    if helper.conf_read("notices", "protections") == "1":
+        channels = helper.conf_read("channels", "protections").split(',')
+        for channel in channels:
+            if (word[2].lower() == channel.lower()) and \
+               (word[0].lower() != ":chan!-@-"):  # Exception for IRC-Hispano
                 print word[0]
-                print "este ban lo pone por notice"
+                print "This ban is for sending notices"
                 xchat.command("".join(["kickban ", word[0][1:].split("!")[0],
-                                       " Putos scriptkidies..."]))
+                                       " Notices to channel are NOT allowed"]))
     return xchat.EAT_NONE
 
 
