@@ -194,35 +194,35 @@ def units(value, base):
     raise ValueError('value too big')
 
 
+# FIXME: This function interacts with the user and doesn't belong here
 # Comandos
-def opciones_cb(word, word_eol, userdata):
-    """Esta funcion se encarga de mostrar y modificar las configuraciones del
-    script.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def options_cb(word, word_eol, userdata):
+    """This function shows and modifies the script settings.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    info_param = len(word_eol)
-    if info_param == 1:
+    param_num = len(word_eol)
+    if param_num == 1:
         _CP.read(_CONFIGFILE)
-        priv_linea("")
-        priv_linea("Lista de secciones y opciones de configuracion:")
-        for seccion in _CP.sections():
-            priv_linea(seccion)
-            for opcion in _CP.options(seccion):
-                mensaje = "".join([" ", opcion, "=", _CP.get(seccion, opcion)])
-                priv_linea(mensaje)
-        priv_linea("")
-    elif info_param == 2:
-        if word[1] == "prueba":
-            print("Prueba con un solo parametro")
-        else:
-            print("Parametro erroneo")
-    elif info_param == 4:
-        escribe_conf(word[1], word[2], word[3])
+        query_line("")
+        query_line("List of configuration sections and options:")
+        for section in _CP.sections():
+            query_line(section)
+            for option in _CP.options(section):
+                message = "".join([" ", option, "=", _CP.get(section, option)])
+                query_line(message)
+        query_line("")
+    elif param_num > 1 and param_num < 4:
+        gprint("Wrong parameters count")
+        gprint("".join(['Usage: OPTIONS <option> <value> <section>, changes',
+                        ' GatoScripts settings. If no section is specified,',
+                        ' "common" is used by default.']))
+    elif param_num == 4:
+        conf_write(word[1], word[2], word[3])
     else:
-        gprint("No mostramos nada")
+        gprint("Don't show anything")
     return xchat.EAT_ALL
 
 
@@ -305,10 +305,9 @@ def unload_cb(userdata):
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-
-# Opciones del script
-HOOKOPCIONES = xchat.hook_command('opciones', opciones_cb)
-# Informacion del script
+# Script options
+HOOKOPTIONS = xchat.hook_command('options', options_cb)
+# Script information
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 # Temporary KickBan
 kbtemp_usage = "".join([
