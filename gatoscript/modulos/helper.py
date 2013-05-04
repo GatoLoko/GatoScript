@@ -29,15 +29,14 @@ __module_version__ = "2.0-alpha"
 __module_description__ = "Helper module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos las librerias y funciones que necesitamos
+# Load all needed libraries
 import xchat
 from os import path
 from ConfigParser import SafeConfigParser
 import sqlite3
 
 #############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Define some environment variables
 #############################################################################
 
 _SCRIPTDIR = xchat.get_info("xchatdir")
@@ -48,7 +47,7 @@ _GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
 _CP = SafeConfigParser()
 
 #############################################################################
-# Inicializamos el modulo
+# Initialize the module
 #############################################################################
 if path.exists(_GATODB_PATH):
     _DBCONECTION = sqlite3.connect(_GATODB_PATH)
@@ -59,9 +58,9 @@ else:
 
 
 #############################################################################
-# Definimos las funciones de uso interno en el GatoScript
+# Define functions for GatoScript
 #############################################################################
-# Informacion
+# Information
 def scriptdirs():
     """Get the base path for HexChat/X-Chat and GatoScript."""
     modules = path.join(_SCRIPTDIR, "modules")
@@ -94,6 +93,7 @@ def conf_write(option, value, section="common"):
     _CP.write(file(_CONFIGFILE, "w"))
 
 
+# Database management
 def gatodb_cursor_execute(sql):
     """Executes an sql statement over the database.
     Arguments:
@@ -268,7 +268,7 @@ def kbtemp_cb(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos las funciones de informacion y ayuda sobre el manejo del modulo
+# Define the help function
 #############################################################################
 def ayuda():
     """Muestra la ayuda de las funciones auxiliares para GatoScript."""
@@ -285,7 +285,8 @@ def ayuda():
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to unload this module. This should be called from the
+# main module unload function
 #############################################################################
 def unload_cb(userdata):
     """Esta funcion debe desconectar todas las funciones del modulo al
@@ -302,8 +303,7 @@ def unload_cb(userdata):
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
 
 # Opciones del script
