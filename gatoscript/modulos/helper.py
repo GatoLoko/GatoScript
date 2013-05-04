@@ -69,18 +69,17 @@ def scriptdirs():
     return _SCRIPTDIR, _GATODIR, modules, media
 
 
-# Configuracion
-def lee_conf(seccion, opcion):
-    """Lee una opcion del archivo de configuracion.
-    Argumentos:
-    seccion -- cadena con el nombre de la seccion del archivo de
-    configuracion, en caso de no suministrarte se usara "comun"
-    opcion  -- cadena con el nombre de la opcion que queremos leer
+# Settings
+def conf_read(option, section="common"):
+    """Read ONE option from the config file.
+    Arguments:
+    option  -- string with the name of the option we want to read.
+    section -- optional string with the section name. Default is "common".
     """
-    if (seccion == ""):
-        seccion = "comun"
+    if (section == ""):
+        section = "common"
     _CP.read(_CONFIGFILE)
-    return _CP.get(seccion, opcion)
+    return _CP.get(section, option)
 
 
 def escribe_conf(seccion, opcion, valor):
