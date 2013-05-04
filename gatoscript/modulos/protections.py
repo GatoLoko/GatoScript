@@ -256,12 +256,7 @@ def ayuda():
 # main module unload function
 ##############################################################################
 def unload_cb(userdata):
-    """Esta funcion debe desconectar todas las funciones del modulo al
-    descargarse el script
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Desconectamos las funciones de proteccion
+    """This function disconects all module functions"""
     xchat.unhook(HOOKANTINOTICE)
     xchat.unhook(HOOKANTIDRONE)
     xchat.unhook(HOOKANTICTCP)
