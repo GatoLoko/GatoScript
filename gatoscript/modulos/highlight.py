@@ -84,68 +84,62 @@ def highlight_collect_cb(word, word_eol, userdata):
     return xchat.EAT_NONE
 
 
-def realza_url_cb(word, word_eol, userdata):
-    """Detecta URLs y les aplica un color distinto al texto normal
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def url_highlight_cb(word, word_eol, userdata):
+    """Looks for URLs and highlight them with the chosen color.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if auxiliar.lee_conf("comun", "realze") == "1":
-        urls = ["(ftp://.*|http://.*|https://.*)", "(www|ftp)\..*\..*"]
-        new_msg = ""
+    # If we are dealing with a CTCP, don't bother trying'
+    if len(word[3]) > 1 and word[3][1] in ctcp_txt:
+        return xchat.EAT_NONE
+    if helper.conf_read("highlight", "common") == "1":
+        urls = re.compile("".join([
+            "((ftp|https?)://.*)|((www|ftp)\..*\..*)",
+            "|([a-z0-9_\.-\\\+]+)\@([a-z0-9_\.-]+)\.([a-z\.]{2,6})"]),
+            re.IGNORECASE)
+        # Set the apropriate start depending on whether it's an action message
+        # or the network it's received from
         action = False
-        # Action messages change from one network to the next, so we need to be
-        # carefull and take it into account.
-        # IRC-Hispano:
-        #   >> :nick!ident@host PRIVMSG #canal :ACTION hola
-        # Freenode:
-        #   >> :nickt!~ident@host PRIVMSG #canal :-ACTION hola
-        #   >> :nickt!~ident@host PRIVMSG #canal :+ACTION hola
-        if word[3] in [":ACTION", ":-ACTION", ":+ACTION"]:
-            palabras = word_eol[4][:-1].split(" ")
+        if word[3] in action_txt:
+            words = word_eol[4][:-1].split(" ")
             action = True
         elif "freenode" in xchat.get_info("server").lower():
-            palabras = word_eol[3][2:].split(" ")
+            words = word_eol[3][2:].split(" ")
         else:
-            palabras = word_eol[3][1:].split(" ")
-        direccion = []
-        for i in urls:
-            expresion = re.compile(i, re.IGNORECASE)
-            for j in palabras:
-                if expresion.match(j):
-                    direccion.append(j)
-        for palabra in palabras:
-            if palabra in direccion:
-                if new_msg == "":
-                    new_msg = "".join(["\003", color, palabra, "\003"])
+            words = word_eol[3][1:].split(" ")
+        address = []
+        # Find if there is any URL
+        for i in words:
+            if urls.match(i):
+                address.append(i)
+        # If there is any URL, colorize all of them
+        new_msg_tmp = []
+        if address != []:
+            for entry in words:
+                if entry in address:
+                    new_msg_tmp.append("".join(["\003", color(), entry,
+                                                "\003"]))
                 else:
-                    new_msg = "".join([new_msg, " \003", color, palabra,
-                        "\003"])
+                    new_msg_tmp.append(entry)
+            new_msg = " ".join(new_msg_tmp)
+            # Find the context:
+            context = xchat.get_context()
+            # Find what's the appropiate event and emit the corresponding text
+            if action is False:
+                context.emit_print("Channel Message",
+                                   word[0].split("!")[0][1:], new_msg)
             else:
-                if new_msg == "":
-                    new_msg = palabra
+                if word[2][0] == "#":
+                    context.emit_print("Channel Action",
+                                       word[0].split("!")[0][1:], new_msg)
                 else:
-                    new_msg = "".join([new_msg, " ", palabra])
-        # Find the context:
-        if word[2][0] == "#":
-            contexto = xchat.find_context(channel=word[2])
-        else:
-            xchat.command("".join(["query -nofocus ",
-                word[0].split("!")[0][1:]]))
-            contexto = xchat.find_context(channel=word[0].split("!")[0][1:])
-        # Emit the apropiate message
-        if action is False:
-            contexto.emit_print("Channel Message", word[0].split("!")[0][1:],
-                 new_msg)
-        else:
-            if word[2][0] == "#":
-                contexto.emit_print("Channel Action",
-                    word[0].split("!")[0][1:], new_msg)
-            else:
-                contexto.emit_print("Private Action",
-                    word[0].split("!")[0][1:], new_msg)
-        return xchat.EAT_ALL
+                    context.emit_print("Private Action",
+                                       word[0].split("!")[0][1:], new_msg)
+            return xchat.EAT_ALL
+    else:
+        return xchat.EAT_NONE
 
 
 #############################################################################
@@ -193,7 +187,7 @@ def unload_cb(userdata):
     # Desconectamos los comandos
     # Resaltados
     xchat.unhook(HOOKRESALTADOS)
-    xchat.unhook(HOOKREALZAURL)
+    xchat.unhook(HOOKURLHIGHLIGHT)
 
 
 #############################################################################
@@ -202,5 +196,4 @@ def unload_cb(userdata):
 #############################################################################
 # Resaltados
 HOOKRESALTADOS = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
-HOOKREALZAURL = xchat.hook_server('PRIVMSG', realza_url_cb, userdata=None,
-                                  priority=-10)
+HOOKURLHIGHLIGHT = xchat.hook_server('PRIVMSG', url_highlight_cb, userdata=None)
