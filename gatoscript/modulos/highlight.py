@@ -19,10 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo Resaltados del GatoScript.
+Highlight module for GatoScript.
 
-Este modulo contiene las funciones resalte/"des-resalte" de textos para el
-GatoScript.
+This module contains functions to highlight texts and URLs
 """
 
 __module_name__ = "GatoScript Highlight"
