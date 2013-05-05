@@ -39,8 +39,7 @@ import re
 import platform
 # Importamos el modulo datetime para obtener la fecha y hora
 import datetime
-# Importamos el modulo de funciones auxiliares
-import auxiliar
+import helper
 
 
 #############################################################################
