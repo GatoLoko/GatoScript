@@ -35,6 +35,7 @@ import re
 import helper
 
 action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
+ctcp_txt = [":VERSION", ":TIME", ":FINGER", ":PING"]
 
 
 ##############################################################################
