@@ -33,8 +33,7 @@ __module_autor__ = "GatoLoko"
 import xchat
 # import re
 import re
-# Importamos el modulo de funciones auxiliares
-import auxiliar
+import helper
 
 color = auxiliar.lee_conf("comun", "colorrealze")
 action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
