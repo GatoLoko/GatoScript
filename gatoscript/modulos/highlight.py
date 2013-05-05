@@ -40,6 +40,18 @@ color = auxiliar.lee_conf("comun", "colorrealze")
 action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
 
 
+##############################################################################
+# Define internal use functions
+##############################################################################
+def color():
+    if helper.conf_read("highlightoverride", "common") == "1":
+        color = helper.conf_read("highlightcolor", "common")
+    else:
+        event = xchat.get_info('event_text Channel Msg Hilight')
+        color = re.findall(r'%C[0-9]{1,2}', event)[-1][2:]
+    return color
+
+
 #############################################################################
 # Redireccion de resaltados
 #############################################################################
