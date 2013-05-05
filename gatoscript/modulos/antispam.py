@@ -28,10 +28,10 @@ __module_name__ = "GatoScript AntiSpam"
 __module_description__ = "AntiSpam module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos las librerias y funciones que necesitamos
+# Load all needed libraries
 import xchat
 import re
-import auxiliar
+import helper
 
 #############################################################################
 # Definimos algunas variables que describen el entorno de trabajo y librerias
