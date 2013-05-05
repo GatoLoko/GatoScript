@@ -329,13 +329,13 @@ HOOKGRAPH = xchat.hook_command('ggraph', graphics_cb)
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/Sistema"')
-xchat.command('menu ADD "GatoScript/Sistema/Uptime" "gup"')
-xchat.command('menu ADD "GatoScript/Sistema/Sistema" "gos"')
-xchat.command('menu ADD "GatoScript/Sistema/Software" "gsoft"')
-xchat.command('menu ADD "GatoScript/Sistema/Hardware" "gpc"')
-xchat.command('menu ADD "GatoScript/Sistema/Fecha" "fecha"')
-xchat.command('menu ADD "GatoScript/Sistema/Red" "gnet"')
-xchat.command('menu ADD "GatoScript/Sistema/Graficos" "ggraf"')
+xchat.command('menu ADD "GatoScript/System"')
+xchat.command('menu ADD "GatoScript/System/Uptime" "gup"')
+xchat.command('menu ADD "GatoScript/System/System" "gos"')
+xchat.command('menu ADD "GatoScript/System/Software" "gsoft"')
+xchat.command('menu ADD "GatoScript/System/Hardware" "ghard"')
+xchat.command('menu ADD "GatoScript/System/Date" "gdate"')
+xchat.command('menu ADD "GatoScript/System/Network" "gnet"')
+xchat.command('menu ADD "GatoScript/System/Graphics" "ggraph"')
