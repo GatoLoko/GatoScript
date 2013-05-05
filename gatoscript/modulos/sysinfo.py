@@ -96,21 +96,20 @@ def uptime_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def sistema_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre el sistema operativo que
-    estamos usando.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def os_cb(word, word_eol, userdata):
+    """Shows information about the operating system on the current channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    datos = platform.linux_distribution()
-    distro = datos[0]
-    version = " ".join(datos[1:3])
+    data = platform.linux_distribution()
+    distribution = data[0]
+    version = " ".join(data[1:3])
     kernel = " ".join([platform.system(), platform.release()])
-    comando = "".join(["say [ Systema ] Distribucion: ", distro,
-        "  - Version: ", version, "  - Kernel: ", kernel])
-    xchat.command(comando)
+    command = "".join(["say [ System ] Distribution: ", distribution,
+                       "  - Version: ", version, "  - Kernel: ", kernel])
+    xchat.command(command)
     return xchat.EAT_ALL
 
 
@@ -316,7 +315,7 @@ def unload_cb():
 #############################################################################
 # Informacion del sistema
 HOOKGUP = xchat.hook_command('gup', uptime_cb)
-HOOKGOS = xchat.hook_command('gos', sistema_cb)
+HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
 HOOKFECHA = xchat.hook_command('fecha', fecha_cb)
 HOOKGPC = xchat.hook_command('gpc', pc_cb)
