@@ -186,14 +186,14 @@ def unload_cb(userdata):
     """
     # Desconectamos los comandos
     # Resaltados
-    xchat.unhook(HOOKRESALTADOS)
+    xchat.unhook(HOOKHIGHLIGHT)
     xchat.unhook(HOOKURLHIGHLIGHT)
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hooks for all functions provided by this module
 #############################################################################
-# Resaltados
-HOOKRESALTADOS = xchat.hook_server('PRIVMSG', resaltados_cb, userdata=None)
+# Highlight
+HOOKHIGHLIGHT = xchat.hook_server('PRIVMSG', highlight_collect_cb,
+                                  userdata=None)
 HOOKURLHIGHLIGHT = xchat.hook_server('PRIVMSG', url_highlight_cb, userdata=None)
