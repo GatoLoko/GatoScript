@@ -34,7 +34,6 @@ import xchat
 import re
 import helper
 
-color = auxiliar.lee_conf("comun", "colorrealze")
 action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
 
 
