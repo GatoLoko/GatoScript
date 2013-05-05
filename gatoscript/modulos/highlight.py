@@ -28,9 +28,8 @@ __module_name__ = "GatoScript Highlight"
 __module_description__ = "Highlight module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# Load all needed libraries
 import xchat
-# import re
 import re
 import helper
 
@@ -151,16 +150,11 @@ def ghelp():
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to to unload this module. This should be called from the
+# main module unload function
 #############################################################################
-def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del modulo al
-    descargarse el script
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Desconectamos los comandos
-    # Resaltados
+def unload():
+    """This function disconects all module functions"""
     xchat.unhook(HOOKHIGHLIGHT)
     xchat.unhook(HOOKURLHIGHLIGHT)
 
