@@ -40,7 +40,7 @@ _HOSTS_ABUSING_CAPS = []
 _HOSTS_ABUSING_COLORS = []
 # Compile some regular expresion once to use them many times
 _COLORS_RE = re.compile("".join(['\\x02|\\x16|\\x1f|\\x03(([0-9]{1,2})?',
-                             '(,[0-9]{1,2})?)?']))
+                                 '(,[0-9]{1,2})?)?']))
 _DRONE_RE = re.compile("^[a-z]{4,}_[a-z]{1,2}$", re.IGNORECASE)
 _CTCP_RE = re.compile("\.*\", re.IGNORECASE)
 _ACTION_RE = re.compile('^[\+,-]?\ACTION')
