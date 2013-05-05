@@ -28,16 +28,11 @@ __module_name__ = "GatoScript SysInfo"
 __module_description__ = "SysInfo module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# Load all needed libraries
 import xchat
-# Importamos la funcion para unir directorios de forma portable
-#from os import path
-#importamos la funcion para ejecutar comandos externos
 from subprocess import Popen, PIPE
 import re
-# Importamos el modulo platform para sacar informacion del sistema
 import platform
-# Importamos el modulo datetime para obtener la fecha y hora
 import datetime
 import helper
 
