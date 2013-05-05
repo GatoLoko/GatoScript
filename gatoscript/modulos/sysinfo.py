@@ -241,30 +241,42 @@ def red_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def graficos_cb(word, word_eol, userdata):
-    """Muestra en el canal activo, informacion sobre la interfaz grafica.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def graphics_cb(word, word_eol, userdata):
+    """Shows graphics devices information on the current channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    datos = Popen("lspci | grep VGA", shell=True, stdout=PIPE, stderr=PIPE)
-    error = datos.stderr.readlines()
+    # Find a list of devices
+    data = Popen("lspci | grep VGA", shell=True, stdout=PIPE, stderr=PIPE)
+    error = data.stderr.readlines()
     if len(error) > 0:
-        auxiliar.gprint(error)
-        grafica = "No se pudo determinar el modelo"
+        for line in error:
+            helper.gprint(line)
+        devices = ["Unknown device"]
     else:
-        grafica = datos.stdout.readlines()[0].split(": ")[1][:-1]
-    datos = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE,
-        stderr=PIPE)
-    error = datos.stderr.readlines()
+        devices = []
+        for line in data.stdout:
+            devices.append(line.split(": ")[1][:-1])
+    # Show a line for each device found
+    for device in devices:
+        xchat.command("".join(["say ", "[ Graphics ] Device: ", device]))
+    # Find the screen resolution for all active screen
+    data = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE,
+                 stderr=PIPE)
+    error = data.stderr.readlines()
     if len(error) > 0:
-        auxiliar.gprint(error)
-        resolucion = "No se pudo determinar el modelo"
+        for line in error:
+            helper.gprint(line)
+        resolutions = ["Unknown resolution"]
     else:
-        resolucion = datos.stdout.readlines()[0].split(":    ")[1][:-1]
-    xchat.command("".join(["say [ Graficos ] Dispositivo: ", grafica, "  - ",
-                           "Resolucion: ", resolucion]))
+        resolutions = []
+        for line in data.stdout:
+            resolutions.append(line.split(":    ")[1][:-1])
+    # Show a line for each active screen
+    for resolution in resolutions:
+        xchat.command("".join(["say ", "[ Graphics ] Screen: ", resolution]))
     return xchat.EAT_ALL
 
 
@@ -304,9 +316,9 @@ def unload_cb():
     xchat.unhook(HOOKDATE)
     xchat.unhook(HOOKGHARD)
     xchat.unhook(HOOKNET)
-    xchat.unhook(HOOKGRAF)
     # Descarga
     xchat.unhook(HOOKSYSINFO)
+    xchat.unhook(HOOKGRAPH)
 
 
 #############################################################################
@@ -318,11 +330,11 @@ HOOKGUP = xchat.hook_command('gup', uptime_cb)
 HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
 HOOKNET = xchat.hook_command('gnet', red_cb)
-HOOKGRAF = xchat.hook_command('ggraf', graficos_cb)
 # Descarga del script
 HOOKSYSINFO = xchat.hook_unload(unload_cb)
 HOOKDATE = xchat.hook_command('gdate', date_cb)
 HOOKGHARD = xchat.hook_command('ghard', hardware_cb)
+HOOKGRAPH = xchat.hook_command('ggraph', graphics_cb)
 
 
 #############################################################################
