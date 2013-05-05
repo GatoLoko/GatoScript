@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-# CopyRight (C) 2006-2009 GatoLoko
+# CopyRight (C) 2006-2013 GatoLoko
 #
 # This file is part of GatoScript
 #
