@@ -25,7 +25,7 @@ This module contains antispam functions for GatoScript.
 """
 
 __module_name__ = "GatoScript AntiSpam"
-__module_description__ = "Modulo AntiSpam para el GatoScript"
+__module_description__ = "AntiSpam module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos las librerias y funciones que necesitamos
