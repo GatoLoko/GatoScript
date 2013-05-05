@@ -38,23 +38,17 @@ import helper
 
 
 #############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Define some environment variables
 #############################################################################
 
 
 #############################################################################
-# Inicializamos el modulo
+# Initialize the module
 #############################################################################
 
 
 #############################################################################
-# Definimos las funciones de uso interno en el modulo
-#############################################################################
-
-
-#############################################################################
-# Definimos las funciones para obtener la informacion del sistema
+# Define internal use functions
 #############################################################################
 def uptime_cb(word, word_eol, userdata):
     """Show system uptime in the active channel.
@@ -277,7 +271,7 @@ def graphics_cb(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos las funciones de informacion y ayuda sobre el manejo del script
+# Define the help function
 #############################################################################
 def ghelp():
     """Returns the help information."""
@@ -296,15 +290,11 @@ def ghelp():
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to to unload this module. This should be called from the
+# main module unload function
 #############################################################################
 def unload_cb():
-    """Esta funcion debe desconectar todas las funciones del modulo al
-    descargarse el script
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Desconectamos los comandos
+    """This function disconects all module functions"""
     xchat.unhook(HOOKGUP)
     xchat.unhook(HOOKGOS)
     xchat.unhook(HOOKGSOFT)
@@ -315,10 +305,8 @@ def unload_cb():
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 #############################################################################
-# Informacion del sistema
 HOOKGUP = xchat.hook_command('gup', uptime_cb)
 HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
