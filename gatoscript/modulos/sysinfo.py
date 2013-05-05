@@ -111,55 +111,58 @@ def os_cb(word, word_eol, userdata):
 
 
 def software_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre las versiones de KERNEL,
-    LIBC, X11 y GCC.
+    """Shows information about the current kernel, LIBC, X11 and GCC on the
+    current channel.
 
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    partes = platform.uname()
-    sistema = " ".join([partes[0], partes[2]])
+    # Find kernel and libc
+    data = platform.uname()
+    kernel = " ".join([data[0], data[2]])
     libc = " ".join(platform.libc_ver()[0:2])
+    # Find X11 server and version
     xdpyinfo = Popen("xdpyinfo | grep version:", shell=True, stdout=PIPE,
-         stderr=PIPE)
+                     stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
-            auxiliar.gprint(error[i])
-        x11 = "Indeterminable"
+            helper.gprint(error[i])
+        x11 = "Unknown"
     else:
-        servidor = xdpyinfo.stdout.readlines()[0].split()[-1]
+        xserver = xdpyinfo.stdout.readlines()[0].split()[-1]
     xdpyinfo = Popen('xdpyinfo | grep "vendor string"', shell=True,
-         stdout=PIPE, stderr=PIPE)
+                     stdout=PIPE, stderr=PIPE)
     error = xdpyinfo.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
-            auxiliar.gprint(error[i])
-        xversion = "Indeterminable"
+            helper.gprint(error[i])
+        xversion = "Unknown"
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = "".join([xversion, " ", servidor])
+        x11 = "".join([xversion, " ", xserver])
+    # Find GCC version
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
     if len(error) > 0:
         for i in range(len(error)):
-            auxiliar.gprint(error[i])
-        gcc = "Indeterminable"
+            helper.gprint(error[i])
+        gcc = "Unknown"
     else:
-        salida = gcc.stdout.readlines()
-        if salida[0] == "bash: gcc: command not found":
-            gcc = "No instalado"
+        gcc_output = gcc.stdout.readlines()
+        if gcc_output[0] == "bash: gcc: command not found":
+            gcc = "Not installed"
         else:
-            partes = salida[0].split()
-            gcc = partes[-1]
-    comando = "".join(["say [ Software ] Kernel: ", sistema, "  - LIBC: ",
-        libc, "  - X11: ", x11, "  - GCC: ", gcc])
-    xchat.command(comando)
-    del partes, sistema, libc, xdpyinfo, gcc, salida, error, x_version
-    del xversion, x11
+            data = gcc_output[0].split()
+            gcc = data[-1]
+    command = "".join(["say [ Software ] Kernel: ", kernel, "  - LIBC: ",
+                       libc, "  - X11: ", x11, "  - GCC: ", gcc])
+    xchat.command(command)
+    del data, kernel, libc, xdpyinfo, gcc, gcc_output, error, x_version
+    del xversion, x11, xserver
     return xchat.EAT_ALL
 
 
