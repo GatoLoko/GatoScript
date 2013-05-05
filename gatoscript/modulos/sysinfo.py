@@ -166,16 +166,16 @@ def software_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def fecha_cb(word, word_eol, userdata):
-    """Muestra en el canal activo la fecha actual.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def date_cb(word, word_eol, userdata):
+    """Shows the current date on the active channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    fecha = datetime.datetime.now()
-    xchat.command(fecha.strftime("say Son las %H:%M del %A %d de %B de %Y"))
-    del fecha
+    date = datetime.datetime.now()
+    xchat.command("".join(["say [ Date/Time ] ", str(date.isoformat())]))
+    del date
     return xchat.EAT_ALL
 
 
@@ -301,8 +301,8 @@ def unload_cb():
     xchat.unhook(HOOKGUP)
     xchat.unhook(HOOKGOS)
     xchat.unhook(HOOKGSOFT)
-    xchat.unhook(HOOKFECHA)
     xchat.unhook(HOOKGPC)
+    xchat.unhook(HOOKDATE)
     xchat.unhook(HOOKNET)
     xchat.unhook(HOOKGRAF)
     # Descarga
@@ -317,12 +317,12 @@ def unload_cb():
 HOOKGUP = xchat.hook_command('gup', uptime_cb)
 HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
-HOOKFECHA = xchat.hook_command('fecha', fecha_cb)
 HOOKGPC = xchat.hook_command('gpc', pc_cb)
 HOOKNET = xchat.hook_command('gnet', red_cb)
 HOOKGRAF = xchat.hook_command('ggraf', graficos_cb)
 # Descarga del script
 HOOKSYSINFO = xchat.hook_unload(unload_cb)
+HOOKDATE = xchat.hook_command('gdate', date_cb)
 
 
 #############################################################################
