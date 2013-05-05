@@ -279,21 +279,20 @@ def graphics_cb(word, word_eol, userdata):
 #############################################################################
 # Definimos las funciones de informacion y ayuda sobre el manejo del script
 #############################################################################
-def ayuda():
-    """Muestra la ayuda de sysinfo"""
-    mensajes = [
+def ghelp():
+    """Returns the help information."""
+    messages = [
         "",
-        "Informacion del sistema:",
-        "    /gup:    Muestra el uptime del sistema",
-        "    /gos:    Muestra la distribucion y su version",
-        "    /gsoft:  Muestra en el canal la version de los programas mas",
-        "             importantes",
-        "    /gpc:    Muestra en el canal informacion sobre el hardware del pc",
-        "    /gnet:   Muestra en el canal informacion sobre la red",
-        "    /ggraf:  Muestra en el canal la tarjeta grafica y la resolucion",
-        "    /hora:   Muestra en el canal la hora del sistema",
+        "System information:",
+        "  /gup:    Shows current system uptime",
+        "  /gos:    Shows current operating system",
+        "  /gsoft:  Shows most relevant software versions",
+        "  /ghard:  Shows some hardware information",
+        "  /gnet:   Shows network(s) information",
+        "  /ggraph: Shows graphic card(s) and screen(s) resolution(s)",
+        "  /gdate:  Shows the current system time and date",
         ""]
-    return mensajes
+    return messages
 
 
 #############################################################################
