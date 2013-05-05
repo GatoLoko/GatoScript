@@ -178,43 +178,43 @@ def date_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def pc_cb(word, word_eol, userdata):
-    """Muestra en el canal activo, informacion sobre el pc.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def hardware_cb(word, word_eol, userdata):
+    """Shows information about the computer on the active channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     # CPU
-    archivo = file("/proc/cpuinfo")
-    cpuinfo = archivo.readlines()
-    archivo.close()
+    data = file("/proc/cpuinfo")
+    cpuinfo = data.readlines()
+    data.close()
     cpu = cpuinfo[4].split(":")[1][1:-1]
-    velocidad = cpuinfo[6].split(":")[1][1:-1]
-    # Memoria
-    archivo = file("/proc/meminfo")
-    meminfo = archivo.readlines()
-    archivo.close()
-    partes = meminfo[0].split(":")[1][:-1].split(" ")
-    memoria = partes[-2]
-    unidad = partes[-1]
-    # Free
-    partes = meminfo[1].split(":")[1][:-1].split(" ")
-    freemem = partes[-2]
-    # Buffer
-    partes = meminfo[2].split(":")[1][:-1].split(" ")
-    bufmem = partes[-2]
-    # Cache
-    partes = meminfo[3].split(":")[1][:-1].split(" ")
-    cachemem = partes[-2]
-    # Usada y libre
-    usada = int(freemem) + int(bufmem) + int(cachemem)
-    libre = int(memoria) - usada
-    # Mensaje
-    comando = "".join(["say [ Informacion del PC ] CPU: ", cpu,
-        "  - Velocidad: ", velocidad, "MHz  - Memoria instalada: ",
-        str(memoria), unidad, "  - Memoria usada: ", str(libre), unidad])
-    xchat.command(comando)
+    speed = cpuinfo[6].split(":")[1][1:-1]
+    # Memory
+    data = file("/proc/meminfo")
+    meminfo = data.readlines()
+    memparts = meminfo[0].split(":")[1][:-1].split(" ")
+    data.close()
+    memory = memparts[-2]
+    units = memparts[-1]
+    ## Free
+    memparts = meminfo[1].split(":")[1][:-1].split(" ")
+    freemem = memparts[-2]
+    ## Buffer
+    memparts = meminfo[2].split(":")[1][:-1].split(" ")
+    bufmem = memparts[-2]
+    ## Cache
+    memparts = meminfo[3].split(":")[1][:-1].split(" ")
+    cachemem = memparts[-2]
+    ## Used and free
+    used = int(freemem) + int(bufmem) + int(cachemem)
+    free = int(memory) - used
+    # Message
+    command = "".join(["say [ Hardware ] CPU: ", cpu, "  - Speed: ", speed,
+                       "MHz  - Installed Memory: ", str(memory), units,
+                       "  - Used Memory: ", str(free), units])
+    xchat.command(command)
     return xchat.EAT_ALL
 
 
@@ -300,8 +300,8 @@ def unload_cb():
     xchat.unhook(HOOKGUP)
     xchat.unhook(HOOKGOS)
     xchat.unhook(HOOKGSOFT)
-    xchat.unhook(HOOKGPC)
     xchat.unhook(HOOKDATE)
+    xchat.unhook(HOOKGHARD)
     xchat.unhook(HOOKNET)
     xchat.unhook(HOOKGRAF)
     # Descarga
@@ -316,12 +316,12 @@ def unload_cb():
 HOOKGUP = xchat.hook_command('gup', uptime_cb)
 HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
-HOOKGPC = xchat.hook_command('gpc', pc_cb)
 HOOKNET = xchat.hook_command('gnet', red_cb)
 HOOKGRAF = xchat.hook_command('ggraf', graficos_cb)
 # Descarga del script
 HOOKSYSINFO = xchat.hook_unload(unload_cb)
 HOOKDATE = xchat.hook_command('gdate', date_cb)
+HOOKGHARD = xchat.hook_command('ghard', hardware_cb)
 
 
 #############################################################################
