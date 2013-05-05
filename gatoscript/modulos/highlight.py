@@ -25,8 +25,8 @@ Este modulo contiene las funciones resalte/"des-resalte" de textos para el
 GatoScript.
 """
 
-__module_name__ = "GatoScript Resaltados"
-__module_description__ = "Modulo Resaltados para GatoScript"
+__module_name__ = "GatoScript Highlight"
+__module_description__ = "Highlight module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
