@@ -19,9 +19,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo AntiSpam del GatoScript.
+AntiSpam module for GatoScript.
 
-Este modulo contiene las funciones AntiSpam para el GatoScript.
+This module contains antispam functions for GatoScript.
 """
 
 __module_name__ = "GatoScript AntiSpam"
