@@ -51,33 +51,36 @@ def color():
 
 
 #############################################################################
-# Redireccion de resaltados
+# Define highlight functions
 #############################################################################
-def resaltados_cb(word, word_eol, userdata):
-    """Detecta palabras resaltadas (en la configuracion del xchat) y copia la
-    linea que las contiene a la pestaña "GatoScript"
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def highlight_collect_cb(word, word_eol, userdata):
+    """Looks for highlighted words (set on HexChat/X-Chat settings) and copy
+    the entire line who contains it to the "GatoScript" tab.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    resaltados = xchat.get_prefs("irc_extra_hilight")
-    if resaltados != '':
-        resaltados = xchat.get_prefs("irc_extra_hilight").split(",")
-        canal = word[2]
+    if xchat.get_prefs("irc_extra_hilight") != '':
+        highlight = xchat.get_prefs("irc_extra_hilight").split(",")
+        # Extract some text to compose the output string
+        channel = word[2]
         nick = word[0].split("!")[0][1:]
-        for resaltado in resaltados:
-            palabra = re.compile(resaltado, re.IGNORECASE)
-            if palabra.search(word_eol[3][1:]):
+        text = word_eol[3][1:]
+        # If there is any highlighted word, compose the string and write it to
+        # the script query
+        for highlighted in highlight:
+            exp = re.compile(highlighted, re.IGNORECASE)
+            if exp.search(text):
                 if word[3] in action_txt:
-                    auxiliar.priv_linea("".join([nick, "ha mencionado",
-                        " \003", color, resaltado, "\003 en un privado; ",
-                        nick, " ", word_eol[4][:-1]]))
+                    helper.query_line("".join([
+                        nick, "has mentioned \003", color(),
+                        highlighted, "\003 in a query: <", nick, "> ",
+                        word_eol[4][:-1]]))
                 else:
-                    auxiliar.priv_linea("".join([nick,
-                        " ha mencionado ", "\003", color, resaltado,
-                        "\003 en ", canal, ": <", nick, "> ",
-                         word_eol[3][1:]]))
+                    helper.query_line("".join([
+                        nick, " has mentioned \003", color(), highlighted,
+                        "\003 in ", channel, ": <", nick, "> ", text]))
     return xchat.EAT_NONE
 
 
