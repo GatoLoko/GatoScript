@@ -62,36 +62,34 @@ import helper
 # Definimos las funciones para obtener la informacion del sistema
 #############################################################################
 def uptime_cb(word, word_eol, userdata):
-    """Muestra en el canal activo el uptime del pc.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Show system uptime in the active channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    archivo_uptime = file("/proc/uptime", "r")
-    lineas_uptime = archivo_uptime.readline()
-    archivo_uptime.close()
-    uptime = eval((lineas_uptime.split())[0])
-    resto_dias = uptime % 86400
-    dias = int(uptime / 86400)
-    if dias < 1:
-        horas = int(uptime / 3600)
-        resto_horas = int(uptime % 3600)
-        minutos = int(resto_horas / 60)
-        comando = "".join(["say Uptime: ", str(horas), " horas y ",
-            str(minutos), "minutos"])
-        xchat.command(comando)
+    uptime_data = file("/proc/uptime", "r").readlines()
+    uptime = float(uptime_data[0].split()[0])
+    days_remainder = uptime % 86400
+    days = int(uptime / 86400)
+    if days < 1:
+        hours = int(uptime / 3600)
+        hours_remainder = int(uptime % 3600)
+        minutes = int(hours_remainder / 60)
+        command = "".join(["say Uptime: ", str(hours), " hours and ",
+                           str(minutes), "minutes"])
     else:
-        if dias > 1:
-            cadena_dias = "dias"
+        if days > 1:
+            days_string = "days"
         else:
-            cadena_dias = "dia"
-        horas = int(resto_dias / 3600)
-        resto_horas = int(resto_dias % 3600)
-        minutos = int(resto_horas / 60)
-        comando = "".join(["say Uptime: ", str(dias), " ", cadena_dias, ", ",
-            str(horas), " horas y ", str(minutos), " minutos"])
-        xchat.command(comando)
+            days_string = "day"
+        hours = int(days_remainder / 3600)
+        hours_remainder = int(days_remainder % 3600)
+        minutes = int(hours_remainder / 60)
+        command = "".join(["say [ Uptime ] ", str(days), " ", days_string,
+                           ", ", str(hours), " hours and ", str(minutes),
+                           " minutes"])
+    xchat.command(command)
     return xchat.EAT_ALL
 
 
