@@ -311,8 +311,6 @@ def unload_cb():
     xchat.unhook(HOOKDATE)
     xchat.unhook(HOOKGHARD)
     xchat.unhook(HOOKNET)
-    # Descarga
-    xchat.unhook(HOOKSYSINFO)
     xchat.unhook(HOOKGRAPH)
 
 
@@ -324,8 +322,6 @@ def unload_cb():
 HOOKGUP = xchat.hook_command('gup', uptime_cb)
 HOOKGOS = xchat.hook_command('gos', os_cb)
 HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
-# Descarga del script
-HOOKSYSINFO = xchat.hook_unload(unload_cb)
 HOOKDATE = xchat.hook_command('gdate', date_cb)
 HOOKGHARD = xchat.hook_command('ghard', hardware_cb)
 HOOKNET = xchat.hook_command('gnet', network_cb)
