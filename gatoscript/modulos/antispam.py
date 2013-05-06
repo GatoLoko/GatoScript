@@ -91,50 +91,50 @@ def antispam_reload():
 # cadenas definidas en el archivo antispam.conf
 #############################################################################
 def antispam_cb(word, word_eol, userdata):
-    """Compara las lineas que se reciben con una lista de filtros y elimina
-    aquellas que coincidan. Ademas, de forma opcional, expulsa a los spambots.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Compare received messages with a list of filters and remove those who
+    match. Also, optionally, expel the spamer.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     global SPAMBOTS
     global ANTISPAM
-    global CANALES
-    # Comprobamos si el mensaje se ha recibido en un canal protegido Y si lo
-    # esta comprobamos tambien que el antispam esta activado
-    if word[2] in CANALES and ANTISPAM == 1:
-        for spam_exp in compilados:
+    global CHANNELS
+    # Check whether the message was receiven on a protected channel and the
+    # antispam is enabled. If so, expel the spammer
+    if word[2] in CHANNELS and ANTISPAM == 1:
+        for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 ban = "1"
-                mensaje = " Spam/Troll"
-                auxiliar.expulsa(mensaje, ban, word)
-                # Una vez expulsado el spammer, devolvemos el control al
-                # cliente para que no se ejecute la comprobacion de privados
-                # cuando el mensaje se ha recibido en un canal publico.
+                message = " Spam/Troll"
+                helper.expel(message, ban, word)
+                # Once the spammer is expelled, return to X-Chat/Hexchat so
+                # the check for private messages isn't executed when it's a
+                # public channel message.
                 return xchat.EAT_NONE
-    # Comprobamos si el mensaje se ha recibido en un privado Y si lo esta
-    # comprobamos tambien que el antibots esta activado
+    # Check wheter the message was received in a private conversation and
+    # spambots protection is enabled.
     elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
-        # Si es asi, comprobamos si el mensaje contiene spam
-        for spam_exp in compilados:
+        # If so, check wheter there it contains spam
+        for spam_exp in COMPILED_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
-                # Si contiene spam, expulsamos al bot responsable
+                # If there is spam, expel the author
                 ban = "1"
-                mensaje = " Bot spammer"
-                auxiliar.expulsa(mensaje, ban, word)
-                # Quitamos el nick del spammer de la lista de niños buenos
+                message = " Spambot"
+                helper.expel(message, ban, word)
+                # Remove the author from the list of "good boys"
                 nick = word[0].split("!")[0].split(":")[1]
                 sql = "SELECT goodboy FROM goodboys"
-                if nick in auxiliar.gatodb_cursor_execute(sql):
+                if nick in helper.gatodb_cursor_execute(sql):
                     sql = "DELETE FROM goodboys WHERE goodboy IN (?)"
-                    auxiliar.gatodb_cursor_execute(sql, (nick,))
-                    auxiliar.gatodb_commit()
-                # Y devolvemos el control a X-Chat tragandonos el mensaje
+                    helper.gatodb_cursor_execute(sql, (nick,))
+                    helper.gatodb_commit()
+                # And return to X-Chat/Hexchat eating the entire message
                 return xchat.EAT_ALL
-    # Si se ha llegado hasta aqui, es que estan desactivadas estas protecciones
-    # o no hay spam o no esta en un canal protegido asi que volvemos a X-Chat
-    # sin hacer nada.
+    # If this point is reached, this protections are disabled OR there is no
+    # spam OR the message is from an unprotected channel, so return to
+    # X-chat/Hexchat without doing anything
     else:
         return xchat.EAT_NONE
 
