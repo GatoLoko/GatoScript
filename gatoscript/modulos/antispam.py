@@ -40,27 +40,23 @@ import helper
 
 
 #############################################################################
-# Inicializamos el modulo
+# Initialize the module
 #############################################################################
-# Cargamos la lista de filtros para el antispam y compilamos las regexps
-if auxiliar.CONECTADO == 1:
-    ANTISPAM = int(auxiliar.lee_conf("protecciones", "spam"))
-    SPAMBOTS = int(auxiliar.lee_conf("protecciones", "spambots"))
-    CANALES = []
-    for canal in auxiliar.gatodb_cursor_execute("SELECT canales FROM canales"):
-        CANALES.append(canal[0])
-    filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
-    compilados = []
-    for filtro in filtros:
-        compilados.append(re.compile("".join([".*", filtro[0], ".*"]),
-                                     re.IGNORECASE))
+# Load the filter list and compile the regular expressions
+if helper.CONNECTED == 1:
+    ANTISPAM = int(helper.conf_read("spam", "protections"))
+    SPAMBOTS = int(helper.conf_read("spambots", "protections"))
+    CHANNELS = helper.conf_read("channels", "protections").split(",")
+    filters = helper.gatodb_cursor_execute("SELECT filtro FROM filtros")
+    COMP_FILTERS = []
+    for item in filters:
+        COMP_FILTERS.append(re.compile("".join([".*", filtro[0], ".*"]),
+                                       re.IGNORECASE))
 else:
-    mensaje = ''.join(["AntiSpam esta desactivado o no se puede cargar la",
-        " lista de filtros"])
-    auxiliar.gprint(mensaje)
+    helper.gprint("AntiSpam is disabled or couldn't read the filters list")
     ANTISPAM = 0
     SPAMBOTS = 0
-    CANALES = ""
+    CHANNELS = []
 
 
 #############################################################################
