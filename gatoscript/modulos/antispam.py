@@ -202,33 +202,6 @@ def antispam_list_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def testspam_cb(word, word_eol, userdata):
-    """Envia un mensaje a todos los usuarios del canal que no esten en la
-    lista de niños buenos para ver si responden con spam.
-    """
-    userlist = xchat.get_list("users")
-    goodboys = []
-    contexto_orig = xchat.find_context(server=None, channel=None)
-    for row in auxiliar.gatodb_cursor_execute("SELECT goodboy FROM goodboys"):
-        goodboys.append(row[0])
-    for usuario in userlist:
-        if usuario.nick not in goodboys:
-            #print usuario.nick
-            contexto = xchat.find_context(channel=usuario.nick)
-            if contexto is None:
-                xchat.command("".join(["query -nofocus ", usuario.nick]))
-                contexto = xchat.find_context(channel=usuario.nick)
-            botmensaje = auxiliar.lee_conf("protecciones", "botmensaje")
-            contexto.command("".join(["say ", botmensaje]))
-            contexto.command("close")
-            sql = "".join(["INSET INTO goodboys VALUES (NULL, '", usuario.nick,
-                           "')"])
-            auxiliar.gatodb_cursor_execute(sql)
-    auxiliar.gatodb_commit()
-    contexto_orig.set()
-    return xchat.EAT_NONE
-
-
 #############################################################################
 # Definimos la funcion de informacion y ayuda sobre el manejo del modulo
 #############################################################################
