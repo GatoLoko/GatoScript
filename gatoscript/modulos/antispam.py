@@ -60,40 +60,29 @@ else:
 
 
 #############################################################################
-# Definimos las funciones de uso interno en el modulo
+# Define internal use functions
 #############################################################################
 def antispam_reload():
-    """Recarga la lista de filtros antispam para aplicar los cambios o
-    retomar una lista anterior
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Utilizamos las variables globales porque esto modifica el
-    # funcionamiento del modulo completo
+    """Reload the antispam filters list to apply changes"""
+    # Use the global variables so this change applies to the wole module
     global ANTISPAM
     global SPAMBOTS
-    global CANALES
-    if auxiliar.CONECTADO == 1:
-        ANTISPAM = int(auxiliar.lee_conf("protecciones", "spam"))
-        SPAMBOTS = int(auxiliar.lee_conf("protecciones", "spambots"))
-        CANALES = []
-        sql = "SELECT canales FROM canales"
-        for canal in auxiliar.gatodb_cursor_execute(sql):
-            CANALES.append(canal[0])
-        # Cargamos la nueva lista de filtros y compilamos las regexps
-        filtros = auxiliar.gatodb_cursor_execute("SELECT filtro FROM filtros")
-        compilados = []
-        for filtro in filtros:
-            compilados.append(re.compile("".join([".*", filtro[0], ".*"]),
-                                         re.IGNORECASE))
+    global CHANNELS
+    if helper.CONNECTED == 1:
+        ANTISPAM = int(helper.lee_conf("spam", "protections"))
+        SPAMBOTS = int(helper.lee_conf("spambots", "protections"))
+        CHANNELS = helper.conf_read("channels", "protections")
+        # Load the new filter list and compile the regexps
+        filters = helper.gatodb_cursor_execute("SELECT filtro FROM filtros")
+        COMP_FILTERS = []
+        for item in filters:
+            COMP_FILTERS.append(re.compile("".join([".*", item[0], ".*"]),
+                                               re.IGNORECASE))
     else:
-        mensaje = "No se pueden recargar los filtros, AntiSpam desactivado"
-        auxiliar.gprint(mensaje)
+        helper.gprint("Failed to reload filters, AntiSpam disabled")
         ANTISPAM = 0
         SPAMBOTS = 0
-        CANALES = ""
+        CHANNELS = []
 
 
 #############################################################################
