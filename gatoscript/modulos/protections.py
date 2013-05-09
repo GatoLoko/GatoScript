@@ -250,7 +250,7 @@ def ghelp():
 
 
 ##############################################################################
-# Define the function to to unload this module. This should be called from the
+# Define the function to unload this module. This should be called from the
 # main module unload function
 ##############################################################################
 def unload_cb(userdata):
