@@ -110,25 +110,22 @@ def azureus_cb(word, word_eol, userdata):
 
 
 def transmission_cb(word, word_eol, userdata):
-    """Lee el archivo stats.benc (estadisticas) de Transmission y muestra parte
-    de la informacion en el canal activo.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Reads transmission's stats file and show some of the statistics in the
+    active channel
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     if path.exists(_TRANSMISSIONSTATS):
-        archivo = file(_TRANSMISSIONSTATS, "r")
-        lineas = archivo.readlines()
-        archivo.close()
-        descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]), 1024)
-        subido = auxiliar.unidades(int(lineas[5].split(":")[1][1:-1]), 1024)
-        xchat.command("".join(["say ( Transmission ) Descargado: ", descargado,
-                               " - Subido: ", subido]))
+        lines = open(_TRANSMISSIONSTATS, "r").readlines()
+        downloaded = helper.units(int(lines[1].split(":")[1][1:-3]), 1024)
+        uploaded = helper.units(int(lines[5].split(":")[1][1:-1]), 1024)
+        xchat.command("".join(["say ( Transmission ) Downloaded: ", downloaded,
+                               " - Uploaded: ", uploaded]))
     else:
-        auxiliar.gprint("".join(["No existe el archivo de estadísticas en sus",
-                        " ubicaciones habituales. Por favor, compruebe su",
-                        " configuración de Transmission."]))
+        helper.gprint("".join(["There is no stats file. Please, check your",
+                        " Transmission setting"]))
     return xchat.EAT_ALL
 
 
