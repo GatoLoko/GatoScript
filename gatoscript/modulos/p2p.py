@@ -36,8 +36,7 @@ import helper
 import xml.dom.minidom
 
 #############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Define some environment variables
 #############################################################################
 _HOME = path.expanduser("~")
 _AMULESIG = "".join([_HOME, "/.aMule/amulesig.dat"])
@@ -46,7 +45,7 @@ _TRANSMISSIONSTATS = "".join([_HOME, "/.config/transmission/stats.json"])
 
 
 ##############################################################################
-# Inicializamos el modulo
+# Module initialization
 ##############################################################################
 
 
@@ -153,10 +152,8 @@ def unload():
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 #############################################################################
-# Peer to Peer
 HOOKAMULE = xchat.hook_command('amule', amule_cb)
 HOOKVUZE = xchat.hook_command('vuze', vuze_cb)
 HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
