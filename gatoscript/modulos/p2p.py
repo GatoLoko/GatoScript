@@ -54,32 +54,30 @@ _TRANSMISSIONSTATS = "".join([_HOME, "/.config/transmission/stats.json"])
 ## Definimos las funciones para mostrar informacion P2P
 ##############################################################################
 def amule_cb(word, word_eol, userdata):
-    """Lee el archivo onlinesig (firma online) de amule y muestra parte de la
-    informacion en el canal activo.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Read aMule's onlinesig file and shows up/down speeds and total
+    downloaded in the active channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     if path.exists(_AMULESIG):
-        archivo = file(_AMULESIG, "r")
-        lineas_amule = archivo.readlines()
-        archivo.close()
-        if lineas_amule[0] == "0":
-            auxiliar.gprint("No estas conectado a aMule")
+        lines = open(_AMULESIG, "r").readlines()
+        if lines[0] == "0":
+            helper.gprint("aMule isn't connected")
         else:
-            vdescarga = (lineas_amule[6])[0:-1]
-            vsubida = (lineas_amule[7])[0:-1]
-            total_descarga = auxiliar.unidades(int(lineas_amule[11]), 1024)
-            version = lineas_amule[13][0:-1]
+            down_speed = (lines[6])[0:-1]
+            up_speed = (lines[7])[0:-1]
+            total_down = helper.units(int(lines[11]), 1024)
+            version = lines[13][0:-1]
             xchat.command("".join(["say ( aMule ", version, " )",
-                                   " Descarga: ", vdescarga, "KB/s -",
-                                   " Subida: ", vsubida, "KB/s -"
-                                   " Total descargado: ", total_descarga]))
+                                   " Download: ", down_speed, "KB/s -",
+                                   " Upload: ", up_speed, "KB/s -"
+                                   " Downloaded: ", total_down]))
     else:
-        parte1 = "No existe el archivo {0}, compruebe que ".format(_AMULESIG)
-        parte2 = "esté activada la firma online en la configuracion de aMule."
-        auxiliar.gprint("{0}{1}".format(parte1, parte2))
+        helper.gprint([_AMULESIG, " file does not exist, check whether you",
+                       " have 'Online signature' enabled in your aMule",
+                       " settings"])
     return xchat.EAT_ALL
 
 
