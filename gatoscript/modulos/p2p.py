@@ -162,16 +162,11 @@ def help():
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to unload this module. This should be called from the
+# main module unload function
 #############################################################################
-def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del modulo al
-    descargarse el script
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Desconectamos los comandos
-    # Peer to Peer
+def unload():
+    """This function disconects all module functions"""
     xchat.unhook(HOOKAMULE)
     xchat.unhook(HOOKAZUREUS)
     xchat.unhook(HOOKTRANSMISSION)
