@@ -106,8 +106,8 @@ def vuze_cb(word, word_eol, userdata):
 
 
 def transmission_cb(word, word_eol, userdata):
-    """Reads transmission's stats file and show some of the statistics in the
-    active channel
+    """Reads transmission's stats file and show total Upload and Download in
+    the active channel
     Arguments:
     word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
