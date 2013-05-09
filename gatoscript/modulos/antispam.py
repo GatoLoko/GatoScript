@@ -169,21 +169,22 @@ def antispam_del_cb(word, word_eol, userdata):
     """Elimina un filtro de la lista que se usa con el sistema antispam.
     Esta funcion no verifica si hay duplicados, elimina todas las ocurrencias
     del filtro.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
+    if helper.CONNECTED == 1:
     if auxiliar.CONECTADO == 1:
         sql = "".join(["DELETE FROM filtros WHERE filtro='", word_eol[1], "'"])
-        auxiliar.gatodb_cursor_execute(sql)
-        auxiliar.gatodb_commit()
-        mensaje = "".join(["Se ha eliminado ", word_eol[1], "de la lista de",
-                           " filtros"])
-        auxiliar.priv_linea(mensaje)
+        helper.gatodb_cursor_execute(sql)
+        helper.gatodb_commit()
+        message = "".join([word_eol[1], " has been deleted from AntiSpam",
+                           " filters"])
+        helper.query_line(message)
         antispam_reload()
     else:
-        auxiliar.gprint("Active el sistema AntiSpam antes de añadir filtros")
+        helper.gprint("Enable the AntiSpam system before deleting filters")
     return xchat.EAT_ALL
 
 
