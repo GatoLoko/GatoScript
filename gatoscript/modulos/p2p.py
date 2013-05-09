@@ -27,7 +27,7 @@ desde el GatoScript.
 """
 
 __module_name__ = "GatoScript P2P"
-__module_description__ = "Modulo P2P para el GatoScript"
+__module_description__ = "P2P module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
