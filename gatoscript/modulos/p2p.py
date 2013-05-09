@@ -183,9 +183,9 @@ HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/Descargas"')
-xchat.command('menu ADD "GatoScript/Descargas/aMule" "amule"')
-xchat.command('menu ADD "GatoScript/Descargas/Azureus" "azureus"')
-xchat.command('menu ADD "GatoScript/Descargas/Transmission" "transmission"')
+xchat.command('menu ADD "GatoScript/Downloads"')
+xchat.command('menu ADD "GatoScript/Downloads/aMule" "amule"')
+xchat.command('menu ADD "GatoScript/Downloads/Azureus" "azureus"')
+xchat.command('menu ADD "GatoScript/Downloads/Transmission" "transmission"')
