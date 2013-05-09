@@ -20,10 +20,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo P2P del GatoScript.
+P2P module for GatoScript.
 
-Este modulo contiene las funciones para acceder a informacion de clientes P2P
-desde el GatoScript.
+This module contains function to interact with P2P clients.
 """
 
 __module_name__ = "GatoScript P2P"
