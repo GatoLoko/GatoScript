@@ -30,10 +30,10 @@ __module_name__ = "GatoScript P2P"
 __module_description__ = "Modulo P2P para el GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria y funciones que necesitamos
+# Load all needed libraries
 import xchat
 from os import path
-import auxiliar
+import helper
 import xml.dom.minidom
 
 #############################################################################
