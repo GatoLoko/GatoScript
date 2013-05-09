@@ -87,9 +87,8 @@ def antispam_reload():
 
 
 #############################################################################
-# Definimos la funcion antispam para filtrado de mensajes privados.
-# El sistema antispam eliminara todas las lineas que contengan alguna de las
-# cadenas definidas en el archivo antispam.conf
+# Define AntiSpam functions to filter messages.
+# The AntiSpam system removes every line matching with one or more filters.
 #############################################################################
 def antispam_cb(word, word_eol, userdata):
     """Compare received messages with a list of filters and remove those who
