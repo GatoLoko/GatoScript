@@ -102,7 +102,7 @@ def vuze_cb(word, word_eol, userdata):
         del down, down_speed, up, up_speed, glob, stats, dom1
     else:
         helper.gprint("".join([_VUZESTATS, " file does not exist, check your",
-                                 " Vuze settings"]))
+                               " Vuze settings"]))
     return xchat.EAT_ALL
 
 
@@ -122,7 +122,7 @@ def transmission_cb(word, word_eol, userdata):
                                " - Uploaded: ", uploaded]))
     else:
         helper.gprint("".join(["There is no stats file. Please, check your",
-                        " Transmission setting"]))
+                               " Transmission setting"]))
     return xchat.EAT_ALL
 
 
