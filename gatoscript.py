@@ -23,7 +23,7 @@ GatoScript's main module.
 """
 
 __module_name__ = "GatoScript"
-__module_description__ = "GatoScript para XChat"
+__module_description__ = "GatoScript for HexChat and X-Chat "
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
