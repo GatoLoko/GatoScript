@@ -42,7 +42,7 @@ import xml.dom.minidom
 #############################################################################
 _HOME = path.expanduser("~")
 _AMULESIG = "".join([_HOME, "/.aMule/amulesig.dat"])
-_AZUREUSSTATS = "".join([_HOME, "/.azureus/Azureus_Stats.xml"])
+_VUZESTATS = "".join([_HOME, "/.azureus/Azureus_Stats.xml"])
 _TRANSMISSIONSTATS = "".join([_HOME, "/.config/transmission/stats.json"])
 
 
@@ -84,28 +84,28 @@ def amule_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
-def azureus_cb(word, word_eol, userdata):
-    """Lee el archivo Azureus_Stats.xml (estadisticas) de azureus y muestra
-    parte de la informacion en el canal activo.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+def vuze_cb(word, word_eol, userdata):
+    """Read Vuze's statistics file and shows Upload and Download speed in the
+    active channel.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if path.exists(_AZUREUSSTATS):
-        dom1 = xml.dom.minidom.parse(_AZUREUSSTATS)
+    if path.exists(_VUZESTATS):
+        dom1 = xml.dom.minidom.parse(_VUZESTATS)
         stats = dom1.getElementsByTagName('STATS')[0]
         glob = stats.getElementsByTagName('GLOBAL')[0]
-        descarga = glob.getElementsByTagName('DOWNLOAD_SPEED')[0]
-        vdescarga = descarga.getElementsByTagName('TEXT')[0].firstChild.data
-        subida = glob.getElementsByTagName('UPLOAD_SPEED')[0]
-        vsubida = subida.getElementsByTagName('TEXT')[0].firstChild.data
-        xchat.command("".join(["say ( Azureus ) Descarga: ", vdescarga, " - ",
-                               "Subida: ", vsubida]))
-        del descarga, vdescarga, subida, vsubida, glob, stats, dom1
+        down = glob.getElementsByTagName('DOWNLOAD_SPEED')[0]
+        down_speed = down.getElementsByTagName('TEXT')[0].firstChild.data
+        up = glob.getElementsByTagName('UPLOAD_SPEED')[0]
+        up_speed = up.getElementsByTagName('TEXT')[0].firstChild.data
+        xchat.command("".join(["say ( Vuze ) Download: ", down_speed, " - ",
+                               "Upload: ", up_speed]))
+        del down, down_speed, up, up_speed, glob, stats, dom1
     else:
-        auxiliar.gprint("".join(["No existe el archivo ", _AZUREUSSTATS, ",",
-                                 " compruebe su configuración de Azureus"]))
+        helper.gprint("".join([_VUZESTATS, " file does not exist, check your",
+                                 " Vuze settings"]))
     return xchat.EAT_ALL
 
 
@@ -138,7 +138,7 @@ def help():
     "",
     "P2P:",
     "    /amule:             Shows aMule stats",
-    "    /azureus:           Shows Azureus stats",
+    "    /vuze:              Shows Vuze stats",
     "    /transmission:      Shows Transmission stats",
     ""]
     return messages
@@ -151,7 +151,7 @@ def help():
 def unload():
     """This function disconects all module functions"""
     xchat.unhook(HOOKAMULE)
-    xchat.unhook(HOOKAZUREUS)
+    xchat.unhook(HOOKVUZE)
     xchat.unhook(HOOKTRANSMISSION)
 
 
@@ -161,7 +161,7 @@ def unload():
 #############################################################################
 # Peer to Peer
 HOOKAMULE = xchat.hook_command('amule', amule_cb)
-HOOKAZUREUS = xchat.hook_command('azureus', azureus_cb)
+HOOKVUZE = xchat.hook_command('vuze', vuze_cb)
 HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
 
 
@@ -170,5 +170,5 @@ HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
 #############################################################################
 xchat.command('menu ADD "GatoScript/Downloads"')
 xchat.command('menu ADD "GatoScript/Downloads/aMule" "amule"')
-xchat.command('menu ADD "GatoScript/Downloads/Azureus" "azureus"')
+xchat.command('menu ADD "GatoScript/Downloads/Vuze" "vuze"')
 xchat.command('menu ADD "GatoScript/Downloads/Transmission" "transmission"')
