@@ -34,8 +34,7 @@ import re
 import helper
 
 #############################################################################
-# Definimos algunas variables que describen el entorno de trabajo y librerias
-# opcionales.
+# Define some environment variables
 #############################################################################
 
 
@@ -241,8 +240,7 @@ def unload():
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 #############################################################################
 
 # Antispam
