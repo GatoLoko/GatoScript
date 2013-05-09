@@ -219,17 +219,14 @@ def ghelp():
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to unload this module. This should be called from the
+# main module unload function
 #############################################################################
-def unload_cb(userdata):
-    """Esta funcion debe desconectar todas las funciones del modulo al
-    descargarse el script
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Guardamos los cambios en la base de datos
-    auxiliar.gatodb_commit()
-    # Desconectamos las funciones AntiSpam
+def unload():
+    """This function disconects all module functions"""
+    # Store all pending changes to the database
+    helper.gatodb_commit()
+    # Disconnect everything else
     xchat.unhook(HOOKANTISPAM)
     xchat.unhook(HOOKANTIADD)
     xchat.unhook(HOOKANTILIST)
