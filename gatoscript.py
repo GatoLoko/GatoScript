@@ -19,9 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
-
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+GatoScript's main module.
 """
 
 __module_name__ = "GatoScript"
