@@ -43,8 +43,7 @@ import xml.dom.minidom
 _HOME = path.expanduser("~")
 _AMULESIG = "".join([_HOME, "/.aMule/amulesig.dat"])
 _AZUREUSSTATS = "".join([_HOME, "/.azureus/Azureus_Stats.xml"])
-_TRANSMISSIONSTATSOLD = "".join([_HOME, "/.transmission/stats.benc"])
-_TRANSMISSIONSTATSNEW = "".join([_HOME, "/.config/transmission/stats.json"])
+_TRANSMISSIONSTATS = "".join([_HOME, "/.config/transmission/stats.json"])
 
 
 ##############################################################################
@@ -118,21 +117,8 @@ def transmission_cb(word, word_eol, userdata):
     word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
     userdata -- variable opcional que se puede enviar a un hook (ignorado)
     """
-    if path.exists(_TRANSMISSIONSTATSOLD):
-        textos = [[1, 3], [17, 3], [12, 3], [15, 3], [14, 3], [15, 2]]
-        parte = []
-        archivo = file(_TRANSMISSIONSTATSOLD, "r")
-        partes = archivo.readline().split(':')
-        #print partes
-        archivo.close()
-        for i in range(1, len(partes)):
-            parte.append(partes[i][textos[i][0]:-textos[i][1]])
-        descargado = auxiliar.unidades(int(parte[0]), 1024)
-        subido = auxiliar.unidades(int(parte[4]), 1024)
-        xchat.command("".join(["say ( Transmission ) Descargado: ", descargado,
-                               " - Subido: ", subido]))
-    elif path.exists(_TRANSMISSIONSTATSNEW):
-        archivo = file(_TRANSMISSIONSTATSNEW, "r")
+    if path.exists(_TRANSMISSIONSTATS):
+        archivo = file(_TRANSMISSIONSTATS, "r")
         lineas = archivo.readlines()
         archivo.close()
         descargado = auxiliar.unidades(int(lineas[1].split(":")[1][1:-3]), 1024)
