@@ -204,18 +204,18 @@ def antispam_list_cb(word, word_eol, userdata):
 
 
 #############################################################################
-# Definimos la funcion de informacion y ayuda sobre el manejo del modulo
+# Define the help function
 #############################################################################
-def ayuda():
-    """Muestra la ayuda de las funciones antispam para GatoScript"""
-    mensajes = [
+def ghelp():
+    """Returns the help information."""
+    messages = [
     "",
     "Antispam:",
-    "    /antiadd <cadena>: Añade una cadena al filtro AntiSpam",
-    "    /antidel <cadena>: Elimina una cadena del filtro AntiSpam",
-    "    /antilist:     Muestra la lista de filtros",
+    "    /antiadd <string>:  Adds a new AntiSpam filter",
+    "    /antidel <cadena>:  Removes an existing AntiSpam filter",
+    "    /antilist:          Lists current AntiSpam filters",
     ""]
-    return mensajes
+    return messages
 
 
 #############################################################################
