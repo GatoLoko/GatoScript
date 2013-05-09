@@ -143,24 +143,25 @@ def antispam_add_cb(word, word_eol, userdata):
     """Añade un nuevo filtro al final de la lista para usarse con el sistema
     antispam. Esta funcion no comprueba si el nuevo filtro ya existe,
     simplemente lo añade al final.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if auxiliar.CONECTADO == 1:
+    if helper.CONNECTED == 1:
         sql = "".join(['INSERT INTO filtros ("id", "filtro", "creado",',
                        '"usado", "veces") VALUES (null, "', word[1],
                        '", date("now"), date("now"), "1")'])
         print(sql)
-        auxiliar.gatodb_cursor_execute(sql)
-        auxiliar.gatodb_commit()
-        mensaje = "".join(["Se ha añadido ", word[1], "a la lista de filtros"])
-        auxiliar.priv_linea(mensaje)
-        del mensaje
+        helper.gatodb_cursor_execute(sql)
+        helper.gatodb_commit()
+        message = "".join([word[1], " filter has been added to AntiSpam",
+                           " filters"])
+        helper.query_line(message)
+        del message
         antispam_reload()
     else:
-        auxiliar.gprint("Active el sistema AntiSpam antes de quitar filtros")
+        helper.gprint("Enable the AntiSpam system before adding filters")
     return xchat.EAT_ALL
 
 
