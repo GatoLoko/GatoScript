@@ -253,7 +253,7 @@ def ghelp():
 # Define the function to unload this module. This should be called from the
 # main module unload function
 ##############################################################################
-def unload_cb(userdata):
+def unload():
     """This function disconects all module functions"""
     xchat.unhook(HOOKANTINOTICE)
     xchat.unhook(HOOKANTIDRONE)
@@ -267,8 +267,6 @@ def unload_cb(userdata):
 ##############################################################################
 # Hook all callbacks with their respective commands
 ##############################################################################
-
-# protections
 HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
 HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
 HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
