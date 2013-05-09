@@ -175,7 +175,6 @@ def antispam_del_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     if helper.CONNECTED == 1:
-    if auxiliar.CONECTADO == 1:
         sql = "".join(["DELETE FROM filtros WHERE filtro='", word_eol[1], "'"])
         helper.gatodb_cursor_execute(sql)
         helper.gatodb_commit()
@@ -245,7 +244,6 @@ HOOKANTISPAM = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None,
 HOOKANTIADD = xchat.hook_command('antiadd', antispam_add_cb)
 HOOKANTILIST = xchat.hook_command('antilist', antispam_list_cb)
 HOOKANTIDEL = xchat.hook_command('antidel', antispam_del_cb)
-HOOKTEST = xchat.hook_command('test2', testspam_cb)
 
 
 #############################################################################
