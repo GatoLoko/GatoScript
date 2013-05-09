@@ -51,20 +51,6 @@ _TRANSMISSIONSTATSNEW = "".join([_HOME, "/.config/transmission/stats.json"])
 # Inicializamos el modulo
 ##############################################################################
 
-##############################################################################
-## Definimos las funciones de informacion y ayuda sobre el manejo del script
-##############################################################################
-def ayuda_cb(word, word_eol, userdata):
-    """Muestra la ayuda de las funciones P2P"""
-    mensajes = [
-    "",
-    "P2P:",
-    "    /amule:             Muestra la informacion de aMule",
-    "    /azureus:           Muestra la informacion de Azureus",
-    "    /transmission:      Muestra la informacion de Transmission",
-    ""]
-    return mensajes
-
 
 ##############################################################################
 ## Definimos las funciones para mostrar informacion P2P
@@ -158,6 +144,21 @@ def transmission_cb(word, word_eol, userdata):
                         " ubicaciones habituales. Por favor, compruebe su",
                         " configuración de Transmission."]))
     return xchat.EAT_ALL
+
+
+##############################################################################
+# Define the help function
+##############################################################################
+def help():
+    """Returns the help information"""
+    messages = [
+    "",
+    "P2P:",
+    "    /amule:             Shows aMule stats",
+    "    /azureus:           Shows Azureus stats",
+    "    /transmission:      Shows Transmission stats",
+    ""]
+    return messages
 
 
 #############################################################################
