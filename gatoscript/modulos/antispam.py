@@ -249,12 +249,12 @@ HOOKTEST = xchat.hook_command('test2', testspam_cb)
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add menu options
 #############################################################################
 xchat.command('menu ADD "GatoScript/-"')
 xchat.command('menu ADD "GatoScript/AntiSpam"')
-xchat.command('menu ADD "GatoScript/AntiSpam/Lista de filtros" "antilist"')
-xchat.command('menu ADD "GatoScript/AntiSpam/Añadir filtro" "getstr \b \
-              "antiadd" "Filtro:""')
-xchat.command('menu ADD "GatoScript/AntiSpam/Eliminar filtro" "getstr \b \
-              "antidel" "Filtro:""')
+xchat.command('menu ADD "GatoScript/AntiSpam/Filters list" "antilist"')
+xchat.command('menu ADD "GatoScript/AntiSpam/Add filter" "getstr \b \
+              "antiadd" "Filter:""')
+xchat.command('menu ADD "GatoScript/AntiSpam/Remove filter" "getstr \b \
+              "antidel" "Filter:""')
