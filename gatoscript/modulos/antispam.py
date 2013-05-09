@@ -189,18 +189,17 @@ def antispam_del_cb(word, word_eol, userdata):
 
 
 def antispam_list_cb(word, word_eol, userdata):
-    """Muestra, en la pestaña "GatoScript", todas las lineas de la lista de
-    filtros antispam.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Shows the list of currently active AntiSapm filters.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     sql = "SELECT id, filtro FROM filtros"
-    for filtro in auxiliar.gatodb_cursor_execute(sql):
-        mensaje = u"".join(["Filtro ", str(filtro[0]), ": ", filtro[1]])
-        auxiliar.priv_linea(mensaje)
-    del mensaje
+    for item in helper.gatodb_cursor_execute(sql):
+        message = u"".join([str(item[0]), ": ", item[1]])
+        helper.query_line(message)
+    del message
     return xchat.EAT_ALL
 
 
