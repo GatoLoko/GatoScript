@@ -130,13 +130,12 @@ def transmission_cb(word, word_eol, userdata):
 ##############################################################################
 def help():
     """Returns the help information"""
-    messages = [
-    "",
-    "P2P:",
-    "    /amule:             Shows aMule stats",
-    "    /vuze:              Shows Vuze stats",
-    "    /transmission:      Shows Transmission stats",
-    ""]
+    messages = ["",
+                "P2P:",
+                "    /amule:             Shows aMule stats",
+                "    /vuze:              Shows Vuze stats",
+                "    /transmission:      Shows Transmission stats",
+                ""]
     return messages
 
 
