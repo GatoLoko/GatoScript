@@ -140,9 +140,8 @@ def antispam_cb(word, word_eol, userdata):
 
 
 def antispam_add_cb(word, word_eol, userdata):
-    """Añade un nuevo filtro al final de la lista para usarse con el sistema
-    antispam. Esta funcion no comprueba si el nuevo filtro ya existe,
-    simplemente lo añade al final.
+    """Adds a new filter to the end of the current antispam filters list.
+    This function doesn't check for duplicates, just adds at the end.
     Arguments:
     word     -- array of strings sent by HexChat/X-Chat to every hook
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
@@ -164,9 +163,9 @@ def antispam_add_cb(word, word_eol, userdata):
 
 
 def antispam_del_cb(word, word_eol, userdata):
-    """Elimina un filtro de la lista que se usa con el sistema antispam.
-    Esta funcion no verifica si hay duplicados, elimina todas las ocurrencias
-    del filtro.
+    """Removes one filter from the current antispam filters.
+    This function doesnt check for duplicates, it removes every instance of the
+    selected filter.
     Arguments:
     word     -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     word_eol -- array of strings sent by HexChat/X-Chat to every hook
