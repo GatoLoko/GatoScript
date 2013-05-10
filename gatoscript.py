@@ -1,7 +1,6 @@
-#!/usr/bin/python
 # -*- coding: UTF8 -*-
 
-# CopyRight (C) 2006-2009 GatoLoko
+# CopyRight (C) 2006-2013 GatoLoko
 #
 # This file is part of GatoScript
 #
@@ -16,87 +15,71 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with GatoScript; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+# along with GatoScript; if not, see <http://www.gnu.org/licenses/>.
 
 """
-Modulo principal del GatoScript.
-
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+GatoScript's main module.
 """
 
 __module_name__ = "GatoScript"
-__module_description__ = "GatoScript para XChat"
+__module_description__ = "GatoScript for HexChat and X-Chat "
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# To interact with X-Chat/HexChat
 import xchat
-# Importamos la funcion para unir directorios de forma portable
+# To manage folders
 from os.path import join
-# Importamos la funcion que nos permite definir nuestro directorio de modulos
 import sys
 
-# Definimos algunas variables de entorno para poder trabajar comodamente
+# Define environment variables
 scriptdir = xchat.get_info("xchatdir")
-moddir = join(scriptdir, "gatoscript", "modulos")
+moddir = join(scriptdir, "gatoscript")
 
-# Incluimos el directorio de modulos en el path
+# Incluide out modules directory in the path
 sys.path.append(moddir)
 
 xchat.command('menu -p4 ADD "GatoScript"')
 
-# Importamos el modulo de funciones auxiliares
-import auxiliar
-__module_version__ = auxiliar.__module_version__
-# Importamos el modulo antispam
-import antispam
-# Importamos el modulo de protecciones
-import protecciones
-# Importamos el modulo gestor de whois
-import whois
-# Importamos el modulo de resaltes
-import resaltados
-# Importamos el modulo MultiMedia
-import media
-# Importamos el modulo gestor de rss
-import rss
-# Importamos el modulo sysinfo
-import sysinfo
-# Importamos el modulo autosend
-import autosend
-# Importamos el modulo p2p
-import p2p
-# Importamos el modolo remotos
-import remotos
-# Importamos el modulo consejos
-# import consejos
-# Importamos el modulo de notas
-import notas
-# Importamos el modulo ejemplo
-# import ejemplo
+# Load all the script modules
+import gmodules
+__module_version__ = gmodules.helper.__module_version__
 
 
-def media_reload(word, word_eol, userdata):
-    reload(media)
+def help_cb(word, word_eol, userdata):
+    gmodules.helper.gprint("GatoScript help:")
+    for entry in dir(gmodules):
+        if "__" not in entry:
+            command = ''.join(["gmodules.", entry, ".ghelp()"])
+            messages = eval(command)
+            for message in messages:
+                gmodules.helper.gprint(message)
 
 
 #############################################################################
-# Definimos la funcion para descargar el script
+# Script unloading function.
 #############################################################################
 def unload_cb(userdata):
+    xchat.unhook(HOOKGHELP)
+    for entry in dir(gmodules):
+        if "__" not in entry:
+            command = ''.join(["gmodules.", entry, ".unload()"])
+            messages = eval(command)
+            for message in messages:
+                print(message)
+    xchat.unhook(HOOKUNLOAD)
     xchat.command('menu del GatoScript')
-    xchat.unhook(HOOKRELOAD)
-    print("Se ha descargado GatoScript {0}".format(__module_version__))
+    print("".join(["GatoScript ", __module_version__, " has been unloaded"]))
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hooks for all functions provided by this module
 #############################################################################
-HOOKRELOAD = xchat.hook_command('media-reload', media_reload, userdata=None)
+help_usage = "Usage: ghelp, shows GatoScript help"
+HOOKGHELP = xchat.hook_command("gatohelp", help_cb, help=help_usage)
 HOOKUNLOAD = xchat.hook_unload(unload_cb)
 
-# Si se ha llegado a este punto el script esta cargado completamente, asi que
-# mostramos el mensaje de carga
-mensaje = "Cargado GatoScript {0}".format(__module_version__)
-auxiliar.gprint(mensaje)
+
+# If this point is reached, it means the script has been loaded succefully, so
+# we anounce it.
+message = "".join(["GatoScript ", __module_version__, " has been loaded."])
+gmodules.helper.gprint(message)
