@@ -121,15 +121,6 @@ def antispam_cb(word, word_eol, userdata):
                 ban = "1"
                 message = " Spambot"
                 helper.expel(message, ban, word)
-                # Remove the author from the list of "good boys"
-                nick = word[0].split("!")[0].split(":")[1]
-                # FIXME: Rename database fields, then fix this acordingly
-                sql = "SELECT goodboy FROM goodboys"
-                if nick in helper.gatodb_cursor_execute(sql):
-                    # FIXME: Rename database fields, then fix this acordingly
-                    sql = "DELETE FROM goodboys WHERE goodboy IN (?)"
-                    helper.gatodb_cursor_execute(sql, (nick,))
-                    helper.gatodb_commit()
                 # And return to X-Chat/Hexchat eating the entire message
                 return xchat.EAT_ALL
     # If this point is reached, this protections are disabled OR there is no
