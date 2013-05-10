@@ -49,7 +49,7 @@ if helper.CONNECTED == 1:
     filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
     COMP_FILTERS = []
     for item in filters:
-        COMP_FILTERS.append(re.compile("".join([".*", filtro[0], ".*"]),
+        COMP_FILTERS.append(re.compile("".join([".*", item[0], ".*"]),
                                        re.IGNORECASE))
 else:
     helper.gprint("AntiSpam is disabled or couldn't read the filters list")
