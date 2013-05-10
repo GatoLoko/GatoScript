@@ -46,8 +46,7 @@ if helper.CONNECTED == 1:
     ANTISPAM = int(helper.conf_read("spam", "protections"))
     SPAMBOTS = int(helper.conf_read("spambots", "protections"))
     CHANNELS = helper.conf_read("channels", "protections").split(",")
-    # FIXME: Rename database fields, then fix this acordingly
-    filters = helper.gatodb_cursor_execute("SELECT filtro FROM filtros")
+    filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
     COMP_FILTERS = []
     for item in filters:
         COMP_FILTERS.append(re.compile("".join([".*", filtro[0], ".*"]),
@@ -73,8 +72,7 @@ def antispam_reload():
         SPAMBOTS = int(helper.lee_conf("spambots", "protections"))
         CHANNELS = helper.conf_read("channels", "protections")
         # Load the new filter list and compile the regexps
-        # FIXME: Rename database fields, then fix this acordingly
-        filters = helper.gatodb_cursor_execute("SELECT filtro FROM filtros")
+        filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
         COMP_FILTERS = []
         for item in filters:
             COMP_FILTERS.append(re.compile("".join([".*", item[0], ".*"]),
@@ -151,11 +149,8 @@ def antispam_add_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     if helper.CONNECTED == 1:
-        # FIXME: Rename database fields, then fix this acordingly
-        sql = "".join(['INSERT INTO filtros ("id", "filtro", "creado",',
-                       '"usado", "veces") VALUES (null, "', word[1],
-                       '", date("now"), date("now"), "1")'])
-        print(sql)
+        sql = "".join(['INSERT INTO filters ("id", "filter")',
+                       ' VALUES (null, "', word[1], '")'])
         helper.gatodb_cursor_execute(sql)
         helper.gatodb_commit()
         message = "".join([word[1], " filter has been added to AntiSpam",
@@ -178,8 +173,7 @@ def antispam_del_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     if helper.CONNECTED == 1:
-        # FIXME: Rename database fields, then fix this acordingly
-        sql = "".join(["DELETE FROM filtros WHERE filtro='", word_eol[1], "'"])
+        sql = "".join(["DELETE FROM filters WHERE filter='", word_eol[1], "'"])
         helper.gatodb_cursor_execute(sql)
         helper.gatodb_commit()
         message = "".join([word_eol[1], " has been deleted from AntiSpam",
@@ -198,8 +192,7 @@ def antispam_list_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    # FIXME: Rename database fields, then fix this acordingly
-    sql = "SELECT id, filtro FROM filtros"
+    sql = "SELECT id, filter FROM filters"
     for item in helper.gatodb_cursor_execute(sql):
         message = u"".join([str(item[0]), ": ", item[1]])
         helper.query_line(message)
