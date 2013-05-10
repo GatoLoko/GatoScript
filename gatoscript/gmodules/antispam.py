@@ -68,8 +68,8 @@ def antispam_reload():
     global SPAMBOTS
     global CHANNELS
     if helper.CONNECTED == 1:
-        ANTISPAM = int(helper.lee_conf("spam", "protections"))
-        SPAMBOTS = int(helper.lee_conf("spambots", "protections"))
+        ANTISPAM = int(helper.conf_read("spam", "protections"))
+        SPAMBOTS = int(helper.conf_read("spambots", "protections"))
         CHANNELS = helper.conf_read("channels", "protections")
         # Load the new filter list and compile the regexps
         filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
