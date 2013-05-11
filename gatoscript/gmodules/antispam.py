@@ -115,7 +115,7 @@ def antispam_cb(word, word_eol, userdata):
     # spambots protection is enabled.
     elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
         # If so, check wheter there it contains spam
-        for spam_exp in COMPILED_FILTERS:
+        for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 # If there is spam, expel the author
                 ban = "1"
