@@ -111,10 +111,10 @@ def antispam_cb(word, word_eol, userdata):
                 # the check for private messages isn't executed when it's a
                 # public channel message.
                 return xchat.EAT_NONE
-    # Check wheter the message was received in a private conversation and
+    # Check whether the message was received in a private conversation and
     # spambots protection is enabled.
     elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
-        # If so, check wheter there it contains spam
+        # If so, check whether it contains spam
         for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 # If there is spam, expel the author
