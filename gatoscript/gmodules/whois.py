@@ -19,9 +19,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """
-Modulo principal del GatoScript.
+WhoIs module for GatoScript.
 
-Este modulo se encarga de cargar e interconectar otras partes del GatoScript.
+This module contains functions to intercept and rewrite whois answers and
+redirect them to the active channel, and is part of GatoScript.
 """
 
 __module_name__ = "GatoScript WhoIs"
