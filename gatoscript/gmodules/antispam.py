@@ -217,7 +217,6 @@ def unload():
     xchat.unhook(HOOKANTIADD)
     xchat.unhook(HOOKANTILIST)
     xchat.unhook(HOOKANTIDEL)
-    xchat.unhook(HOOKTEST)
 
 
 #############################################################################
