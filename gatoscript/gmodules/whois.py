@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: UTF8 -*-
 
 # CopyRight (C) 2006-2009 GatoLoko
