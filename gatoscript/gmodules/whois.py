@@ -26,7 +26,7 @@ redirect them to the active channel, and is part of GatoScript.
 """
 
 __module_name__ = "GatoScript WhoIs"
-__module_description__ = "Modulo WhoIs para GatoScript"
+__module_description__ = "WhoIs module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Cargamos la libreria de funciones de X-Chat
