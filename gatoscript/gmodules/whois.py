@@ -42,37 +42,6 @@ import auxiliar
 ##############################################################################
 
 
-##############################################################################
-## Definimos las funciones de informacion y ayuda sobre el manejo del script
-##############################################################################
-#def gato_cb(word, word_eol, userdata):
-    #"""Muestra la ayuda del GatoScript
-    #Argumentos:
-    #word     -- array de palabras que envia xchat a cada hook
-    #word_eol -- array de cadenas que envia xchat a cada hook
-    #userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    #"""
-    #info_param = len(word_eol)
-    #if info_param > 2:
-        #mensajes = [
-        #"",
-        #"Solo se puede usar un parametro cada vez",
-        #""]
-    #else:
-        #if word[1] == "-g":
-            #mensajes = [
-            #"",
-            #"Informacion:",
-            #"    /gato:   Muestra esta informacion",
-            #"    /ginfo:  Muestra en el canal activo la publicidad sobre el",
-            #"             script",
-            #""]
-        #else:
-            #mensajes = [
-            #"",
-            #"Parametro no soportado",
-            #""]
-    #return mensajes
 
 
 #############################################################################
