@@ -165,4 +165,5 @@ def unload():
 # Highlight
 HOOKHIGHLIGHT = xchat.hook_server('PRIVMSG', highlight_collect_cb,
                                   userdata=None)
-HOOKURLHIGHLIGHT = xchat.hook_server('PRIVMSG', url_highlight_cb, userdata=None)
+HOOKURLHIGHLIGHT = xchat.hook_server('PRIVMSG', url_highlight_cb,
+                                     userdata=None)

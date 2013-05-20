@@ -76,7 +76,7 @@ def antispam_reload():
         COMP_FILTERS = []
         for item in filters:
             COMP_FILTERS.append(re.compile("".join([".*", item[0], ".*"]),
-                                               re.IGNORECASE))
+                                           re.IGNORECASE))
     else:
         helper.gprint("Failed to reload filters, AntiSpam disabled")
         ANTISPAM = 0
@@ -195,13 +195,12 @@ def antispam_list_cb(word, word_eol, userdata):
 #############################################################################
 def ghelp():
     """Returns the help information."""
-    messages = [
-    "",
-    "Antispam:",
-    "    /antiadd <string>:  Adds a new AntiSpam filter",
-    "    /antidel <cadena>:  Removes an existing AntiSpam filter",
-    "    /antilist:          Lists current AntiSpam filters",
-    ""]
+    messages = ["",
+                "Antispam:",
+                "    /antiadd <string>:  Adds a new AntiSpam filter",
+                "    /antidel <cadena>:  Removes an existing AntiSpam filter",
+                "    /antilist:          Lists current AntiSpam filters",
+                ""]
     return messages
 
 
