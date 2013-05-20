@@ -34,20 +34,19 @@ import xchat
 # Importamos el modulo de funciones auxiliares
 import auxiliar
 
-# Definimos algunas variables de entorno para poder trabajar comodamente
-
-
-##############################################################################
-# Definimos las funciones de uso interno del modulo
-##############################################################################
-
-
+#############################################################################
+# Define some environment variables
+#############################################################################
 
 
 #############################################################################
-# Definimos la funcion para redireccion y formateo de respuestas al whois
+# Define internal use functions
 #############################################################################
-# Respuesta al whois: Informacion de usuario
+
+
+#############################################################################
+# Define functions for whois formating and redirection
+#############################################################################
 def whois_cb(word, word_eol, userdata):
     """Redirecciona las respuestas al "whois" hacia la ventana activa, al
     tiempo que modifica el formato de salida.
