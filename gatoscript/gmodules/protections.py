@@ -113,7 +113,7 @@ def anti_hoygan_cb(word, word_eol, userdata):
                     xchat.command("".join(["ban *!*@", host]))
                     nick = word[0][1:].split("!")[0]
                     xchat.command("".join(["kick ", nick, " Hoygan are the",
-                                           " electronic version if the class",
+                                           " electronic version of the class",
                                            " clown, and they are NOT funny."]))
                     del host, nick
     return xchat.EAT_NONE
