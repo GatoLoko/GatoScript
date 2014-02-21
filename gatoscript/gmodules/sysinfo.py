@@ -224,7 +224,7 @@ def network_cb(word, word_eol, userdata):
             parts = line[:-1].split(":")[1].split()
             received = helper.units(int(parts[0]), 1024)
             sent = helper.units(int(parts[8]), 1024)
-            command = "".join(["say [ Red ] Device: ", device,
+            command = "".join(["say [ Network ] Device: ", device,
                                "  - Hostname: ", hostname, "  - Received: ",
                                received, "  - Sent: ", sent])
             xchat.command(command)
