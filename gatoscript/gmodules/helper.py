@@ -102,7 +102,7 @@ def gatodb_cursor_execute(sql):
     try:
         results = _CURSOR.execute(sql)
         return results
-    except sqlite3.Error, err:
+    except sqlite3.Error as err:
         message = "SQL error: {0}".format(err.args[0])
         gprint(message)
         return None
