@@ -184,7 +184,7 @@ def antispam_list_cb(word, word_eol, userdata):
     """
     sql = "SELECT id, filter FROM filters"
     for item in helper.gatodb_cursor_execute(sql):
-        message = u"".join([str(item[0]), ": ", item[1]])
+        message = "".join([str(item[0]), ": ", item[1]])
         helper.query_line(message)
     del message
     return xchat.EAT_ALL
