@@ -101,7 +101,7 @@ def antispam_cb(word, word_eol, userdata):
     global CHANNELS
     # Check whether the message was receiven on a protected channel and the
     # antispam is enabled. If so, expel the spammer
-    if word[2] in CHANNELS and ANTISPAM == 1:
+    if word[2].lower() in CHANNELS and ANTISPAM == 1:
         for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 ban = "1"
