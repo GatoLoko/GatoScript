@@ -88,8 +88,8 @@ def anti_notice_cb(word, word_eol, userdata):
         for channel in channels:
             if (word[2].lower() == channel.lower()) and \
                (word[0].lower() != ":chan!-@-"):  # Exception for IRC-Hispano
-                print word[0]
-                print "This ban is for sending notices"
+                print(word[0])
+                print("This ban is for sending notices")
                 xchat.command("".join(["kickban ", word[0][1:].split("!")[0],
                                        " Notices to channel are NOT allowed"]))
     return xchat.EAT_NONE
