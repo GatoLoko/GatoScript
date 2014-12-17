@@ -122,6 +122,9 @@ def whois_cb(word, word_eol, userdata):
         elif (word[1] == "335"):
             # WhoIs reply: Bot
             print('\0033{0}\003'.format(word_eol[0]))
+        elif (word[1] == "337"):
+            string = word[3].ljust(min_width)
+            print('{0}{1}{2}{3}'.format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "338"):
             # WhoIs reply: user@host, ip
             string = "User@host".ljust(min_width)
@@ -176,6 +179,7 @@ def unload():
     xchat.unhook(_RAW320)
     xchat.unhook(_RAW330)
     xchat.unhook(_RAW335)
+    xchat.unhook(_RAW337)
     xchat.unhook(_RAW338)
     xchat.unhook(_RAW342)
     xchat.unhook(_RAW378)
@@ -213,6 +217,8 @@ _RAW320 = xchat.hook_server('320', whois_cb, userdata=None, priority=10)
 _RAW330 = xchat.hook_server('330', whois_cb, userdata=None, priority=10)
 # whoisbot (Unreal)
 _RAW335 = xchat.hook_server('335', whois_cb, userdata=None, priority=10)
+# SSL
+_RAW337 = xchat.hook_server('337', whois_cb, userdata=None, priority=10)
 # whoisactually (user@host, ip) (Unreal)
 _RAW338 = xchat.hook_server('338', whois_cb, userdata=None, priority=10)
 # Only accepts querys from registered users
