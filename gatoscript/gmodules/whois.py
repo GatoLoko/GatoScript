@@ -1,6 +1,6 @@
 # -*- coding: UTF8 -*-
 
-# CopyRight (C) 2006-2009 GatoLoko
+# CopyRight (C) 2006-2014 GatoLoko
 #
 # This file is part of GatoScript
 #
@@ -29,10 +29,9 @@ __module_name__ = "GatoScript WhoIs"
 __module_description__ = "WhoIs module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Cargamos la libreria de funciones de X-Chat
+# Load all needed libraries
 import xchat
-# Importamos el modulo de funciones auxiliares
-import auxiliar
+from . import helper
 
 #############################################################################
 # Define some environment variables
@@ -48,133 +47,122 @@ import auxiliar
 # Define functions for whois formating and redirection
 #############################################################################
 def whois_cb(word, word_eol, userdata):
-    """Redirecciona las respuestas al "whois" hacia la ventana activa, al
-    tiempo que modifica el formato de salida.
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    """Redirects all whois responses to the active channel and reformats the
+    output.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
     """
     color = "3"
-    abre = "\003{0}[".format(color)
-    cierra = "]\003 "
-    ajuste = 16
-    whois_activo = auxiliar.lee_conf("comun", "whois")
-    if (whois_activo == "1"):
+    start = "\003{0}[".format(color)
+    end = "]\003 "
+    min_width = 16
+    if helper.conf_read("whois", "common") == "1":
         if (word[1] == "301"):
-            # Respuesta al whois: AwayMessage
-            cadena = "No disponible".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: AwayMessage
+            string = "Away message".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "307"):
-            # Respuesta al whois: RegNick
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: RegNick
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "310"):
-            # Respuesta al whois: Operador de servicios
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: Service Operator
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "311"):
-            # Respuesta al whois: Usuario
+            # WhoIs reply: User
             nick = word[3]
             host = "{0}@{1}".format(word[4], word[5])
-            nombre = word_eol[7][1:]
-            cadena = "Nick".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, nick))
-            cadena = "Direccion".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, host))
-            cadena = "Nombre real".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, nombre))
+            name = word_eol[7][1:]
+            string = "Nick".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, nick))
+            string = "Address".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, host))
+            string = "Real name".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, name))
         elif (word[1] == "312"):
-            # Respuesta al whois: Servidor
-            cadena = "Servidor".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4]))
+            # WhoIs reply: Server
+            string = "Server".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
         elif (word[1] == "313"):
-            # Respuesta al whois: IrcOp
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4]))
+            # WhoIs reply: IrcOp
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
         elif (word[1] == "316"):
-            # Respuesta al whois: Bot de la red
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4]))
+            # WhoIs reply: Network Bot
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
         elif (word[1] == "317"):
-            # Respuesta al whois: IDLE
-            horas = int(word[4]) / 3600
-            minutos = (int(word[4]) - horas * 3600) / 60
-            segundos = int(word[4]) - ((horas * 3600) + (minutos * 60))
-            parte1 = "{0} horas, ".format(str(horas))
-            parte2 = "{0} minutos y ".format(str(minutos))
-            parte3 = "{0} segundos".format(str(segundos))
-            tiempo = "{0}{1}{2}".format(parte1, parte2, parte3)
-            cadena = "IDLE".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, tiempo))
+            # WhoIs reply: IDLE
+            hours = int(word[4]) / 3600
+            minutes = (int(word[4]) - hours * 3600) / 60
+            seconds = int(word[4]) - ((hours * 3600) + (minutes * 60))
+            time = ''.join([str(hours), " hours, ", str(minutes), " minutes",
+                           " and ", str(seconds), " seconds"])
+            string = "IDLE".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, time))
         elif (word[1] == "318"):
-            # Respuesta al whois: Fin del whois
-            cadena = "Fin del WHOIS".ljust(ajuste)
-            print("{0}{1}{2}".format(abre, cadena, cierra))
+            # WhoIs reply: End of WhoIs
+            string = "End of WHOIS".ljust(min_width)
+            print("{0}{1}{2}".format(start, string, end))
         elif (word[1] == "319"):
-            # Respuesta al whois: Canales
-            cadena = "Canales".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: Channels
+            string = "Channels".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "320"):
-            # Respuesta al whois: Especial
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: Special
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "330"):
-            # Respuesta al whois: Logged in as
-            cadena = "Logged in as".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word[4]))
+            # WhoIs reply: Logged in as
+            string = "Logged in as".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word[4]))
         elif (word[1] == "335"):
-            # Respuesta al whois: Bot
+            # WhoIs reply: Bot
             print('\0033{0}\003'.format(word_eol[0]))
         elif (word[1] == "338"):
-            # Respuesta al whois: user@host, ip
-            cadena = "User@host".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word[4]))
-            cadena = "IP".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word[5]))
+            # WhoIs reply: user@host, ip
+            string = "User@host".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word[4]))
+            string = "IP".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word[5]))
         elif (word[1] == "342"):
-            # Respuesta al whois: Solo admite privados de usuarios registrados
-            cadena = word[3].ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply in ChatHispano:
+            # Only accepts querys from registered users
+            string = word[3].ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "378"):
-            # Respuesta al whois: VHOST
-            cadena = "VHost".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[6]))
+            # WhoIs reply: VHOST
+            string = "VHost".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[6]))
         elif (word[1] == "379"):
-            # Respuesta al whois: whoismodes
-            cadena = "Modos".ljust(ajuste)
-            print("{0}{1}{2}{3}".format(abre, cadena, cierra, word_eol[4][1:]))
+            # WhoIs reply: whoismodes
+            string = "Modes".ljust(min_width)
+            print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
         elif (word[1] == "401"):
-            # Respuesta al whois: No such nick
-            parte1 = '\0033El nick {0} no existe '.format(word[3])
-            parte2 = 'o no esta conectado\003'
-            print('{0}{1}'.format(parte1, parte2))
+            # WhoIs reply: No such nick
+            part1 = '\0033Nick {0} doesn\'t exist'.format(word[3])
+            part2 = 'or isn\'t connected.\003'
+            print('{0}{1}'.format(part1, part2))
         elif (word[1] == "671"):
-            cadena = word[3].ljust(ajuste)
-            if word_eol[4] == ":is using a secure connection":
-                respuesta = "está usando una conexión segura"
-            else:
-                respuesta = word_eol[4][1:]
-            print('{0}{1}{2}{3}'.format(abre, cadena, cierra, respuesta))
+            string = word[3].ljust(min_width)
+            print('{0}{1}{2}{3}'.format(start, string, end, word_eol[4][1:]))
         else:
-            # Raw no definido
-            print('\0033El raw {0} no esta definido'.format(word[1]))
+            # Undefined Raw
+            print(''.join(["\0033Unknown reply in whois: ", word_eol[1]]))
         return xchat.EAT_ALL
     else:
         return xchat.EAT_NONE
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to unload this module. This should be called from the
+# main module unload function
 #############################################################################
-def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al
-    descargarse el script.
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Desconectamos los comandos
-    # Whois
+def unload():
+    """This function disconects all module functions"""
     xchat.unhook(_RAW301)
     xchat.unhook(_RAW307)
     xchat.unhook(_RAW310)
@@ -197,45 +185,43 @@ def unload_cb(userdata):
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 #############################################################################
-# Whois
-# Mensaje de AWAY
+# AWAY message (RFC1459)
 _RAW301 = xchat.hook_server('301', whois_cb, userdata=None, priority=10)
-# whoisregnick
+# whoisregnick (Unreal)
 _RAW307 = xchat.hook_server('307', whois_cb, userdata=None, priority=10)
-# whoishelpop
+# whoishelpop (Unreal)
 _RAW310 = xchat.hook_server('310', whois_cb, userdata=None, priority=10)
-# whoisuser
+# whoisuser (RFC1459)
 _RAW311 = xchat.hook_server('311', whois_cb, userdata=None, priority=10)
-# whoisserver
+# whoisserver (RFC1459)
 _RAW312 = xchat.hook_server('312', whois_cb, userdata=None, priority=10)
-# whoisoperator
+# whoisoperator (RFC1459)
 _RAW313 = xchat.hook_server('313', whois_cb, userdata=None, priority=10)
-# whoischanop
+# whoischanop (RFC1459)
 _RAW316 = xchat.hook_server('316', whois_cb, userdata=None, priority=10)
-# whoisidle
+# whoisidle (RFC1459)
 _RAW317 = xchat.hook_server('317', whois_cb, userdata=None, priority=10)
-# endofwhois
+# endofwhois (RFC1459)
 _RAW318 = xchat.hook_server('318', whois_cb, userdata=None, priority=10)
-# whoischannels
+# whoischannels (RFC1459)
 _RAW319 = xchat.hook_server('319', whois_cb, userdata=None, priority=10)
-# whoisspecial
+# whoisspecial (Unreal)
 _RAW320 = xchat.hook_server('320', whois_cb, userdata=None, priority=10)
-# loggedinas
+# whoisaccount (logged in as) (IRCU)
 _RAW330 = xchat.hook_server('330', whois_cb, userdata=None, priority=10)
-# whoisbot
+# whoisbot (Unreal)
 _RAW335 = xchat.hook_server('335', whois_cb, userdata=None, priority=10)
-# user@host, ip
+# whoisactually (user@host, ip) (Unreal)
 _RAW338 = xchat.hook_server('338', whois_cb, userdata=None, priority=10)
-# Solo admite privados de usuarios registrados
+# Only accepts querys from registered users
 _RAW342 = xchat.hook_server('342', whois_cb, userdata=None, priority=10)
-# whoishost (ip virtual)
+# whoishost (virtual host) (Unreal)
 _RAW378 = xchat.hook_server('378', whois_cb, userdata=None, priority=10)
-# whoismodes
+# whoismodes (Unreal)
 _RAW379 = xchat.hook_server('379', whois_cb, userdata=None, priority=10)
-# No such nick
+# No such nick (RFC1459)
 _RAW401 = xchat.hook_server('401', whois_cb, userdata=None, priority=10)
-# SSL
+# whoissecure (Using SSL) (KineIRCd, ircd-seven)
 _RAW671 = xchat.hook_server('671', whois_cb, userdata=None, priority=10)
