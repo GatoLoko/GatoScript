@@ -20,10 +20,10 @@
 __all__ = ["helper", "highlight", "sysinfo", "protections", "antispam", "p2p",
            "whois"]
 
-import helper
-import highlight
-import sysinfo
-import protections
-import antispam
-import p2p
-import whois
+from . import helper
+from . import highlight
+from . import sysinfo
+from . import protections
+from . import antispam
+from . import p2p
+from . import whois
