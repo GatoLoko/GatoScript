@@ -17,7 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with GatoScript; if not,  see <http://www.gnu.org/licenses/>.
 
-__all__ = ["helper", "highlight"]
+__all__ = ["helper", "highlight", "sysinfo", "protections", "antispam", "p2p",
+           "whois"]
 
 import helper
 import highlight
@@ -25,3 +26,4 @@ import sysinfo
 import protections
 import antispam
 import p2p
+import whois
