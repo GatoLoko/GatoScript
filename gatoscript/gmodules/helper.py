@@ -63,7 +63,7 @@ else:
 # Information
 def scriptdirs():
     """Get the base path for HexChat/X-Chat and GatoScript."""
-    modules = path.join(_SCRIPTDIR, "modules")
+    modules = path.join(_GATODIR, "gmodules")
     media = path.join(modules, "players")
     return _SCRIPTDIR, _GATODIR, modules, media
 
