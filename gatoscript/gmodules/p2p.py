@@ -128,7 +128,7 @@ def transmission_cb(word, word_eol, userdata):
 ##############################################################################
 # Define the help function
 ##############################################################################
-def help():
+def ghelp():
     """Returns the help information"""
     messages = ["",
                 "P2P:",
