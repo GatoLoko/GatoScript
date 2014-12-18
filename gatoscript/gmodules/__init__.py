@@ -18,7 +18,7 @@
 # along with GatoScript; if not,  see <http://www.gnu.org/licenses/>.
 
 __all__ = ["helper", "highlight", "sysinfo", "protections", "antispam", "p2p",
-           "whois"]
+           "whois", "media"]
 
 from . import helper
 from . import highlight
@@ -27,3 +27,4 @@ from . import protections
 from . import antispam
 from . import p2p
 from . import whois
+from . import media
