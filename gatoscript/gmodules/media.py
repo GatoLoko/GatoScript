@@ -26,151 +26,136 @@ __module_name__ = "GatoScript MultiMedia - Main"
 __module_description__ = "Main MultiMedia module for GatoScript"
 __module_autor__ = "GatoLoko"
 
-# Load the X-Chat function library
+# Load all needed libraries
 import xchat
-# Importamos la funcion para unir directorios de forma portable
-from os import popen3, system
-from commands import getoutput
 import sys
-# Importamos el modulo de funciones auxiliares
-import auxiliar
+from . import helper
 
 
-gatodirs = auxiliar.scriptdirs()
-# Incluimos el directorio de modulos en el path
+gatodirs = helper.scriptdirs()
+# Include our module's directory in the path
 sys.path.append(gatodirs[3])
 
 
 #############################################################################
 # Load the module for the active player
 #############################################################################
-repro_activo = auxiliar.lee_conf("media", "activo")
-if (repro_activo == "1"):
-    repro = __import__(auxiliar.lee_conf("media", "reproductor"))
-    player = repro.Player()
+player_enabled = int(helper.conf_read("media", "enabled"))
+if player_enabled:
+    player_module = __import__(helper.conf_read("media", "player"))
+    player = player_module.Player()
 
 
 ##############################################################################
-## Definimos las funciones de informacion y ayuda sobre el manejo del script
+# Define the help function
 ##############################################################################
-def ayuda_cb():
-    """Muestra la ayuda del GatoScript
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook
-    word_eol -- array de cadenas que envia xchat a cada hook
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    mensajes = [
-    "",
-    "Multimedia:",
-    "".join(["    /escuchando:         Muestra en el canal activo la cancion",
-             "que se esta reproduciendo"]),
-    "    /reproductor:        Nos informa del reproductor seleccionado",
-    "    /siguiente:          Cambia a la cancion siguiente",
-    "    /anterior:           Cambia a la cancion anterior",
-    "    /pausa:              Pausa la reproduccion",
-    "    /play:               Reanuda la reproduccion",
-    "    /stop:               Detiene la reproduccion",
-    ""]
-    auxiliar.priv_imprime(mensajes)
+def ghelp():
+    """Returns the help information."""
+    messages = [
+        "",
+        "Multimedia:",
+        "".join(
+            ["    /hearing:       Shows in the active channel the song we",
+             " are hearing currently playing"]),
+        "    /player:        Shows the chosen player",
+        "    /next:          Jumps to the next song",
+        "    /prev:          Jumps to the previous song",
+        "    /pause:         Pauses the music",
+        "    /play:          Plays the music",
+        "    /stop:          Stops the music",
+        ""]
+    return messages
 
 
 ##############################################################################
-## Definimos las funciones para el control de multimedia
+# Define functions for multimedia control
 ##############################################################################
 def media_cb(word, word_eol, userdata):
-    """Muestra en el canal activo informacion sobre la cancion que estamos
-    escuchando.
-    Toma del archivo de configuracion el reproductor a usar.
+    """Shows in the active channel information about the song we are hearing.
+    Gets from the settings file the player to use.
 
-    Argumentos:
-    word     -- array de palabras que envia xchat a cada hook (ignorado)
-    word_eol -- array de cadenas que envia xchat a cada hook (ignorado)
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
+    Arguments:
+    word     -- array of words sent by HexChat/X-chat to every hook (ignored)
+    word_eol -- array of strings sent by HexChat/X-chat to every hook (ignored)
+    userdata -- optional variable sent to a hook. Here we get what to do.
     """
-    if (userdata == "escuchando"):
-        titulo, artista, longitud = player.listening()
-        comando = "me esta escuchando: {0} - {1} ({2})".format(titulo, artista,
-                                                               longitud)
-        xchat.command(comando)
-    elif (userdata == "reproductor"):
+    if userdata == "hearing":
+        title, artist, songlength = player.listening()
+        command = "me is hearing: {0} - {1} ({2})".format(title, artist,
+                                                          songlength)
+        xchat.command(command)
+    elif userdata == "player":
         print("The selected media player is {0}".format(player.name()))
-    elif (userdata == "siguiente"):
+    elif userdata == "next":
         player.next()
-    elif (userdata == "anterior"):
+    elif userdata == "previous":
         player.previous()
-    elif (userdata == "play"):
+    elif userdata == "play":
         player.play()
-    elif (userdata == "pausa"):
+    elif userdata == "pause":
         player.pause()
-    elif (userdata == "stop"):
+    elif userdata == "stop":
         player.stop()
     else:
-        mensaje = "La funcion {0} no esta implementada".format(userdata)
-        auxiliar.gprint(mensaje)
+        message = "The {0} function is not implemented".format(userdata)
+        helper.gprint(message)
     return xchat.EAT_ALL
 
 
 #############################################################################
-# Definimos la funcion para la descarga del programa
+# Define the function to unload this module. This should be called from the
+# main module unload function
 #############################################################################
-def unload_cb(userdata):
-    """Esta funcion debe desenlazar todas las funciones del GatoScript al
-    descargarse el script.
-
-    Argumentos:
-    userdata -- variable opcional que se puede enviar a un hook (ignorado)
-    """
-    # Media
-    xchat.unhook(hookescuchando)
-    xchat.unhook(hookreproductor)
-    xchat.unhook(hooksiguiente)
-    xchat.unhook(hookanterior)
+def unload():
+    """This function disconnects all module functions"""
+    xchat.unhook(hookhearing)
+    xchat.unhook(hookplayer)
+    xchat.unhook(hooknext)
+    xchat.unhook(hookprevious)
     xchat.unhook(hookplay)
-    xchat.unhook(hookpausa)
+    xchat.unhook(hookpause)
     xchat.unhook(hookstop)
-    xchat.command('menu del "GatoScript/Opciones/Multimedia"')
-    xchat.command('menu del "GatoScript/Opciones/Reproductor"')
+    xchat.command('menu del "GatoScript/Options/Multimedia"')
+    xchat.command('menu del "GatoScript/Options/Player"')
     xchat.command('menu del "GatoScript/Multimedia"')
 
 
 #############################################################################
-# Conectamos los "lanzadores" de xchat con las funciones que hemos definido
-# para ellos
+# Hook all callbacks with their respective commands
 #############################################################################
 # Media
-hookescuchando = xchat.hook_command('escuchando', media_cb,
-                                    userdata="escuchando")
-hookreproductor = xchat.hook_command('reproductor', media_cb,
-                                     userdata="reproductor")
-hooksiguiente = xchat.hook_command('siguiente', media_cb, userdata="siguiente")
-hookanterior = xchat.hook_command('anterior', media_cb, userdata="anterior")
+hookhearing = xchat.hook_command('hearing', media_cb,
+                                 userdata="hearing")
+hookplayer = xchat.hook_command('player', media_cb,
+                                userdata="player")
+hooknext = xchat.hook_command('next', media_cb, userdata="next")
+hookprevious = xchat.hook_command('previous', media_cb, userdata="previous")
 hookplay = xchat.hook_command('play', media_cb, userdata="play")
-hookpausa = xchat.hook_command('pausa', media_cb, userdata="pausa")
+hookpause = xchat.hook_command('pause', media_cb, userdata="pause")
 hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
 
 
 #############################################################################
-# Añadimos las opciones del menu
+# Add menu options
 #############################################################################
-xchat.command("".join(['menu -t1 ADD "GatoScript/Opciones/Multimedia"',
-                       ' "opciones media activo 1"',
-                       ' "opciones media activo 0"']))
-xchat.command('menu ADD "GatoScript/Opciones/Reproductor"')
-xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Rhythmbox"',
-                       ' "opciones media reproductor rhythmbox"']))
-xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Banshee"',
-                       ' "opciones media reproductor banshee"']))
-xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Amarok"',
-                       ' "opciones media reproductor amarok"']))
-xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Exaile"',
-                       ' "opciones media reproductor exaile"']))
-xchat.command("".join(['menu ADD "GatoScript/Opciones/Reproductor/Audacious"',
-                       ' "opciones media reproductor audacious"']))
+xchat.command("".join(['menu -t1 ADD "GatoScript/Options/Multimedia"',
+                       ' "options media enabled 1"',
+                       ' "options media enabled 0"']))
+xchat.command('menu ADD "GatoScript/Options/Player"')
+xchat.command("".join(['menu ADD "GatoScript/Option/Player/Rhythmbox"',
+                       ' "options media player rhythmbox"']))
+xchat.command("".join(['menu ADD "GatoScript/Option/Player/Banshee"',
+                       ' "options media player banshee"']))
+xchat.command("".join(['menu ADD "GatoScript/Option/Player/Amarok"',
+                       ' "options media player amarok"']))
+xchat.command("".join(['menu ADD "GatoScript/Option/Player/Exaile"',
+                       ' "options media player exaile"']))
+xchat.command("".join(['menu ADD "GatoScript/Option/Player/Audacious"',
+                       ' "options media player audacious"']))
 xchat.command('menu ADD "GatoScript/Multimedia"')
-xchat.command('menu ADD "GatoScript/Multimedia/Cancion actual" "escuchando"')
-xchat.command('menu ADD "GatoScript/Multimedia/Reproductor" "reproductor"')
-xchat.command('menu ADD "GatoScript/Multimedia/Anterior" "anterior"')
-xchat.command('menu ADD "GatoScript/Multimedia/Siguiente" "siguiente"')
+xchat.command('menu ADD "GatoScript/Multimedia/Current song" "hearing"')
+xchat.command('menu ADD "GatoScript/Multimedia/Player" "player"')
+xchat.command('menu ADD "GatoScript/Multimedia/Previous" "previous"')
+xchat.command('menu ADD "GatoScript/Multimedia/Next" "next"')
 xchat.command('menu ADD "GatoScript/Multimedia/Stop" "stop"')
 xchat.command('menu ADD "GatoScript/Multimedia/Play" "play"')
