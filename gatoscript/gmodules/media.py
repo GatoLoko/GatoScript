@@ -40,9 +40,9 @@ sys.path.append(gatodirs[3])
 #############################################################################
 # Load the module for the active player
 #############################################################################
-player_enabled = int(helper.conf_read("media", "enabled"))
+player_enabled = int(helper.conf_read("enabled", "media"))
 if player_enabled:
-    player_module = __import__(helper.conf_read("media", "player"))
+    player_module = __import__(helper.conf_read("player", "media"))
     player = player_module.Player()
 
 
