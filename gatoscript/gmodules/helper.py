@@ -118,7 +118,7 @@ def gprint(message):
     """Writes a line with format "Gatoscript >> blah", where blah is the string
     received as an argument. Usefull to send the user messages from the script.
     Arguments:
-    mensaje -- cadena con el mensaje a mostrar
+    message -- string with the message to show
     """
     g_message = "".join(["GatoScript >> ", message])
     print(g_message)
