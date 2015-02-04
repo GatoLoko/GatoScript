@@ -80,6 +80,7 @@ def conf_read(option, section="common"):
     _CP.read(_CONFIGFILE)
     return _CP.get(section, option)
 
+
 def conf_show():
     """Reads the entire config file and shows it in the script query channel"""
     _CP.read(_CONFIGFILE)
