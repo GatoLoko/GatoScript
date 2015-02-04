@@ -45,23 +45,59 @@ from . import helper
 #############################################################################
 # Define functions for GatoScript
 #############################################################################
+def options_cb(word, word_eol, userdata):
+    """This function shows and modifies the script settings.
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
+    """
+    param_num = len(word_eol)
+    if param_num == 1:
+        helper.conf_show()
+    # elif param_num > 1 and param_num < 4:
+    elif 1 < param_num < 4:
+        helper.gprint('Wrong parameters count')
+        helper.gprint("".join(['Usage: OPTIONS <option> <value> <section>,',
+                               ' changes GatoScripts settings. If no section',
+                               ' is specified, "common" is used by default.']))
+    elif param_num == 4:
+        helper.conf_write(word[1], word[2], word[3])
+    else:
+        helper.gprint("Don't show anything")
+    return xchat.EAT_ALL
 
 
 #############################################################################
 # Define the help function
 #############################################################################
+def ghelp():
+    """Returns the help information."""
+    messages = [
+        "Commands:",
+        "  /OPTIONS <option> <value> <section>: changes GatoScripts settings.",
+        "      If no section is specified, \"common\" is used by default."]
+    return messages
 
 
 #############################################################################
 # Define the function to unload this module. This should be called from the
 # main module unload function
 #############################################################################
+def unload():
+    """This function disconnects all module functions"""
+    # Script options
+    xchat.unhook(HOOKOPTIONS)
 
 
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-
+# Script options
+options_usage = "".join(['Usage: OPTIONS <option> <value> <section>, changes',
+                         ' GatoScripts settings. If no section is specified,',
+                         '"common" is used by default.'])
+HOOKOPTIONS = xchat.hook_command('options', options_cb, help=options_usage)
 
 
 #############################################################################

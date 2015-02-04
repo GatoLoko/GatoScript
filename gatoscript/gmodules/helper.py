@@ -80,6 +80,18 @@ def conf_read(option, section="common"):
     _CP.read(_CONFIGFILE)
     return _CP.get(section, option)
 
+def conf_show():
+    """Reads the entire config file and shows it in the script query channel"""
+    _CP.read(_CONFIGFILE)
+    query_line("")
+    query_line("List of configuration sections and options:")
+    for section in _CP.sections():
+        query_line(section)
+        for option in _CP.options(section):
+            message = "".join([" ", option, "=", _CP.get(section, option)])
+            query_line(message)
+    query_line("")
+
 
 def conf_write(option, value, section="common"):
     """Store ONE option in the config file.
@@ -195,38 +207,6 @@ def units(value, base):
 
 
 # FIXME: This function interacts with the user and doesn't belong here
-# Comandos
-def options_cb(word, word_eol, userdata):
-    """This function shows and modifies the script settings.
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    param_num = len(word_eol)
-    if param_num == 1:
-        _CP.read(_CONFIGFILE)
-        query_line("")
-        query_line("List of configuration sections and options:")
-        for section in _CP.sections():
-            query_line(section)
-            for option in _CP.options(section):
-                message = "".join([" ", option, "=", _CP.get(section, option)])
-                query_line(message)
-        query_line("")
-    elif param_num > 1 and param_num < 4:
-        gprint("Wrong parameters count")
-        gprint("".join(['Usage: OPTIONS <option> <value> <section>, changes',
-                        ' GatoScripts settings. If no section is specified,',
-                        ' "common" is used by default.']))
-    elif param_num == 4:
-        conf_write(word[1], word[2], word[3])
-    else:
-        gprint("Don't show anything")
-    return xchat.EAT_ALL
-
-
-# FIXME: This function interacts with the user and doesn't belong here
 def gato_info_cb(word, word_eol, userdata):
     """Shows GatoScript publicity
     Arguments:
@@ -290,8 +270,6 @@ def ghelp():
 #############################################################################
 def unload():
     """This function disconects all module functions"""
-    # Script options
-    xchat.unhook(HOOKOPTIONS)
     # Script information
     xchat.unhook(HOOKGINFO)
     # Temporary KickBan
@@ -301,8 +279,6 @@ def unload():
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-# Script options
-HOOKOPTIONS = xchat.hook_command('options', options_cb)
 # Script information
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 # Temporary KickBan
