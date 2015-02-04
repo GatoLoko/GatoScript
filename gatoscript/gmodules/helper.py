@@ -43,7 +43,7 @@ _SCRIPTDIR = xchat.get_info("xchatdir")
 _GATODIR = "".join([_SCRIPTDIR, "/gatoscript/"])
 _CONFIGFILE = "".join([_GATODIR, "gatoscript.conf"])
 _GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
-#_HOME = path.expanduser("~")
+# _HOME = path.expanduser("~")
 _CP = SafeConfigParser()
 
 #############################################################################
@@ -75,7 +75,7 @@ def conf_read(option, section="common"):
     option  -- string with the name of the option we want to read.
     section -- optional string with the section name. Default is "common".
     """
-    if (section == ""):
+    if section == "":
         section = "common"
     _CP.read(_CONFIGFILE)
     return _CP.get(section, option)
