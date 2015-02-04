@@ -68,6 +68,25 @@ def options_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
+def gato_info_cb(word, word_eol, userdata):
+    """Shows GatoScript publicity
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
+    """
+    if 'hexchat' in helper.scriptdirs()[0]:
+        client = 'HexChat'
+    else:
+        client = 'X-Chat'
+    version = xchat.get_info('version')
+    xchat.command("".join(["say ( ", client, " ) ", version,
+                           " ( Script ) GatoScript ", __module_version__,
+                           " python script for HexChat/X-Chat ",
+                           "(http://catsskein.wordpress.com)"]))
+    return xchat.EAT_ALL
+
+
 #############################################################################
 # Define the help function
 #############################################################################
@@ -75,6 +94,7 @@ def ghelp():
     """Returns the help information."""
     messages = [
         "Commands:",
+        "  /GINFO: shows GatoScript's spam",
         "  /OPTIONS <option> <value> <section>: changes GatoScripts settings.",
         "      If no section is specified, \"common\" is used by default."]
     return messages
@@ -88,6 +108,8 @@ def unload():
     """This function disconnects all module functions"""
     # Script options
     xchat.unhook(HOOKOPTIONS)
+    # Script information
+    xchat.unhook(HOOKGINFO)
 
 
 #############################################################################
@@ -98,8 +120,11 @@ options_usage = "".join(['Usage: OPTIONS <option> <value> <section>, changes',
                          ' GatoScripts settings. If no section is specified,',
                          '"common" is used by default.'])
 HOOKOPTIONS = xchat.hook_command('options', options_cb, help=options_usage)
+# Script information
+HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 
 
 #############################################################################
 # Add Information and Options menus
 #############################################################################
+xchat.command('menu ADD "GatoScript/Information" "ginfo"')

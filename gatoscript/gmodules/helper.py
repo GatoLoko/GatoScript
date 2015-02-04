@@ -207,26 +207,6 @@ def units(value, base):
 
 
 # FIXME: This function interacts with the user and doesn't belong here
-def gato_info_cb(word, word_eol, userdata):
-    """Shows GatoScript publicity
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    if "hexchat" in _SCRIPTDIR:
-        client = "HexChat"
-    else:
-        client = "X-Chat"
-    version = xchat.get_info("version")
-    xchat.command("".join(["say ( ", client, " ) ", version,
-                           " ( Script ) GatoScript ", __module_version__,
-                           " python script for HexChat/X-Chat ",
-                           "(http://catsskein.wordpress.com)"]))
-    return xchat.EAT_ALL
-
-
-# FIXME: This function interacts with the user and doesn't belong here
 def kbtemp_cb(word, word_eol, userdata):
     """Temporarily expels an user on the active channel (must be OP).
     Arguments:
@@ -258,7 +238,6 @@ def ghelp():
         "      from the actual channel, then activates a 5 minutes countdown,",
         "      after wich the ban is removed. If a message is added, it's",
         "      used as the kick reason. (You must be channel operator)",
-        "  /GINFO: shows GatoScript's spam"]
     return messages
 
 
@@ -270,8 +249,6 @@ def ghelp():
 #############################################################################
 def unload():
     """This function disconects all module functions"""
-    # Script information
-    xchat.unhook(HOOKGINFO)
     # Temporary KickBan
     xchat.unhook(HOOKKBTEMP)
 
@@ -279,8 +256,6 @@ def unload():
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-# Script information
-HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
 # Temporary KickBan
 kbtemp_usage = "".join([
     "Usage: KBTEMP <nick> <optional_message>, bans and kicks the selected",
@@ -293,7 +268,6 @@ HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemp_cb, help=kbtemp_usage)
 #############################################################################
 # Add Information and Options menus
 #############################################################################
-xchat.command('menu ADD "GatoScript/Information" "ginfo"')
 xchat.command('menu ADD "GatoScript/-"')
 xchat.command('menu ADD "GatoScript/Options"')
 xchat.command('menu ADD "GatoScript/Options/Python" "py console"')
