@@ -87,6 +87,26 @@ def gato_info_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
+def kbtemp_cb(word, word_eol, userdata):
+    """Temporarily expels an user on the active channel (must be OP).
+    Arguments:
+    word     -- array of strings sent by HexChat/X-Chat to every hook
+    word_eol -- array of strings sent by HexChat/X-Chat to every hook
+    userdata -- optional variable that can be sent to a hook (ignored)
+    """
+    if len(word_eol) > 1:
+        xchat.command("".join(["ban ", word[1], "!*@*"]))
+        if len(word_eol) > 2:
+            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes (",
+                                   word_eol[2], ")"]))
+        else:
+            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes"]))
+        xchat.command("".join(["timer -repeat 1 300 unban ", word[1], "!*@*"]))
+    else:
+        helper.gprint("You must specify a nick to kick/ban")
+    return xchat.EAT_ALL
+
+
 #############################################################################
 # Define the help function
 #############################################################################
@@ -94,6 +114,10 @@ def ghelp():
     """Returns the help information."""
     messages = [
         "Commands:",
+        "  /KBTEMP <nick> <optional_message>: bans and kick the selected nick",
+        "      from the actual channel, then activates a 5 minutes countdown,",
+        "      after which the ban is removed. If a message is added, it's",
+        "      used as the kick reason. (You must be channel operator)",
         "  /GINFO: shows GatoScript's spam",
         "  /OPTIONS <option> <value> <section>: changes GatoScripts settings.",
         "      If no section is specified, \"common\" is used by default."]
@@ -110,6 +134,8 @@ def unload():
     xchat.unhook(HOOKOPTIONS)
     # Script information
     xchat.unhook(HOOKGINFO)
+    # Temporary KickBan
+    xchat.unhook(HOOKKBTEMP)
 
 
 #############################################################################
@@ -122,9 +148,19 @@ options_usage = "".join(['Usage: OPTIONS <option> <value> <section>, changes',
 HOOKOPTIONS = xchat.hook_command('options', options_cb, help=options_usage)
 # Script information
 HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
+# Temporary KickBan
+kbtemp_usage = "".join([
+    'Usage: KBTEMP <nick> <optional_message>, bans and kicks the selected',
+    ' nick from the actual channel, then activates a 5 minutes countdown,',
+    ' after wich the ban is removed. If a message is added, it\'s used as',
+    ' the kick reason. (You must be channel operator)'])
+HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemp_cb, help=kbtemp_usage)
 
 
 #############################################################################
 # Add Information and Options menus
 #############################################################################
 xchat.command('menu ADD "GatoScript/Information" "ginfo"')
+xchat.command('menu ADD "GatoScript/-"')
+xchat.command('menu ADD "GatoScript/Options"')
+xchat.command('menu ADD "GatoScript/Options/Python" "py console"')

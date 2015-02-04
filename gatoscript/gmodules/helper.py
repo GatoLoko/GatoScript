@@ -206,27 +206,6 @@ def units(value, base):
     raise ValueError('value too big')
 
 
-# FIXME: This function interacts with the user and doesn't belong here
-def kbtemp_cb(word, word_eol, userdata):
-    """Temporarily expels an user on the active channel (must be OP).
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    if (len(word_eol) > 1):
-        xchat.command("".join(["ban ", word[1], "!*@*"]))
-        if (len(word_eol) > 2):
-            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes (",
-                                   word_eol[2], ")"]))
-        else:
-            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes"]))
-        xchat.command("".join(["timer -repeat 1 300 unban ", word[1], "!*@*"]))
-    else:
-        gprint("You must specify a nick to kick/ban")
-    return xchat.EAT_ALL
-
-
 #############################################################################
 # Define the help function
 #############################################################################
@@ -234,40 +213,16 @@ def ghelp():
     """Returns the help information."""
     messages = [
         "Helper:",
-        "  /KBTEMP <nick> <optional_message>: bans and kick the selected nick",
-        "      from the actual channel, then activates a 5 minutes countdown,",
-        "      after wich the ban is removed. If a message is added, it's",
-        "      used as the kick reason. (You must be channel operator)",
+        "  This module doesnt contain any interactive functions"]
     return messages
 
 
-# FIXME: This module shouldn't have any interactive function, so the next two
-# section shouldn't exist at all
 #############################################################################
 # Define the function to unload this module. This should be called from the
 # main module unload function
 #############################################################################
-def unload():
-    """This function disconects all module functions"""
-    # Temporary KickBan
-    xchat.unhook(HOOKKBTEMP)
 
 
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-# Temporary KickBan
-kbtemp_usage = "".join([
-    "Usage: KBTEMP <nick> <optional_message>, bans and kicks the selected",
-    " nick from the actual channel, then activates a 5 minutes countdown,",
-    " after wich the ban is removed. If a message is added, it's used as",
-    " the kick reason. (You must be channel operator)"])
-HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemp_cb, help=kbtemp_usage)
-
-
-#############################################################################
-# Add Information and Options menus
-#############################################################################
-xchat.command('menu ADD "GatoScript/-"')
-xchat.command('menu ADD "GatoScript/Options"')
-xchat.command('menu ADD "GatoScript/Options/Python" "py console"')
