@@ -130,7 +130,6 @@ def anti_caps_cb(word, word_eol, userdata):
     if helper.conf_read("caps", "protections") == "1":
         for channel in helper.conf_read("channels", "protections").split(','):
             if channel.lower() == word[2].lower():
-                message = ""
                 string = word_eol[3][1:]
                 if _ACTION_RE.match(string):
                     string = string[7:]
