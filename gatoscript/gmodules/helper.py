@@ -170,7 +170,7 @@ def query_line(message):
     orig_context.set()
 
 
-#Expulsion
+# Expulsion
 def expel(message, ban, word):
     """Expels an user from the channel according to the configured options.
     Arguments:
@@ -187,7 +187,7 @@ def expel(message, ban, word):
         xchat.command("".join(["kick ", word[0][1:].split("!")[0], message]))
 
 
-#Unit conversion
+# Unit conversion
 def units(value, base):
     """Converts amounts of bytes to one of its multiples
     Arguments:
