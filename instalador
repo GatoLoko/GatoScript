@@ -57,7 +57,8 @@ lineas_ctcp = ["NAME VERSION\n",
 # una instalacion completa.
 if os.path.exists(gatoscript):
     actualizacion = 1
-    print "Se ha detectado una version anterior de GatoScript, se realizara una actualizacion"
+    print "Se ha detectado una version anterior de GatoScript, se realizara" + \
+          " una actualizacion"
 else:
     actualizacion = 0
 
