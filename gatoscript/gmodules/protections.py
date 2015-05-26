@@ -163,8 +163,6 @@ def anti_colors_cb(word, word_eol, userdata):
     # Only act on protected channels
     if word[2].lower() in helper.conf_read("channels",
                                            "protections").split(","):
-    # for channel in helper.conf_read("channels", "protections").split(","):
-    #     if channel.lower() == word[2].lower():
         string = word_eol[3][1:]
         if _ACTION_RE.match(string):
             string = string[7:]
