@@ -22,7 +22,7 @@ def conf_busqueda(conf):
     archivo = file(xchatconf, "r")
     for linea in archivo.readlines():
         opcion, valor = linea[0:len(linea)-1].split(' = ')
-        if (opcion == conf):
+        if opcion == conf:
             return valor
     archivo.close
 
@@ -38,7 +38,7 @@ def conf_cambia(conf, nuevo):
     for i in range(len(memoria)-1):
         if memoria[i] != "":
             opcion, valor = memoria[i].split(' = ')
-            if (opcion == conf):
+            if opcion == conf:
                 memoria[i] = opcion + " = " + nuevo
     archivo = file(xchatconf, "w")
     for i in range(len(memoria)):
