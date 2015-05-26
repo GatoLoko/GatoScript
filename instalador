@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#Instalador de GatoScript
+# Instalador de GatoScript
 import os
 
 # Variables del entorno de trabajo
@@ -32,7 +32,7 @@ def conf_cambia(conf,nuevo):
     archivo = file(xchatconf, "r")
     memoria = archivo.read().split("\n")
     archivo.close
-    #print len(memoria)
+    # print len(memoria)
     for i in range(len(memoria)-1):
         if memoria[i] != "":
             opcion, valor = memoria[i].split(' = ')
@@ -60,7 +60,7 @@ if os.path.exists(gatoscript):
 else:
     actualizacion = 0
 
-## Instalamos los archivos del script
+# Instalamos los archivos del script
 os.system("cp -rf %s %s" %(directorio_actual + "/*",directorio_xchat))
 os.system("rm %sinstalador" %directorio_xchat)
 
