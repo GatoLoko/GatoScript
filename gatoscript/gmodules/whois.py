@@ -59,19 +59,19 @@ def whois_cb(word, word_eol, userdata):
     end = "]\003 "
     min_width = 16
     if helper.conf_read("whois", "common") == "1":
-        if (word[1] == "301"):
+        if word[1] == "301":
             # WhoIs reply: AwayMessage
             string = "Away message".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "307"):
+        elif word[1] == "307":
             # WhoIs reply: RegNick
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "310"):
+        elif word[1] == "310":
             # WhoIs reply: Service Operator
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "311"):
+        elif word[1] == "311":
             # WhoIs reply: User
             nick = word[3]
             host = "{0}@{1}".format(word[4], word[5])
@@ -82,19 +82,19 @@ def whois_cb(word, word_eol, userdata):
             print("{0}{1}{2}{3}".format(start, string, end, host))
             string = "Real name".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, name))
-        elif (word[1] == "312"):
+        elif word[1] == "312":
             # WhoIs reply: Server
             string = "Server".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
-        elif (word[1] == "313"):
+        elif word[1] == "313":
             # WhoIs reply: IrcOp
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
-        elif (word[1] == "316"):
+        elif word[1] == "316":
             # WhoIs reply: Network Bot
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4]))
-        elif (word[1] == "317"):
+        elif word[1] == "317":
             # WhoIs reply: IDLE
             hours = int(word[4]) / 3600
             minutes = (int(word[4]) - hours * 3600) / 60
@@ -103,53 +103,53 @@ def whois_cb(word, word_eol, userdata):
                            " and ", str(seconds), " seconds"])
             string = "IDLE".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, time))
-        elif (word[1] == "318"):
+        elif word[1] == "318":
             # WhoIs reply: End of WhoIs
             string = "End of WHOIS".ljust(min_width)
             print("{0}{1}{2}".format(start, string, end))
-        elif (word[1] == "319"):
+        elif word[1] == "319":
             # WhoIs reply: Channels
             string = "Channels".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "320"):
+        elif word[1] == "320":
             # WhoIs reply: Special
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "330"):
+        elif word[1] == "330":
             # WhoIs reply: Logged in as
             string = "Logged in as".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word[4]))
-        elif (word[1] == "335"):
+        elif word[1] == "335":
             # WhoIs reply: Bot
             print('\0033{0}\003'.format(word_eol[0]))
-        elif (word[1] == "337"):
+        elif word[1] == "337":
             string = word[3].ljust(min_width)
             print('{0}{1}{2}{3}'.format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "338"):
+        elif word[1] == "338":
             # WhoIs reply: user@host, ip
             string = "User@host".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word[4]))
             string = "IP".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word[5]))
-        elif (word[1] == "342"):
+        elif word[1] == "342":
             # WhoIs reply in ChatHispano:
             # Only accepts querys from registered users
             string = word[3].ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "378"):
+        elif word[1] == "378":
             # WhoIs reply: VHOST
             string = "VHost".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[6]))
-        elif (word[1] == "379"):
+        elif word[1] == "379":
             # WhoIs reply: whoismodes
             string = "Modes".ljust(min_width)
             print("{0}{1}{2}{3}".format(start, string, end, word_eol[4][1:]))
-        elif (word[1] == "401"):
+        elif word[1] == "401":
             # WhoIs reply: No such nick
             part1 = '\0033Nick {0} doesn\'t exist'.format(word[3])
             part2 = 'or isn\'t connected.\003'
             print('{0}{1}'.format(part1, part2))
-        elif (word[1] == "671"):
+        elif word[1] == "671":
             string = word[3].ljust(min_width)
             print('{0}{1}{2}{3}'.format(start, string, end, word_eol[4][1:]))
         else:
