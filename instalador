@@ -14,6 +14,7 @@ archivo_ctcp = directorio_xchat + "ctcpreply.conf"
 xchatconf = directorio_xchat + "xchat.conf"
 ctcp_existe = False
 
+
 # Esta funcion nos devuelve el valor de una entrada (conf) en el archivo de
 # configuracion de X-Chat.
 def conf_busqueda(conf):
@@ -24,6 +25,7 @@ def conf_busqueda(conf):
         if (opcion == conf):
             return valor
     archivo.close
+
 
 # Esta funcion modifica el valor (nuevo) de un campo (conf) en el archivo de
 # configuracion de X-Chat.
