@@ -81,8 +81,8 @@ def anti_notice_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    #>> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hello
-    #>> :CHaN!-@- NOTICE #canal :nick añade en #canal a nick2 con nivel 499
+    # >> :Anti_Bots!GatoBot@BvW8Qj.CtqRtH.virtual NOTICE #gatoscript :hello
+    # >> :CHaN!-@- NOTICE #canal :nick añade en #canal a nick2 con nivel 499
     if helper.conf_read("notices", "protections") == "1":
         channels = helper.conf_read("channels", "protections").split(',')
         for channel in channels:
@@ -103,7 +103,7 @@ def anti_hoygan_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    #>> :nick!ident@host PRIVMSG #channel :message
+    # >> :nick!ident@host PRIVMSG #channel :message
     if helper.conf_read("hoygan", "protections") == "1":
         for channel in helper.conf_read("channels", "protections").split(','):
             if channel.lower() == word[2].lower():
@@ -163,8 +163,8 @@ def anti_colors_cb(word, word_eol, userdata):
     # Only act on protected channels
     if word[2].lower() in helper.conf_read("channels",
                                            "protections").split(","):
-    #for channel in helper.conf_read("channels", "protections").split(","):
-    #    if channel.lower() == word[2].lower():
+    # for channel in helper.conf_read("channels", "protections").split(","):
+    #     if channel.lower() == word[2].lower():
         string = word_eol[3][1:]
         if _ACTION_RE.match(string):
             string = string[7:]
@@ -204,7 +204,7 @@ def anti_drone_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    #print word_eol[0]
+    # print word_eol[0]
     if helper.conf_read("drones", "protections") == "1":
         nick = word[0][1:].split("!")[0]
         ident = word[0][1:].split("!")[1].split("@")[0]
