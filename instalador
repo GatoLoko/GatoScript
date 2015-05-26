@@ -48,11 +48,10 @@ def conf_cambia(conf, nuevo):
 # La siguiente variable contiene las lineas que deben añadirse al archivo de
 # respuestas ctcp para mostrar que se esta usando GatoScript cuando se reciba
 # un ctcp version.
-lineas_ctcp = [
-"NAME VERSION\n",
-"CMD nctcp %s VERSION GatoScript for X-Chat\n",
-"\n"
-]
+lineas_ctcp = ["NAME VERSION\n",
+               "CMD nctcp %s VERSION GatoScript for X-Chat\n",
+               "\n"
+               ]
 
 # Si existe el directorio gatoscript, realizamos una actualizacion en lugar de
 # una instalacion completa.
