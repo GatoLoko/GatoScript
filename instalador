@@ -29,7 +29,7 @@ def conf_busqueda(conf):
 
 # Esta funcion modifica el valor (nuevo) de un campo (conf) en el archivo de
 # configuracion de X-Chat.
-def conf_cambia(conf,nuevo):
+def conf_cambia(conf, nuevo):
     global xchatconf
     archivo = file(xchatconf, "r")
     memoria = archivo.read().split("\n")
@@ -63,8 +63,8 @@ else:
     actualizacion = 0
 
 # Instalamos los archivos del script
-os.system("cp -rf %s %s" %(directorio_actual + "/*",directorio_xchat))
-os.system("rm %sinstalador" %directorio_xchat)
+os.system("cp -rf %s %s" % (directorio_actual + "/*", directorio_xchat))
+os.system("rm %sinstalador" % directorio_xchat)
 
 # Si no es la primera vez que se instala el GatoScript no modificaremos
 # ninguna configuracion.
