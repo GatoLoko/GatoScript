@@ -188,16 +188,16 @@ def hardware_cb(word, word_eol, userdata):
     data.close()
     memory = memparts[-2]
     units = memparts[-1]
-    ## Free
+    # Free
     memparts = meminfo[1].split(":")[1][:-1].split(" ")
     freemem = memparts[-2]
-    ## Buffer
+    # Buffer
     memparts = meminfo[2].split(":")[1][:-1].split(" ")
     bufmem = memparts[-2]
-    ## Cache
+    # Cache
     memparts = meminfo[3].split(":")[1][:-1].split(" ")
     cachemem = memparts[-2]
-    ## Used and free
+    # Used and free
     used = int(freemem) + int(bufmem) + int(cachemem)
     free = int(memory) - used
     # Message
