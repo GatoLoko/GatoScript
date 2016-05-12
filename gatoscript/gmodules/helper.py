@@ -43,7 +43,7 @@ _SCRIPTDIR = xchat.get_info("xchatdir")
 _GATODIR = "".join([_SCRIPTDIR, "/gatoscript/"])
 _CONFIGFILE = "".join([_GATODIR, "gatoscript.conf"])
 _GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
-#_HOME = path.expanduser("~")
+# _HOME = path.expanduser("~")
 _CP = SafeConfigParser()
 
 #############################################################################
@@ -63,7 +63,7 @@ else:
 # Information
 def scriptdirs():
     """Get the base path for HexChat/X-Chat and GatoScript."""
-    modules = path.join(_SCRIPTDIR, "modules")
+    modules = path.join(_GATODIR, "gmodules")
     media = path.join(modules, "players")
     return _SCRIPTDIR, _GATODIR, modules, media
 
@@ -75,10 +75,23 @@ def conf_read(option, section="common"):
     option  -- string with the name of the option we want to read.
     section -- optional string with the section name. Default is "common".
     """
-    if (section == ""):
+    if section == "":
         section = "common"
     _CP.read(_CONFIGFILE)
     return _CP.get(section, option)
+
+
+def conf_show():
+    """Reads the entire config file and shows it in the script query channel"""
+    _CP.read(_CONFIGFILE)
+    query_line("")
+    query_line("List of configuration sections and options:")
+    for section in _CP.sections():
+        query_line(section)
+        for option in _CP.options(section):
+            message = "".join([" ", option, "=", _CP.get(section, option)])
+            query_line(message)
+    query_line("")
 
 
 def conf_write(option, value, section="common"):
@@ -102,7 +115,7 @@ def gatodb_cursor_execute(sql):
     try:
         results = _CURSOR.execute(sql)
         return results
-    except sqlite3.Error, err:
+    except sqlite3.Error as err:
         message = "SQL error: {0}".format(err.args[0])
         gprint(message)
         return None
@@ -118,7 +131,7 @@ def gprint(message):
     """Writes a line with format "Gatoscript >> blah", where blah is the string
     received as an argument. Usefull to send the user messages from the script.
     Arguments:
-    mensaje -- cadena con el mensaje a mostrar
+    message -- string with the message to show
     """
     g_message = "".join(["GatoScript >> ", message])
     print(g_message)
@@ -157,7 +170,7 @@ def query_line(message):
     orig_context.set()
 
 
-#Expulsion
+# Expulsion
 def expel(message, ban, word):
     """Expels an user from the channel according to the configured options.
     Arguments:
@@ -174,7 +187,7 @@ def expel(message, ban, word):
         xchat.command("".join(["kick ", word[0][1:].split("!")[0], message]))
 
 
-#Unit conversion
+# Unit conversion
 def units(value, base):
     """Converts amounts of bytes to one of its multiples
     Arguments:
@@ -194,79 +207,6 @@ def units(value, base):
     raise ValueError('value too big')
 
 
-# FIXME: This function interacts with the user and doesn't belong here
-# Comandos
-def options_cb(word, word_eol, userdata):
-    """This function shows and modifies the script settings.
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    param_num = len(word_eol)
-    if param_num == 1:
-        _CP.read(_CONFIGFILE)
-        query_line("")
-        query_line("List of configuration sections and options:")
-        for section in _CP.sections():
-            query_line(section)
-            for option in _CP.options(section):
-                message = "".join([" ", option, "=", _CP.get(section, option)])
-                query_line(message)
-        query_line("")
-    elif param_num > 1 and param_num < 4:
-        gprint("Wrong parameters count")
-        gprint("".join(['Usage: OPTIONS <option> <value> <section>, changes',
-                        ' GatoScripts settings. If no section is specified,',
-                        ' "common" is used by default.']))
-    elif param_num == 4:
-        conf_write(word[1], word[2], word[3])
-    else:
-        gprint("Don't show anything")
-    return xchat.EAT_ALL
-
-
-# FIXME: This function interacts with the user and doesn't belong here
-def gato_info_cb(word, word_eol, userdata):
-    """Shows GatoScript publicity
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    if "hexchat" in _SCRIPTDIR:
-        client = "HexChat"
-    else:
-        client = "X-Chat"
-    version = xchat.get_info("version")
-    xchat.command("".join(["say ( ", client, " ) ", version,
-                           " ( Script ) GatoScript ", __module_version__,
-                           " python script for HexChat/X-Chat ",
-                           "(http://gatoloko.homelinux.org)"]))
-    return xchat.EAT_ALL
-
-
-# FIXME: This function interacts with the user and doesn't belong here
-def kbtemp_cb(word, word_eol, userdata):
-    """Temporarily expels an user on the active channel (must be OP).
-    Arguments:
-    word     -- array of strings sent by HexChat/X-Chat to every hook
-    word_eol -- array of strings sent by HexChat/X-Chat to every hook
-    userdata -- optional variable that can be sent to a hook (ignored)
-    """
-    if (len(word_eol) > 1):
-        xchat.command("".join(["ban ", word[1], "!*@*"]))
-        if (len(word_eol) > 2):
-            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes (",
-                                   word_eol[2], ")"]))
-        else:
-            xchat.command("".join(["kick ", word[1], " Banned for 5 minutes"]))
-        xchat.command("".join(["timer -repeat 1 300 unban ", word[1], "!*@*"]))
-    else:
-        gprint("You must specify a nick to kick/ban")
-    return xchat.EAT_ALL
-
-
 #############################################################################
 # Define the help function
 #############################################################################
@@ -274,50 +214,16 @@ def ghelp():
     """Returns the help information."""
     messages = [
         "Helper:",
-        "  /KBTEMP <nick> <optional_message>: bans and kick the selected nick",
-        "      from the actual channel, then activates a 5 minutes countdown,",
-        "      after wich the ban is removed. If a message is added, it's",
-        "      used as the kick reason. (You must be channel operator)",
-        "  /GINFO: shows GatoScript's spam"]
+        "  This module doesnt contain any interactive functions"]
     return messages
 
 
-# FIXME: This module shouldn't have any interactive function, so the next two
-# section shouldn't exist at all
 #############################################################################
 # Define the function to unload this module. This should be called from the
 # main module unload function
 #############################################################################
-def unload():
-    """This function disconects all module functions"""
-    # Script options
-    xchat.unhook(HOOKOPTIONS)
-    # Script information
-    xchat.unhook(HOOKGINFO)
-    # Temporary KickBan
-    xchat.unhook(HOOKKBTEMP)
 
 
 #############################################################################
 # Connect all HexChat/X-Chat hooks with the functions defined for them
 #############################################################################
-# Script options
-HOOKOPTIONS = xchat.hook_command('options', options_cb)
-# Script information
-HOOKGINFO = xchat.hook_command('ginfo', gato_info_cb)
-# Temporary KickBan
-kbtemp_usage = "".join([
-    "Usage: KBTEMP <nick> <optional_message>, bans and kicks the selected",
-    " nick from the actual channel, then activates a 5 minutes countdown,",
-    " after wich the ban is removed. If a message is added, it's used as",
-    " the kick reason. (You must be channel operator)"])
-HOOKKBTEMP = xchat.hook_command('kbtemp', kbtemp_cb, help=kbtemp_usage)
-
-
-#############################################################################
-# Add Information and Options menus
-#############################################################################
-xchat.command('menu ADD "GatoScript/Information" "ginfo"')
-xchat.command('menu ADD "GatoScript/-"')
-xchat.command('menu ADD "GatoScript/Options"')
-xchat.command('menu ADD "GatoScript/Options/Python" "py console"')

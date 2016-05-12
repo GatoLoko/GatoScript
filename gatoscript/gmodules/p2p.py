@@ -49,9 +49,9 @@ _TRANSMISSIONSTATS = "".join([_HOME, "/.config/transmission/stats.json"])
 ##############################################################################
 
 
-##############################################################################
-## Definimos las funciones para mostrar informacion P2P
-##############################################################################
+#############################################################################
+# Define internal use functions
+#############################################################################
 def amule_cb(word, word_eol, userdata):
     """Read aMule's onlinesig file and shows up/down speeds and total
     downloaded in the active channel.
@@ -128,7 +128,7 @@ def transmission_cb(word, word_eol, userdata):
 ##############################################################################
 # Define the help function
 ##############################################################################
-def help():
+def ghelp():
     """Returns the help information"""
     messages = ["",
                 "P2P:",

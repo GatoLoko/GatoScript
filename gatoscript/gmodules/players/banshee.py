@@ -36,8 +36,8 @@ class Player:
         return "Banshee"
 
     def listening(self):
-        comando = 'banshee --query-artist --query-title --query-duration'
-        information = (getoutput(comando)).split("\n")
+        command = 'banshee --query-artist --query-title --query-duration'
+        information = (getoutput(command)).split("\n")
         if information[2].split(": ")[1] == "":
             length = "Radio"
         else:

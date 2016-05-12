@@ -188,16 +188,16 @@ def hardware_cb(word, word_eol, userdata):
     data.close()
     memory = memparts[-2]
     units = memparts[-1]
-    ## Free
+    # Free
     memparts = meminfo[1].split(":")[1][:-1].split(" ")
     freemem = memparts[-2]
-    ## Buffer
+    # Buffer
     memparts = meminfo[2].split(":")[1][:-1].split(" ")
     bufmem = memparts[-2]
-    ## Cache
+    # Cache
     memparts = meminfo[3].split(":")[1][:-1].split(" ")
     cachemem = memparts[-2]
-    ## Used and free
+    # Used and free
     used = int(freemem) + int(bufmem) + int(cachemem)
     free = int(memory) - used
     # Message
@@ -224,7 +224,7 @@ def network_cb(word, word_eol, userdata):
             parts = line[:-1].split(":")[1].split()
             received = helper.units(int(parts[0]), 1024)
             sent = helper.units(int(parts[8]), 1024)
-            command = "".join(["say [ Red ] Device: ", device,
+            command = "".join(["say [ Network ] Device: ", device,
                                "  - Hostname: ", hostname, "  - Received: ",
                                received, "  - Sent: ", sent])
             xchat.command(command)
@@ -290,10 +290,10 @@ def ghelp():
 
 
 #############################################################################
-# Define the function to to unload this module. This should be called from the
+# Define the function to unload this module. This should be called from the
 # main module unload function
 #############################################################################
-def unload_cb():
+def unload():
     """This function disconects all module functions"""
     xchat.unhook(HOOKGUP)
     xchat.unhook(HOOKGOS)

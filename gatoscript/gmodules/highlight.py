@@ -115,7 +115,7 @@ def url_highlight_cb(word, word_eol, userdata):
                 address.append(i)
         # If there is any URL, colorize all of them
         new_msg_tmp = []
-        if address != []:
+        if address:
             for entry in words:
                 if entry in address:
                     new_msg_tmp.append("".join(["\003", color(), entry,
@@ -150,7 +150,7 @@ def ghelp():
 
 
 #############################################################################
-# Define the function to to unload this module. This should be called from the
+# Define the function to unload this module. This should be called from the
 # main module unload function
 #############################################################################
 def unload():
