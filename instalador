@@ -24,7 +24,7 @@ def conf_busqueda(conf):
         opcion, valor = linea[0:len(linea)-1].split(' = ')
         if opcion == conf:
             return valor
-    archivo.close
+    archivo.close()
 
 
 # Esta funcion modifica el valor (nuevo) de un campo (conf) en el archivo de
@@ -33,7 +33,7 @@ def conf_cambia(conf, nuevo):
     global xchatconf
     archivo = file(xchatconf, "r")
     memoria = archivo.read().split("\n")
-    archivo.close
+    archivo.close()
     # print len(memoria)
     for i in range(len(memoria)-1):
         if memoria[i] != "":
@@ -43,7 +43,8 @@ def conf_cambia(conf, nuevo):
     archivo = file(xchatconf, "w")
     for i in range(len(memoria)):
         archivo.write(memoria[i] + "\n")
-    archivo.close
+    archivo.close()
+
 
 # La siguiente variable contiene las lineas que deben añadirse al archivo de
 # respuestas ctcp para mostrar que se esta usando GatoScript cuando se reciba
@@ -57,8 +58,8 @@ lineas_ctcp = ["NAME VERSION\n",
 # una instalacion completa.
 if os.path.exists(gatoscript):
     actualizacion = 1
-    print "Se ha detectado una version anterior de GatoScript, se realizara" + \
-          " una actualizacion"
+    print("Se ha detectado una version anterior de GatoScript, se realizara" +
+          " una actualizacion")
 else:
     actualizacion = 0
 
@@ -90,9 +91,9 @@ if actualizacion != 1:
     conf_cambia("irc_user_name", "GatoScript")
     # Activamos coloreado de nicks?
     conf_cambia("text_color_nicks", "1")
-    print "Instalacion completada"
+    print("Instalacion completada")
 else:
-    print "Actualizacion completada"
+    print("Actualizacion completada")
 
 # Mensajes de aviso para que quienes lo instalen
 mensaje = """Para algunas funciones de GatoScript son necesarias las librerias externas indicadas a continuacion:
@@ -102,4 +103,4 @@ Uso                                 | Libreria
 Control de Rhythmbox mediante DBUS  | python-dbus
 
 Si quiere utilizar alguna de esas funciones, instale la libreria correspondiente."""
-print mensaje
+print(mensaje)
