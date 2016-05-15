@@ -56,6 +56,7 @@ else:
     ANTISPAM = 0
     SPAMBOTS = 0
     CHANNELS = []
+    COMP_FILTERS = []
 
 
 #############################################################################
@@ -67,6 +68,7 @@ def antispam_reload():
     global ANTISPAM
     global SPAMBOTS
     global CHANNELS
+    global COMP_FILTERS
     if helper.CONNECTED == 1:
         ANTISPAM = int(helper.conf_read("spam", "protections"))
         SPAMBOTS = int(helper.conf_read("spambots", "protections"))
@@ -82,6 +84,7 @@ def antispam_reload():
         ANTISPAM = 0
         SPAMBOTS = 0
         CHANNELS = []
+        COMP_FILTERS = []
 
 
 #############################################################################
