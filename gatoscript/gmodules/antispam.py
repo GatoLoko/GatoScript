@@ -193,6 +193,14 @@ def antispam_list_cb(word, word_eol, userdata):
     return xchat.EAT_ALL
 
 
+def antispam_debug_cb(word, word_eol, userdata):
+    global CHANNELS
+    global SPAMBOTS
+    global ANTISPAM
+    print("Antispam debug: enabled={},"
+          " channels={}, spambots={}".format(ANTISPAM, CHANNELS, SPAMBOTS))
+
+
 #############################################################################
 # Define the help function
 #############################################################################
@@ -220,6 +228,7 @@ def unload():
     xchat.unhook(HOOKANTIADD)
     xchat.unhook(HOOKANTILIST)
     xchat.unhook(HOOKANTIDEL)
+    xchat.unhook(HOOKDEBUG)
 
 
 #############################################################################
@@ -232,6 +241,7 @@ HOOKANTISPAM = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None,
 HOOKANTIADD = xchat.hook_command('antiadd', antispam_add_cb)
 HOOKANTILIST = xchat.hook_command('antilist', antispam_list_cb)
 HOOKANTIDEL = xchat.hook_command('antidel', antispam_del_cb)
+HOOKDEBUG = xchat.hook_command('asdebug', antispam_debug_cb)
 
 
 #############################################################################
