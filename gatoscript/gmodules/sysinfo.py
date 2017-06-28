@@ -176,34 +176,29 @@ def hardware_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     # CPU
-    data = file("/proc/cpuinfo")
-    cpuinfo = data.readlines()
-    data.close()
-    cpu = cpuinfo[4].split(":")[1][1:-1]
-    speed = cpuinfo[6].split(":")[1][1:-1]
+    with open("/proc/cpuinfo") as data:
+        cpuinfo = data.readlines()
+    # Fin the lines with "name", take the first one, split out the name
+    cpu = [x for x in cpuinfo if "name" in x ][0].split(":")[1][1:-1]
+    speed = [x for x in cpuinfo if "MHz" in x][0].split(":")[1][1:-1]
     # Memory
-    data = file("/proc/meminfo")
-    meminfo = data.readlines()
-    memparts = meminfo[0].split(":")[1][:-1].split(" ")
-    data.close()
-    memory = memparts[-2]
-    units = memparts[-1]
-    # Free
-    memparts = meminfo[1].split(":")[1][:-1].split(" ")
-    freemem = memparts[-2]
-    # Buffer
-    memparts = meminfo[2].split(":")[1][:-1].split(" ")
-    bufmem = memparts[-2]
-    # Cache
-    memparts = meminfo[3].split(":")[1][:-1].split(" ")
-    cachemem = memparts[-2]
+    with open("/proc/meminfo", 'r') as data:
+        meminfo = data.readlines()
+    for line in meminfo:
+        if "MemTotal" in line:
+            memory, units = line.split(":")[1].strip().split(" ")
+        if "MemFree" in line:
+            memfree = line.split(":")[1].strip().split(" ")[0]
+        if "Buffers" in line:
+            bufmem = line.split(":")[1].strip().split(" ")[0]
+        if "Cached" in line:
+            cachemem = line.split(":")[1].strip().split(" ")[0]
     # Used and free
-    used = int(freemem) + int(bufmem) + int(cachemem)
-    free = int(memory) - used
-    # Message
+    used = int(memory) - int(memfree) - int(bufmem) - int(cachemem)
+    # Message:
     command = "".join(["say [ Hardware ] CPU: ", cpu, "  - Speed: ", speed,
                        "MHz  - Installed Memory: ", str(memory), units,
-                       "  - Used Memory: ", str(free), units])
+                       "  - Used Memory: ", str(used), units])
     xchat.command(command)
     return xchat.EAT_ALL
 
