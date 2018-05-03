@@ -10,3 +10,24 @@ Disable all    |   "%O"    =   "\017"
 Acoustic bell  |           =   "\007"
 $t             |   "$t"    =   "\t"    <--- uh?
 
+
+Python BOM line
+# -*- coding: utf-8 *-*
+
+
+xchat.get_info('event_text Channel Msg Hilight')
+
+
+# https://www.alien.net.au/irc/irc2numerics.html
+#689   RPL_WHOISSTAFF
+#690   RPL_WHOISLANGUAGE
+
+
+Different cases of WhoIs responses
+
+# Freenode:                         311, 319, 312, 671, 378, 317, 330, 318
+# IRC-Hispano/ChatHispano (unreg):  311, 319, 312, 338, 379, 317, 318
+# IRC-Hispano/ChatHispano (reg):    311, 319, 312, 307, 338, 379, 317, 318
+# IRC-Hispano/ChatHispano (reg+R):  311, 319, 312, 307, 342, 338, 379, 317, 318
+# IRC-Hispano/ChatHispano (op bot): 311, 319, 312, 307, 316, 313, 342, 379, 318
+# IRC-Hispano/ChatHispano (ircop):  311, 319, 312, 307, 379, 317, 318

@@ -103,7 +103,7 @@ def antispam_cb(word, word_eol, userdata):
     global CHANNELS
     # Check whether the message was receiven on a protected channel and the
     # antispam is enabled. If so, expel the spammer
-    if word[2] in CHANNELS and ANTISPAM == 1:
+    if word[2].lower() in CHANNELS and ANTISPAM == 1:
         for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 ban = "1"
@@ -113,10 +113,10 @@ def antispam_cb(word, word_eol, userdata):
                 # the check for private messages isn't executed when it's a
                 # public channel message.
                 return xchat.EAT_NONE
-    # Check wheter the message was received in a private conversation and
+    # Check whether the message was received in a private conversation and
     # spambots protection is enabled.
     elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
-        # If so, check wheter there it contains spam
+        # If so, check whether it contains spam
         for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
                 # If there is spam, expel the author
@@ -186,7 +186,7 @@ def antispam_list_cb(word, word_eol, userdata):
     """
     sql = "SELECT id, filter FROM filters"
     for item in helper.gatodb_cursor_execute(sql):
-        message = u"".join([str(item[0]), ": ", item[1]])
+        message = "".join([str(item[0]), ": ", item[1]])
         helper.query_line(message)
     del message
     return xchat.EAT_ALL
