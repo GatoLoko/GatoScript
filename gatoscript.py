@@ -64,8 +64,9 @@ def unload_cb(userdata):
         if "__" not in entry:
             command = ''.join(["gmodules.", entry, ".unload()"])
             messages = eval(command)
-            for message in messages:
-                print(message)
+            if messages:
+                for message in messages:
+                    print(message)
     xchat.unhook(HOOKUNLOAD)
     xchat.command('menu del GatoScript')
     print("".join(["GatoScript ", __module_version__, " has been unloaded"]))

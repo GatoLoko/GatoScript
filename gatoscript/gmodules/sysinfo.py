@@ -293,7 +293,7 @@ def ghelp():
 # Define the function to to unload this module. This should be called from the
 # main module unload function
 #############################################################################
-def unload_cb():
+def unload():
     """This function disconects all module functions"""
     xchat.unhook(HOOKGUP)
     xchat.unhook(HOOKGOS)

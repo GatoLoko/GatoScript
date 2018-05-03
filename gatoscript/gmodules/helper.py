@@ -242,7 +242,7 @@ def gato_info_cb(word, word_eol, userdata):
     xchat.command("".join(["say ( ", client, " ) ", version,
                            " ( Script ) GatoScript ", __module_version__,
                            " python script for HexChat/X-Chat ",
-                           "(http://gatoloko.homelinux.org)"]))
+                           "(https://gatoloko.github.io/GatoScript/)"]))
     return xchat.EAT_ALL
 
 

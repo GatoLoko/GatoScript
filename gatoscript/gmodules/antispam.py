@@ -67,10 +67,12 @@ def antispam_reload():
     global ANTISPAM
     global SPAMBOTS
     global CHANNELS
+    global filters
+    global COMP_FILTERS
     if helper.CONNECTED == 1:
         ANTISPAM = int(helper.conf_read("spam", "protections"))
         SPAMBOTS = int(helper.conf_read("spambots", "protections"))
-        CHANNELS = helper.conf_read("channels", "protections")
+        CHANNELS = helper.conf_read("channels", "protections").split(",")
         # Load the new filter list and compile the regexps
         filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
         COMP_FILTERS = []
@@ -217,7 +219,6 @@ def unload():
     xchat.unhook(HOOKANTIADD)
     xchat.unhook(HOOKANTILIST)
     xchat.unhook(HOOKANTIDEL)
-    xchat.unhook(HOOKTEST)
 
 
 #############################################################################
