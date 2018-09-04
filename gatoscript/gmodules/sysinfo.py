@@ -34,7 +34,7 @@ from subprocess import Popen, PIPE
 import re
 import platform
 import datetime
-import helper
+from . import helper
 
 
 #############################################################################
@@ -57,7 +57,7 @@ def uptime_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    uptime_data = file("/proc/uptime", "r").readlines()
+    uptime_data = open("/proc/uptime", "r").readlines()
     uptime = float(uptime_data[0].split()[0])
     days_remainder = uptime % 86400
     days = int(uptime / 86400)
@@ -132,7 +132,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = "".join([xversion, " ", xserver])
+        x11 = "%s %s" % (xversion.decode(), xserver.decode())
     # Find GCC version
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
@@ -146,9 +146,9 @@ def software_cb(word, word_eol, userdata):
             gcc = "Not installed"
         else:
             data = gcc_output[0].split()
-            gcc = data[-1]
-    command = "".join(["say [ Software ] Kernel: ", kernel, "  - LIBC: ",
-                       libc, "  - X11: ", x11, "  - GCC: ", gcc])
+            gcc = data[-2].decode()
+    command = "say [ Software ] Kernel: %s  - LIBC: %s  - X11: %s  - GCC: " \
+              "%s" % (kernel, libc, x11, gcc)
     hexchat.command(command)
     del data, kernel, libc, xdpyinfo, gcc, gcc_output, error, x_version
     del xversion, x11, xserver
@@ -179,7 +179,7 @@ def hardware_cb(word, word_eol, userdata):
     with open("/proc/cpuinfo") as data:
         cpuinfo = data.readlines()
     # Fin the lines with "name", take the first one, split out the name
-    cpu = [x for x in cpuinfo if "name" in x ][0].split(":")[1][1:-1]
+    cpu = [x for x in cpuinfo if "name" in x][0].split(":")[1][1:-1]
     speed = [x for x in cpuinfo if "MHz" in x][0].split(":")[1][1:-1]
     # Memory
     with open("/proc/meminfo", 'r') as data:
@@ -213,7 +213,7 @@ def network_cb(word, word_eol, userdata):
     # Find all devices and show a line for each one
     net = re.compile('eth|ath|wlan|ra([0-9]):')
     hostname = platform.node()
-    for line in file("/proc/net/dev"):
+    for line in open("/proc/net/dev"):
         if net.search(line):
             device = line.split(":")[0].split()[-1]
             parts = line[:-1].split(":")[1].split()
@@ -243,7 +243,7 @@ def graphics_cb(word, word_eol, userdata):
     else:
         devices = []
         for line in data.stdout:
-            devices.append(line.split(": ")[1][:-1])
+            devices.append(line.decode().split(": ")[1][:-1])
     # Show a line for each device found
     for device in devices:
         hexchat.command("".join(["say ", "[ Graphics ] Device: ", device]))
@@ -258,7 +258,7 @@ def graphics_cb(word, word_eol, userdata):
     else:
         resolutions = []
         for line in data.stdout:
-            resolutions.append(line.split(":    ")[1][:-1])
+            resolutions.append(line.decode().split(":    ")[1][:-1])
     # Show a line for each active screen
     for resolution in resolutions:
         hexchat.command("".join(["say ", "[ Graphics ] Screen: ", resolution]))

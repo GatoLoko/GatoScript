@@ -31,7 +31,7 @@ __module_autor__ = "GatoLoko"
 # Load all needed libraries
 import hexchat
 import re
-import helper
+from . import helper
 
 #############################################################################
 # Define some environment variables

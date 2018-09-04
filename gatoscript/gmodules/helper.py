@@ -32,7 +32,7 @@ __module_autor__ = "GatoLoko"
 # Load all needed libraries
 import hexchat
 from os import path
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import sqlite3
 
 #############################################################################
@@ -103,7 +103,7 @@ def conf_write(option, value, section="common"):
     """
     _CP.read(_CONFIGFILE)
     _CP.set(section, option, value)
-    _CP.write(file(_CONFIGFILE, "w"))
+    _CP.write(open(_CONFIGFILE, "w"))
 
 
 # Database management

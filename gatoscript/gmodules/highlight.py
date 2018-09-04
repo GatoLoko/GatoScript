@@ -31,7 +31,7 @@ __module_autor__ = "GatoLoko"
 # Load all needed libraries
 import hexchat
 import re
-import helper
+from . import helper
 
 action_txt = [":ACTION", ":-ACTION", ":+ACTION"]
 ctcp_txt = [":VERSION", ":TIME", ":FINGER", ":PING"]

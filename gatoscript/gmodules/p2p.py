@@ -32,7 +32,7 @@ __module_autor__ = "GatoLoko"
 # Load all needed libraries
 import hexchat
 from os import path
-import helper
+from . import helper
 import xml.dom.minidom
 
 #############################################################################
