@@ -29,12 +29,12 @@ __module_description__ = "SysInfo module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 from subprocess import Popen, PIPE
 import re
 import platform
 import datetime
-import helper
+from . import helper
 
 
 #############################################################################
@@ -57,7 +57,7 @@ def uptime_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook (ignored)
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    uptime_data = file("/proc/uptime", "r").readlines()
+    uptime_data = open("/proc/uptime", "r").readlines()
     uptime = float(uptime_data[0].split()[0])
     days_remainder = uptime % 86400
     days = int(uptime / 86400)
@@ -78,8 +78,8 @@ def uptime_cb(word, word_eol, userdata):
         command = "".join(["say [ Uptime ] ", str(days), " ", days_string,
                            ", ", str(hours), " hours and ", str(minutes),
                            " minutes"])
-    xchat.command(command)
-    return xchat.EAT_ALL
+    hexchat.command(command)
+    return hexchat.EAT_ALL
 
 
 def os_cb(word, word_eol, userdata):
@@ -95,8 +95,8 @@ def os_cb(word, word_eol, userdata):
     kernel = " ".join([platform.system(), platform.release()])
     command = "".join(["say [ System ] Distribution: ", distribution,
                        "  - Version: ", version, "  - Kernel: ", kernel])
-    xchat.command(command)
-    return xchat.EAT_ALL
+    hexchat.command(command)
+    return hexchat.EAT_ALL
 
 
 def software_cb(word, word_eol, userdata):
@@ -132,7 +132,7 @@ def software_cb(word, word_eol, userdata):
     else:
         x_version = xdpyinfo.stdout.readlines()
         xversion = x_version[0].split()[3]
-        x11 = "".join([xversion, " ", xserver])
+        x11 = "%s %s" % (xversion.decode(), xserver.decode())
     # Find GCC version
     gcc = Popen("gcc --version", shell=True, stdout=PIPE, stderr=PIPE)
     error = gcc.stderr.readlines()
@@ -146,13 +146,13 @@ def software_cb(word, word_eol, userdata):
             gcc = "Not installed"
         else:
             data = gcc_output[0].split()
-            gcc = data[-1]
-    command = "".join(["say [ Software ] Kernel: ", kernel, "  - LIBC: ",
-                       libc, "  - X11: ", x11, "  - GCC: ", gcc])
-    xchat.command(command)
+            gcc = data[-2].decode()
+    command = "say [ Software ] Kernel: %s  - LIBC: %s  - X11: %s  - GCC: " \
+              "%s" % (kernel, libc, x11, gcc)
+    hexchat.command(command)
     del data, kernel, libc, xdpyinfo, gcc, gcc_output, error, x_version
     del xversion, x11, xserver
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def date_cb(word, word_eol, userdata):
@@ -163,9 +163,9 @@ def date_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     date = datetime.datetime.now()
-    xchat.command("".join(["say [ Date/Time ] ", str(date.isoformat())]))
+    hexchat.command("".join(["say [ Date/Time ] ", str(date.isoformat())]))
     del date
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def hardware_cb(word, word_eol, userdata):
@@ -176,36 +176,31 @@ def hardware_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     # CPU
-    data = file("/proc/cpuinfo")
-    cpuinfo = data.readlines()
-    data.close()
-    cpu = cpuinfo[4].split(":")[1][1:-1]
-    speed = cpuinfo[6].split(":")[1][1:-1]
+    with open("/proc/cpuinfo") as data:
+        cpuinfo = data.readlines()
+    # Fin the lines with "name", take the first one, split out the name
+    cpu = [x for x in cpuinfo if "name" in x][0].split(":")[1][1:-1]
+    speed = [x for x in cpuinfo if "MHz" in x][0].split(":")[1][1:-1]
     # Memory
-    data = file("/proc/meminfo")
-    meminfo = data.readlines()
-    memparts = meminfo[0].split(":")[1][:-1].split(" ")
-    data.close()
-    memory = memparts[-2]
-    units = memparts[-1]
-    # Free
-    memparts = meminfo[1].split(":")[1][:-1].split(" ")
-    freemem = memparts[-2]
-    # Buffer
-    memparts = meminfo[2].split(":")[1][:-1].split(" ")
-    bufmem = memparts[-2]
-    # Cache
-    memparts = meminfo[3].split(":")[1][:-1].split(" ")
-    cachemem = memparts[-2]
+    with open("/proc/meminfo", 'r') as data:
+        meminfo = data.readlines()
+    for line in meminfo:
+        if "MemTotal" in line:
+            memory, units = line.split(":")[1].strip().split(" ")
+        if "MemFree" in line:
+            memfree = line.split(":")[1].strip().split(" ")[0]
+        if "Buffers" in line:
+            bufmem = line.split(":")[1].strip().split(" ")[0]
+        if "Cached" in line:
+            cachemem = line.split(":")[1].strip().split(" ")[0]
     # Used and free
-    used = int(freemem) + int(bufmem) + int(cachemem)
-    free = int(memory) - used
-    # Message
+    used = int(memory) - int(memfree) - int(bufmem) - int(cachemem)
+    # Message:
     command = "".join(["say [ Hardware ] CPU: ", cpu, "  - Speed: ", speed,
                        "MHz  - Installed Memory: ", str(memory), units,
-                       "  - Used Memory: ", str(free), units])
-    xchat.command(command)
-    return xchat.EAT_ALL
+                       "  - Used Memory: ", str(used), units])
+    hexchat.command(command)
+    return hexchat.EAT_ALL
 
 
 def network_cb(word, word_eol, userdata):
@@ -218,7 +213,7 @@ def network_cb(word, word_eol, userdata):
     # Find all devices and show a line for each one
     net = re.compile('eth|ath|wlan|ra([0-9]):')
     hostname = platform.node()
-    for line in file("/proc/net/dev"):
+    for line in open("/proc/net/dev"):
         if net.search(line):
             device = line.split(":")[0].split()[-1]
             parts = line[:-1].split(":")[1].split()
@@ -227,8 +222,8 @@ def network_cb(word, word_eol, userdata):
             command = "".join(["say [ Network ] Device: ", device,
                                "  - Hostname: ", hostname, "  - Received: ",
                                received, "  - Sent: ", sent])
-            xchat.command(command)
-    return xchat.EAT_ALL
+            hexchat.command(command)
+    return hexchat.EAT_ALL
 
 
 def graphics_cb(word, word_eol, userdata):
@@ -248,10 +243,10 @@ def graphics_cb(word, word_eol, userdata):
     else:
         devices = []
         for line in data.stdout:
-            devices.append(line.split(": ")[1][:-1])
+            devices.append(line.decode().split(": ")[1][:-1])
     # Show a line for each device found
     for device in devices:
-        xchat.command("".join(["say ", "[ Graphics ] Device: ", device]))
+        hexchat.command("".join(["say ", "[ Graphics ] Device: ", device]))
     # Find the screen resolution for all active screen
     data = Popen("xdpyinfo | grep dimensions", shell=True, stdout=PIPE,
                  stderr=PIPE)
@@ -263,11 +258,11 @@ def graphics_cb(word, word_eol, userdata):
     else:
         resolutions = []
         for line in data.stdout:
-            resolutions.append(line.split(":    ")[1][:-1])
+            resolutions.append(line.decode().split(":    ")[1][:-1])
     # Show a line for each active screen
     for resolution in resolutions:
-        xchat.command("".join(["say ", "[ Graphics ] Screen: ", resolution]))
-    return xchat.EAT_ALL
+        hexchat.command("".join(["say ", "[ Graphics ] Screen: ", resolution]))
+    return hexchat.EAT_ALL
 
 
 #############################################################################
@@ -295,35 +290,35 @@ def ghelp():
 #############################################################################
 def unload():
     """This function disconects all module functions"""
-    xchat.unhook(HOOKGUP)
-    xchat.unhook(HOOKGOS)
-    xchat.unhook(HOOKGSOFT)
-    xchat.unhook(HOOKDATE)
-    xchat.unhook(HOOKGHARD)
-    xchat.unhook(HOOKNET)
-    xchat.unhook(HOOKGRAPH)
+    hexchat.unhook(HOOKGUP)
+    hexchat.unhook(HOOKGOS)
+    hexchat.unhook(HOOKGSOFT)
+    hexchat.unhook(HOOKDATE)
+    hexchat.unhook(HOOKGHARD)
+    hexchat.unhook(HOOKNET)
+    hexchat.unhook(HOOKGRAPH)
 
 
 #############################################################################
 # Hook all callbacks with their respective commands
 #############################################################################
-HOOKGUP = xchat.hook_command('gup', uptime_cb)
-HOOKGOS = xchat.hook_command('gos', os_cb)
-HOOKGSOFT = xchat.hook_command('gsoft', software_cb)
-HOOKDATE = xchat.hook_command('gdate', date_cb)
-HOOKGHARD = xchat.hook_command('ghard', hardware_cb)
-HOOKNET = xchat.hook_command('gnet', network_cb)
-HOOKGRAPH = xchat.hook_command('ggraph', graphics_cb)
+HOOKGUP = hexchat.hook_command('gup', uptime_cb)
+HOOKGOS = hexchat.hook_command('gos', os_cb)
+HOOKGSOFT = hexchat.hook_command('gsoft', software_cb)
+HOOKDATE = hexchat.hook_command('gdate', date_cb)
+HOOKGHARD = hexchat.hook_command('ghard', hardware_cb)
+HOOKNET = hexchat.hook_command('gnet', network_cb)
+HOOKGRAPH = hexchat.hook_command('ggraph', graphics_cb)
 
 
 #############################################################################
 # Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/System"')
-xchat.command('menu ADD "GatoScript/System/Uptime" "gup"')
-xchat.command('menu ADD "GatoScript/System/System" "gos"')
-xchat.command('menu ADD "GatoScript/System/Software" "gsoft"')
-xchat.command('menu ADD "GatoScript/System/Hardware" "ghard"')
-xchat.command('menu ADD "GatoScript/System/Date" "gdate"')
-xchat.command('menu ADD "GatoScript/System/Network" "gnet"')
-xchat.command('menu ADD "GatoScript/System/Graphics" "ggraph"')
+hexchat.command('menu ADD "GatoScript/System"')
+hexchat.command('menu ADD "GatoScript/System/Uptime" "gup"')
+hexchat.command('menu ADD "GatoScript/System/System" "gos"')
+hexchat.command('menu ADD "GatoScript/System/Software" "gsoft"')
+hexchat.command('menu ADD "GatoScript/System/Hardware" "ghard"')
+hexchat.command('menu ADD "GatoScript/System/Date" "gdate"')
+hexchat.command('menu ADD "GatoScript/System/Network" "gnet"')
+hexchat.command('menu ADD "GatoScript/System/Graphics" "ggraph"')

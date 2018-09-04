@@ -27,7 +27,7 @@ __module_description__ = "Main MultiMedia module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 import sys
 from . import helper
 
@@ -83,7 +83,7 @@ def media_cb(word, word_eol, userdata):
         title, artist, songlength = player.listening()
         command = "me is hearing: {0} - {1} ({2})".format(title, artist,
                                                           songlength)
-        xchat.command(command)
+        hexchat.command(command)
     elif userdata == "player":
         print("The selected media player is {0}".format(player.name()))
     elif userdata == "next":
@@ -99,7 +99,7 @@ def media_cb(word, word_eol, userdata):
     else:
         message = "The {0} function is not implemented".format(userdata)
         helper.gprint(message)
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 #############################################################################
@@ -108,54 +108,56 @@ def media_cb(word, word_eol, userdata):
 #############################################################################
 def unload():
     """This function disconnects all module functions"""
-    xchat.unhook(hookhearing)
-    xchat.unhook(hookplayer)
-    xchat.unhook(hooknext)
-    xchat.unhook(hookprevious)
-    xchat.unhook(hookplay)
-    xchat.unhook(hookpause)
-    xchat.unhook(hookstop)
-    xchat.command('menu del "GatoScript/Options/Multimedia"')
-    xchat.command('menu del "GatoScript/Options/Player"')
-    xchat.command('menu del "GatoScript/Multimedia"')
+    hexchat.unhook(hookhearing)
+    hexchat.unhook(hookplayer)
+    hexchat.unhook(hooknext)
+    hexchat.unhook(hookprevious)
+    hexchat.unhook(hookplay)
+    hexchat.unhook(hookpause)
+    hexchat.unhook(hookstop)
+    hexchat.command('menu del "GatoScript/Options/Multimedia"')
+    hexchat.command('menu del "GatoScript/Options/Player"')
+    hexchat.command('menu del "GatoScript/Multimedia"')
 
 
 #############################################################################
 # Hook all callbacks with their respective commands
 #############################################################################
 # Media
-hookhearing = xchat.hook_command('hearing', media_cb,
-                                 userdata="hearing")
-hookplayer = xchat.hook_command('player', media_cb,
-                                userdata="player")
-hooknext = xchat.hook_command('next', media_cb, userdata="next")
-hookprevious = xchat.hook_command('previous', media_cb, userdata="previous")
-hookplay = xchat.hook_command('play', media_cb, userdata="play")
-hookpause = xchat.hook_command('pause', media_cb, userdata="pause")
-hookstop = xchat.hook_command('stop', media_cb, userdata="stop")
+hookhearing = hexchat.hook_command('hearing', media_cb,
+                                   userdata="hearing")
+hookplayer = hexchat.hook_command('player', media_cb,
+                                  userdata="player")
+hooknext = hexchat.hook_command('next', media_cb, userdata="next")
+hookprevious = hexchat.hook_command('previous', media_cb, userdata="previous")
+hookplay = hexchat.hook_command('play', media_cb, userdata="play")
+hookpause = hexchat.hook_command('pause', media_cb, userdata="pause")
+hookstop = hexchat.hook_command('stop', media_cb, userdata="stop")
 
 
 #############################################################################
 # Add menu options
 #############################################################################
-xchat.command("".join(['menu -t1 ADD "GatoScript/Options/Multimedia"',
-                       ' "options media enabled 1"',
-                       ' "options media enabled 0"']))
-xchat.command('menu ADD "GatoScript/Options/Player"')
-xchat.command("".join(['menu ADD "GatoScript/Option/Player/Rhythmbox"',
-                       ' "options media player rhythmbox"']))
-xchat.command("".join(['menu ADD "GatoScript/Option/Player/Banshee"',
-                       ' "options media player banshee"']))
-xchat.command("".join(['menu ADD "GatoScript/Option/Player/Amarok"',
-                       ' "options media player amarok"']))
-xchat.command("".join(['menu ADD "GatoScript/Option/Player/Exaile"',
-                       ' "options media player exaile"']))
-xchat.command("".join(['menu ADD "GatoScript/Option/Player/Audacious"',
-                       ' "options media player audacious"']))
-xchat.command('menu ADD "GatoScript/Multimedia"')
-xchat.command('menu ADD "GatoScript/Multimedia/Current song" "hearing"')
-xchat.command('menu ADD "GatoScript/Multimedia/Player" "player"')
-xchat.command('menu ADD "GatoScript/Multimedia/Previous" "previous"')
-xchat.command('menu ADD "GatoScript/Multimedia/Next" "next"')
-xchat.command('menu ADD "GatoScript/Multimedia/Stop" "stop"')
-xchat.command('menu ADD "GatoScript/Multimedia/Play" "play"')
+hexchat.command("".join(['menu -t1 ADD "GatoScript/Options/Multimedia"',
+                         ' "options media enabled 1"',
+                         ' "options media enabled 0"']))
+hexchat.command('menu ADD "GatoScript/Options/Player"')
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/Rhythmbox"',
+                         ' "options media player rhythmbox"']))
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/Banshee"',
+                         ' "options media player banshee"']))
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/Amarok"',
+                         ' "options media player amarok"']))
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/Exaile"',
+                         ' "options media player exaile"']))
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/Audacious"',
+                         ' "options media player audacious"']))
+hexchat.command("".join(['menu ADD "GatoScript/Option/Player/gmusicbrowser"',
+                         ' "options media player gmusicbrowser"']))
+hexchat.command('menu ADD "GatoScript/Multimedia"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Current song" "hearing"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Player" "player"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Previous" "previous"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Next" "next"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Stop" "stop"')
+hexchat.command('menu ADD "GatoScript/Multimedia/Play" "play"')

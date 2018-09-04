@@ -61,7 +61,9 @@ def help_cb(word, word_eol, userdata):
 def unload_cb(userdata):
     xchat.unhook(HOOKGHELP)
     for entry in dir(gmodules):
-        if "__" not in entry:
+        # Since helper module isn't directly loaded, it doesn't neet to be
+        # directly unloaded either
+        if "__" not in entry and entry is not "helper":
             command = ''.join(["gmodules.", entry, ".unload()"])
             messages = eval(command)
             if messages:

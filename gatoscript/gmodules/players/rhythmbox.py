@@ -29,7 +29,7 @@ __module_autor__ = "GatoLoko"
 
 
 from os import system
-from commands import getoutput
+from subprocess import getoutput
 
 
 # The following code access rhythmbx without using dbus, but this needs a

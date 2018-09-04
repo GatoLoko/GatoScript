@@ -30,16 +30,16 @@ __module_description__ = "Helper module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 from os import path
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import sqlite3
 
 #############################################################################
 # Define some environment variables
 #############################################################################
 
-_SCRIPTDIR = xchat.get_info("xchatdir")
+_SCRIPTDIR = hexchat.get_info("xchatdir")
 _GATODIR = "".join([_SCRIPTDIR, "/gatoscript/"])
 _CONFIGFILE = "".join([_GATODIR, "gatoscript.conf"])
 _GATODB_PATH = "".join([_GATODIR, "gatoscript.db"])
@@ -103,7 +103,7 @@ def conf_write(option, value, section="common"):
     """
     _CP.read(_CONFIGFILE)
     _CP.set(section, option, value)
-    _CP.write(file(_CONFIGFILE, "w"))
+    _CP.write(open(_CONFIGFILE, "w"))
 
 
 # Database management
@@ -144,11 +144,11 @@ def query_print(messages):
     Arguments:
     messages -- list of string
     """
-    orig_context = xchat.get_context()
-    context = xchat.find_context(channel="GatoScript")
+    orig_context = hexchat.get_context()
+    context = hexchat.find_context(channel="GatoScript")
     if context is None:
-        xchat.command("query -nofocus GatoScript")
-        context = xchat.find_context(channel="GatoScript")
+        hexchat.command("query -nofocus GatoScript")
+        context = hexchat.find_context(channel="GatoScript")
     for message in messages:
         context.emit_print("Private Message", "GatoScript", message)
     orig_context.set()
@@ -161,11 +161,11 @@ def query_line(message):
     Arguments:
     message -- message string
     """
-    orig_context = xchat.get_context()
-    context = xchat.find_context(channel="GatoScript")
+    orig_context = hexchat.get_context()
+    context = hexchat.find_context(channel="GatoScript")
     if context is None:
-        xchat.command("query -nofocus GatoScript")
-        context = xchat.find_context(channel="GatoScript")
+        hexchat.command("query -nofocus GatoScript")
+        context = hexchat.find_context(channel="GatoScript")
     context.emit_print("Private Message", "GatoScript", message)
     orig_context.set()
 
@@ -183,8 +183,8 @@ def expel(message, ban, word):
             ban = int(conf_read("protections", "ban"))
         if ban:
             host = word[0][1:].split("@")[-1]
-            xchat.command("".join(["ban *!*@", host]))
-        xchat.command("".join(["kick ", word[0][1:].split("!")[0], message]))
+            hexchat.command("".join(["ban *!*@", host]))
+        hexchat.command("".join(["kick ", word[0][1:].split("!")[0], message]))
 
 
 # Unit conversion
