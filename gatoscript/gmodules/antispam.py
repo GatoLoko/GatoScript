@@ -29,7 +29,7 @@ __module_description__ = "AntiSpam module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 import re
 import helper
 
@@ -110,13 +110,13 @@ def antispam_cb(word, word_eol, userdata):
                 ban = "1"
                 message = " Spam/Troll"
                 helper.expel(message, ban, word)
-                # Once the spammer is expelled, return to X-Chat/Hexchat so
-                # the check for private messages isn't executed when it's a
-                # public channel message.
-                return xchat.EAT_NONE
+                # Once the spammer is expelled, return to Hexchat so the check
+                # for private messages isn't executed when it's a public
+                # channel message.
+                return hexchat.EAT_NONE
     # Check whether the message was received in a private conversation and
     # spambots protection is enabled.
-    elif word[2] == xchat.get_info("nick") and SPAMBOTS == 1:
+    elif word[2] == hexchat.get_info("nick") and SPAMBOTS == 1:
         # If so, check whether it contains spam
         for spam_exp in COMP_FILTERS:
             if spam_exp.search(word_eol[3][1:]):
@@ -124,13 +124,13 @@ def antispam_cb(word, word_eol, userdata):
                 ban = "1"
                 message = " Spambot"
                 helper.expel(message, ban, word)
-                # And return to X-Chat/Hexchat eating the entire message
-                return xchat.EAT_ALL
+                # And return to Hexchat eating the entire message
+                return hexchat.EAT_ALL
     # If this point is reached, this protections are disabled OR there is no
     # spam OR the message is from an unprotected channel, so return to
-    # X-chat/Hexchat without doing anything
+    # Hexchat without doing anything
     else:
-        return xchat.EAT_NONE
+        return hexchat.EAT_NONE
 
 
 def antispam_add_cb(word, word_eol, userdata):
@@ -153,7 +153,7 @@ def antispam_add_cb(word, word_eol, userdata):
         antispam_reload()
     else:
         helper.gprint("Enable the AntiSpam system before adding filters")
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def antispam_del_cb(word, word_eol, userdata):
@@ -175,7 +175,7 @@ def antispam_del_cb(word, word_eol, userdata):
         antispam_reload()
     else:
         helper.gprint("Enable the AntiSpam system before deleting filters")
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def antispam_list_cb(word, word_eol, userdata):
@@ -190,7 +190,7 @@ def antispam_list_cb(word, word_eol, userdata):
         message = "".join([str(item[0]), ": ", item[1]])
         helper.query_line(message)
     del message
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def antispam_debug_cb(word, word_eol, userdata):
@@ -224,11 +224,11 @@ def unload():
     # Store all pending changes to the database
     helper.gatodb_commit()
     # Disconnect everything else
-    xchat.unhook(HOOKANTISPAM)
-    xchat.unhook(HOOKANTIADD)
-    xchat.unhook(HOOKANTILIST)
-    xchat.unhook(HOOKANTIDEL)
-    xchat.unhook(HOOKDEBUG)
+    hexchat.unhook(HOOKANTISPAM)
+    hexchat.unhook(HOOKANTIADD)
+    hexchat.unhook(HOOKANTILIST)
+    hexchat.unhook(HOOKANTIDEL)
+    hexchat.unhook(HOOKDEBUG)
 
 
 #############################################################################
@@ -236,21 +236,21 @@ def unload():
 #############################################################################
 
 # Antispam
-HOOKANTISPAM = xchat.hook_server('PRIVMSG', antispam_cb, userdata=None,
-                                 priority=5)
-HOOKANTIADD = xchat.hook_command('antiadd', antispam_add_cb)
-HOOKANTILIST = xchat.hook_command('antilist', antispam_list_cb)
-HOOKANTIDEL = xchat.hook_command('antidel', antispam_del_cb)
-HOOKDEBUG = xchat.hook_command('asdebug', antispam_debug_cb)
+HOOKANTISPAM = hexchat.hook_server('PRIVMSG', antispam_cb, userdata=None,
+                                   priority=5)
+HOOKANTIADD = hexchat.hook_command('antiadd', antispam_add_cb)
+HOOKANTILIST = hexchat.hook_command('antilist', antispam_list_cb)
+HOOKANTIDEL = hexchat.hook_command('antidel', antispam_del_cb)
+HOOKDEBUG = hexchat.hook_command('asdebug', antispam_debug_cb)
 
 
 #############################################################################
 # Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/-"')
-xchat.command('menu ADD "GatoScript/AntiSpam"')
-xchat.command('menu ADD "GatoScript/AntiSpam/Filters list" "antilist"')
-xchat.command('menu ADD "GatoScript/AntiSpam/Add filter" "getstr \b \
+hexchat.command('menu ADD "GatoScript/-"')
+hexchat.command('menu ADD "GatoScript/AntiSpam"')
+hexchat.command('menu ADD "GatoScript/AntiSpam/Filters list" "antilist"')
+hexchat.command('menu ADD "GatoScript/AntiSpam/Add filter" "getstr \b \
               "antiadd" "Filter:""')
-xchat.command('menu ADD "GatoScript/AntiSpam/Remove filter" "getstr \b \
+hexchat.command('menu ADD "GatoScript/AntiSpam/Remove filter" "getstr \b \
               "antidel" "Filter:""')

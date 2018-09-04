@@ -30,7 +30,7 @@ __module_description__ = "P2P module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 from os import path
 import helper
 import xml.dom.minidom
@@ -69,7 +69,7 @@ def amule_cb(word, word_eol, userdata):
             up_speed = (lines[7])[0:-1]
             total_down = helper.units(int(lines[11]), 1024)
             version = lines[13][0:-1]
-            xchat.command("".join(["say ( aMule ", version, " )",
+            hexchat.command("".join(["say ( aMule ", version, " )",
                                    " Download: ", down_speed, "KB/s -",
                                    " Upload: ", up_speed, "KB/s -"
                                    " Downloaded: ", total_down]))
@@ -77,7 +77,7 @@ def amule_cb(word, word_eol, userdata):
         helper.gprint([_AMULESIG, " file does not exist, check whether you",
                        " have 'Online signature' enabled in your aMule",
                        " settings"])
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def vuze_cb(word, word_eol, userdata):
@@ -96,13 +96,13 @@ def vuze_cb(word, word_eol, userdata):
         down_speed = down.getElementsByTagName('TEXT')[0].firstChild.data
         up = glob.getElementsByTagName('UPLOAD_SPEED')[0]
         up_speed = up.getElementsByTagName('TEXT')[0].firstChild.data
-        xchat.command("".join(["say ( Vuze ) Download: ", down_speed, " - ",
+        hexchat.command("".join(["say ( Vuze ) Download: ", down_speed, " - ",
                                "Upload: ", up_speed]))
         del down, down_speed, up, up_speed, glob, stats, dom1
     else:
         helper.gprint("".join([_VUZESTATS, " file does not exist, check your",
                                " Vuze settings"]))
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 def transmission_cb(word, word_eol, userdata):
@@ -117,12 +117,12 @@ def transmission_cb(word, word_eol, userdata):
         lines = open(_TRANSMISSIONSTATS, "r").readlines()
         downloaded = helper.units(int(lines[1].split(":")[1][1:-3]), 1024)
         uploaded = helper.units(int(lines[5].split(":")[1][1:-1]), 1024)
-        xchat.command("".join(["say ( Transmission ) Downloaded: ", downloaded,
+        hexchat.command("".join(["say ( Transmission ) Downloaded: ", downloaded,
                                " - Uploaded: ", uploaded]))
     else:
         helper.gprint("".join(["There is no stats file. Please, check your",
                                " Transmission setting"]))
-    return xchat.EAT_ALL
+    return hexchat.EAT_ALL
 
 
 ##############################################################################
@@ -145,23 +145,23 @@ def ghelp():
 #############################################################################
 def unload():
     """This function disconects all module functions"""
-    xchat.unhook(HOOKAMULE)
-    xchat.unhook(HOOKVUZE)
-    xchat.unhook(HOOKTRANSMISSION)
+    hexchat.unhook(HOOKAMULE)
+    hexchat.unhook(HOOKVUZE)
+    hexchat.unhook(HOOKTRANSMISSION)
 
 
 #############################################################################
 # Hook all callbacks with their respective commands
 #############################################################################
-HOOKAMULE = xchat.hook_command('amule', amule_cb)
-HOOKVUZE = xchat.hook_command('vuze', vuze_cb)
-HOOKTRANSMISSION = xchat.hook_command('transmission', transmission_cb)
+HOOKAMULE = hexchat.hook_command('amule', amule_cb)
+HOOKVUZE = hexchat.hook_command('vuze', vuze_cb)
+HOOKTRANSMISSION = hexchat.hook_command('transmission', transmission_cb)
 
 
 #############################################################################
 # Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/Downloads"')
-xchat.command('menu ADD "GatoScript/Downloads/aMule" "amule"')
-xchat.command('menu ADD "GatoScript/Downloads/Vuze" "vuze"')
-xchat.command('menu ADD "GatoScript/Downloads/Transmission" "transmission"')
+hexchat.command('menu ADD "GatoScript/Downloads"')
+hexchat.command('menu ADD "GatoScript/Downloads/aMule" "amule"')
+hexchat.command('menu ADD "GatoScript/Downloads/Vuze" "vuze"')
+hexchat.command('menu ADD "GatoScript/Downloads/Transmission" "transmission"')

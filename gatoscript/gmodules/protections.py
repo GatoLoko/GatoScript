@@ -29,7 +29,7 @@ __module_description__ = "Protections module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 import re
 import helper
 
@@ -68,10 +68,11 @@ def anti_ctcp_cb(word, word_eol, userdata):
                     message = "".join(["Received a CTCP to channel ", word[2]])
                     helper.gprint(message)
                     host = word[0][1:].split("@")[-1]
-                    xchat.command("".join(["ban *!*@", host]))
+                    hexchat.command("".join(["ban *!*@", host]))
                     nick = word[0][1:].split("!")[0]
-                    xchat.command("".join(["kick ", nick, "CTCPs to channel"]))
-    return xchat.EAT_NONE
+                    hexchat.command("".join(["kick ", nick,
+                                             "CTCPs to channel"]))
+    return hexchat.EAT_NONE
 
 
 def anti_notice_cb(word, word_eol, userdata):
@@ -90,9 +91,9 @@ def anti_notice_cb(word, word_eol, userdata):
                (word[0].lower() != ":chan!-@-"):  # Exception for IRC-Hispano
                 print(word[0])
                 print("This ban is for sending notices")
-                xchat.command("".join(["kickban ", word[0][1:].split("!")[0],
+                hexchat.command("".join(["kickban ", word[0][1:].split("!")[0],
                                        " Notices to channel are NOT allowed"]))
-    return xchat.EAT_NONE
+    return hexchat.EAT_NONE
 
 
 def anti_hoygan_cb(word, word_eol, userdata):
@@ -110,13 +111,13 @@ def anti_hoygan_cb(word, word_eol, userdata):
                 hoygan_re = re.compile('hoyga|h 0 y g 4 n', re.IGNORECASE)
                 if hoygan_re.search(word_eol[3]):
                     host = word[0][1:].split("@")[-1]
-                    xchat.command("".join(["ban *!*@", host]))
+                    hexchat.command("".join(["ban *!*@", host]))
                     nick = word[0][1:].split("!")[0]
-                    xchat.command("".join(["kick ", nick, " Hoygan are the",
+                    hexchat.command("".join(["kick ", nick, " Hoygan are the",
                                            " electronic version of the class",
                                            " clown, and they are NOT funny."]))
                     del host, nick
-    return xchat.EAT_NONE
+    return hexchat.EAT_NONE
 
 
 def anti_caps_cb(word, word_eol, userdata):
@@ -147,8 +148,8 @@ def anti_caps_cb(word, word_eol, userdata):
                                            " do not write in all caps, it is",
                                            " against the rules. Next time you",
                                            " will be expelled."])
-                    xchat.command(message)
-    return xchat.EAT_NONE
+                    hexchat.command(message)
+    return hexchat.EAT_NONE
 
 
 def anti_colors_cb(word, word_eol, userdata):
@@ -182,15 +183,15 @@ def anti_colors_cb(word, word_eol, userdata):
                                        " this channel, it is against the",
                                        " rules. Next time you will be",
                                        " expelled."])
-                    xchat.command(message)
+                    hexchat.command(message)
             # If we are ignoring messages containing colors
             if helper.conf_read("ignore_colors", "protections") == "1":
                 helper.gprint("".join(["Message from ",
                                        word[0][1:].split("!")[0],
                                        " ignored because it contains",
                                        " colors."]))
-                return xchat.EAT_ALL
-    return xchat.EAT_NONE
+                return hexchat.EAT_ALL
+    return hexchat.EAT_NONE
 
 
 def anti_drone_cb(word, word_eol, userdata):
@@ -206,11 +207,11 @@ def anti_drone_cb(word, word_eol, userdata):
         nick = word[0][1:].split("!")[0]
         ident = word[0][1:].split("!")[1].split("@")[0]
         if _DRONE_RE.search(nick) and _DRONE_RE.search(ident):
-            context = xchat.get_context()
+            context = hexchat.get_context()
             host = word[0].split("@")[1]
             context.command("".join(["ban *!*@", host]))
             context.command("".join(["kick ", nick, " Bot"]))
-    return xchat.EAT_NONE
+    return hexchat.EAT_NONE
 
 
 def anti_away_cb(word, word_eol, userdata):
@@ -230,7 +231,7 @@ def anti_away_cb(word, word_eol, userdata):
                     message = "".join([" Disable automatic away messages,",
                                        " if you are out, just shut up"])
                     helper.expel(message, ban, word)
-    return xchat.EAT_NONE
+    return hexchat.EAT_NONE
 
 
 ##############################################################################
@@ -252,62 +253,62 @@ def ghelp():
 ##############################################################################
 def unload():
     """This function disconects all module functions"""
-    xchat.unhook(HOOKANTINOTICE)
-    xchat.unhook(HOOKANTIDRONE)
-    xchat.unhook(HOOKANTICTCP)
-    xchat.unhook(HOOKANTIHOYGAN)
-    xchat.unhook(HOOKANTICAPS)
-    xchat.unhook(HOOKANTICOLORS)
-    xchat.unhook(HOOKANTIAWAY)
+    hexchat.unhook(HOOKANTINOTICE)
+    hexchat.unhook(HOOKANTIDRONE)
+    hexchat.unhook(HOOKANTICTCP)
+    hexchat.unhook(HOOKANTIHOYGAN)
+    hexchat.unhook(HOOKANTICAPS)
+    hexchat.unhook(HOOKANTICOLORS)
+    hexchat.unhook(HOOKANTIAWAY)
 
 
 ##############################################################################
 # Hook all callbacks with their respective commands
 ##############################################################################
-HOOKANTINOTICE = xchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
-HOOKANTIDRONE = xchat.hook_server('JOIN', anti_drone_cb, userdata=None)
-HOOKANTICTCP = xchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
-HOOKANTIHOYGAN = xchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
-HOOKANTICAPS = xchat.hook_server('PRIVMSG', anti_caps_cb, userdata=None)
-HOOKANTICOLORS = xchat.hook_server('PRIVMSG', anti_colors_cb, userdata=None)
-HOOKANTIAWAY = xchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
+HOOKANTINOTICE = hexchat.hook_server('NOTICE', anti_notice_cb, userdata=None)
+HOOKANTIDRONE = hexchat.hook_server('JOIN', anti_drone_cb, userdata=None)
+HOOKANTICTCP = hexchat.hook_server('PRIVMSG', anti_ctcp_cb, userdata=None)
+HOOKANTIHOYGAN = hexchat.hook_server('PRIVMSG', anti_hoygan_cb, userdata=None)
+HOOKANTICAPS = hexchat.hook_server('PRIVMSG', anti_caps_cb, userdata=None)
+HOOKANTICOLORS = hexchat.hook_server('PRIVMSG', anti_colors_cb, userdata=None)
+HOOKANTIAWAY = hexchat.hook_server('PRIVMSG', anti_away_cb, userdata=None)
 
 
 #############################################################################
 # Add menu options
 #############################################################################
-xchat.command('menu ADD "GatoScript/Options/Protections"')
-xchat.command("".join(['menu -t', helper.conf_read("away", "protections"),
+hexchat.command('menu ADD "GatoScript/Options/Protections"')
+hexchat.command("".join(['menu -t', helper.conf_read("away", "protections"),
                        ' ADD "GatoScript/Options/Protections/Away"',
                        ' "options protections away 1"',
                        ' "options protections away 0"']))
-xchat.command("".join(['menu -t', helper.conf_read("ban", "protections"),
+hexchat.command("".join(['menu -t', helper.conf_read("ban", "protections"),
                        ' ADD "GatoScript/Options/Protections/Ban"',
                        ' "options protections ban 1"',
                        ' "options protections ban 0"']))
-xchat.command("".join(['menu -t',
+hexchat.command("".join(['menu -t',
                        helper.conf_read("ignore_colors", "protections"),
                        ' ADD "GatoScript/Options/Protections/Ignore colors"',
                        ' "options protections colors 1"',
                        ' "options protections colors 0"']))
-xchat.command("".join(['menu -t',
+hexchat.command("".join(['menu -t',
                        helper.conf_read("ban_colors", "protections"),
                        ' ADD "GatoScript/Options/Protections/Ban colors"',
                        ' "options protections colors 1"',
                        ' "options protections colors 0"']))
-xchat.command("".join(['menu -t', helper.conf_read("ctcps", "protections"),
+hexchat.command("".join(['menu -t', helper.conf_read("ctcps", "protections"),
                        ' ADD "GatoScript/Options/Protections/CTCPs"',
                        ' "options protections ctcps 1"',
                        ' "options protections ctcps 0"']))
-xchat.command("".join(['menu -t', helper.conf_read("caps", "protections"),
+hexchat.command("".join(['menu -t', helper.conf_read("caps", "protections"),
                        ' ADD "GatoScript/Options/Protections/Caps"',
                        ' "options protections caps 1"',
                        ' "options protections caps 0"']))
-xchat.command("".join(['menu -t', helper.conf_read("hoygan", "protections"),
+hexchat.command("".join(['menu -t', helper.conf_read("hoygan", "protections"),
                        ' ADD "GatoScript/Options/Protections/HOYGAN"',
                        ' "options protections hoygan 1"',
                        ' "options protections hoygan 0"']))
-xchat.command("".join(['menu -t', helper.conf_read("spam", "protections"),
+hexchat.command("".join(['menu -t', helper.conf_read("spam", "protections"),
                        ' ADD "GatoScript/Options/Protections/Spam"',
                        ' "options protections spam 1"',
                        ' "options protections spam 0"']))

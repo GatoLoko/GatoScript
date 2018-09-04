@@ -29,7 +29,7 @@ __module_description__ = "Highlight module for GatoScript"
 __module_autor__ = "GatoLoko"
 
 # Load all needed libraries
-import xchat
+import hexchat
 import re
 import helper
 
@@ -44,7 +44,7 @@ def color():
     if helper.conf_read("highlightoverride", "common") == "1":
         color = helper.conf_read("highlightcolor", "common")
     else:
-        event = xchat.get_info('event_text Channel Msg Hilight')
+        event = hexchat.get_info('event_text Channel Msg Hilight')
         color = re.findall(r'%C[0-9]{1,2}', event)[-1][2:]
     return color
 
@@ -60,8 +60,8 @@ def highlight_collect_cb(word, word_eol, userdata):
     word_eol -- array of strings sent by HexChat/X-Chat to every hook
     userdata -- optional variable that can be sent to a hook (ignored)
     """
-    if xchat.get_prefs("irc_extra_hilight") != '':
-        highlight = xchat.get_prefs("irc_extra_hilight").split(",")
+    if hexchat.get_prefs("irc_extra_hilight") != '':
+        highlight = hexchat.get_prefs("irc_extra_hilight").split(",")
         # Extract some text to compose the output string
         channel = word[2]
         nick = word[0].split("!")[0][1:]
@@ -80,7 +80,7 @@ def highlight_collect_cb(word, word_eol, userdata):
                     helper.query_line("".join([
                         nick, " has mentioned \003", color(), highlighted,
                         "\003 in ", channel, ": <", nick, "> ", text]))
-    return xchat.EAT_NONE
+    return hexchat.EAT_NONE
 
 
 def url_highlight_cb(word, word_eol, userdata):
@@ -92,7 +92,7 @@ def url_highlight_cb(word, word_eol, userdata):
     """
     # If we are dealing with a CTCP, don't bother trying'
     if len(word[3]) > 1 and word[3][1] in ctcp_txt:
-        return xchat.EAT_NONE
+        return hexchat.EAT_NONE
     if helper.conf_read("highlight", "common") == "1":
         urls = re.compile("".join([
             "((ftp|https?)://.*)|((www|ftp)\..*\..*)",
@@ -104,7 +104,7 @@ def url_highlight_cb(word, word_eol, userdata):
         if word[3] in action_txt:
             words = word_eol[4][:-1].split(" ")
             action = True
-        elif "freenode" in xchat.get_info("server").lower():
+        elif "freenode" in hexchat.get_info("server").lower():
             words = word_eol[3][2:].split(" ")
         else:
             words = word_eol[3][1:].split(" ")
@@ -124,7 +124,7 @@ def url_highlight_cb(word, word_eol, userdata):
                     new_msg_tmp.append(entry)
             new_msg = " ".join(new_msg_tmp)
             # Find the context:
-            context = xchat.get_context()
+            context = hexchat.get_context()
             # Find what's the appropiate event and emit the corresponding text
             if action is False:
                 context.emit_print("Channel Message",
@@ -136,9 +136,9 @@ def url_highlight_cb(word, word_eol, userdata):
                 else:
                     context.emit_print("Private Action",
                                        word[0].split("!")[0][1:], new_msg)
-            return xchat.EAT_ALL
+            return hexchat.EAT_ALL
     else:
-        return xchat.EAT_NONE
+        return hexchat.EAT_NONE
 
 
 #############################################################################
@@ -155,15 +155,15 @@ def ghelp():
 #############################################################################
 def unload():
     """This function disconects all module functions"""
-    xchat.unhook(HOOKHIGHLIGHT)
-    xchat.unhook(HOOKURLHIGHLIGHT)
+    hexchat.unhook(HOOKHIGHLIGHT)
+    hexchat.unhook(HOOKURLHIGHLIGHT)
 
 
 #############################################################################
 # Hooks for all functions provided by this module
 #############################################################################
 # Highlight
-HOOKHIGHLIGHT = xchat.hook_server('PRIVMSG', highlight_collect_cb,
-                                  userdata=None)
-HOOKURLHIGHLIGHT = xchat.hook_server('PRIVMSG', url_highlight_cb,
-                                     userdata=None)
+HOOKHIGHLIGHT = hexchat.hook_server('PRIVMSG', highlight_collect_cb,
+                                    userdata=None)
+HOOKURLHIGHLIGHT = hexchat.hook_server('PRIVMSG', url_highlight_cb,
+                                       userdata=None)
