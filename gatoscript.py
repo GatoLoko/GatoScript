@@ -66,7 +66,7 @@ def unload_cb(userdata):
         if "__" not in entry and entry is not "helper":
             command = ''.join(["gmodules.", entry, ".unload()"])
             messages = eval(command)
-            if messages is not None:
+            if messages:
                 for message in messages:
                     print(message)
     xchat.unhook(HOOKUNLOAD)

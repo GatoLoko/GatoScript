@@ -72,7 +72,7 @@ def antispam_reload():
     if helper.CONNECTED == 1:
         ANTISPAM = int(helper.conf_read("spam", "protections"))
         SPAMBOTS = int(helper.conf_read("spambots", "protections"))
-        CHANNELS = helper.conf_read("channels", "protections")
+        CHANNELS = helper.conf_read("channels", "protections").split(",")
         # Load the new filter list and compile the regexps
         filters = helper.gatodb_cursor_execute("SELECT filter FROM filters")
         COMP_FILTERS = []
