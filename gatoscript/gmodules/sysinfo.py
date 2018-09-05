@@ -211,7 +211,8 @@ def network_cb(word, word_eol, userdata):
     userdata -- optional variable that can be sent to a hook (ignored)
     """
     # Find all devices and show a line for each one
-    net = re.compile('eth|ath|wlan|ra([0-9]):')
+    netre = '((eth|ath|wlan|ra|(en[spo]([0-9])+s)|vtnet)([0-9])+)|enx([0-9a-f])+:'
+    net = re.compile(netre, re.IGNORECASE)
     hostname = platform.node()
     for line in open("/proc/net/dev"):
         if net.search(line):
