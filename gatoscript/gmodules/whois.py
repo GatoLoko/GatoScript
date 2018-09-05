@@ -160,6 +160,14 @@ def whois_cb(word, word_eol, userdata):
         return hexchat.EAT_NONE
 
 
+##############################################################################
+# Define the help function
+##############################################################################
+def ghelp():
+    """This module doesn't provide any interactive command"""
+    return []
+
+
 #############################################################################
 # Define the function to unload this module. This should be called from the
 # main module unload function

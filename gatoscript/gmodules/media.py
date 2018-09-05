@@ -52,7 +52,6 @@ if player_enabled:
 def ghelp():
     """Returns the help information."""
     messages = [
-        "",
         "Multimedia:",
         "".join(
             ["    /hearing:       Shows in the active channel the song we",

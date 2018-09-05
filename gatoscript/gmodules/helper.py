@@ -211,11 +211,8 @@ def units(value, base):
 # Define the help function
 #############################################################################
 def ghelp():
-    """Returns the help information."""
-    messages = [
-        "Helper:",
-        "  This module doesnt contain any interactive functions"]
-    return messages
+    """This module doesn't contain any interactive functions"""
+    return []
 
 
 #############################################################################

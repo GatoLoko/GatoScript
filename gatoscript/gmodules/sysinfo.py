@@ -272,7 +272,6 @@ def graphics_cb(word, word_eol, userdata):
 def ghelp():
     """Returns the help information."""
     messages = [
-        "",
         "System information:",
         "  /gup:    Shows current system uptime",
         "  /gos:    Shows current operating system",

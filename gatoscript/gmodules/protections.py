@@ -238,13 +238,8 @@ def anti_away_cb(word, word_eol, userdata):
 # Define the help function
 ##############################################################################
 def ghelp():
-    """Returns the help information."""
-    messages = [
-        "",
-        "Protections:",
-        "    This module doesn't provide any interactive command",
-        ""]
-    return messages
+    """This module doesn't provide any interactive command"""
+    return []
 
 
 ##############################################################################
